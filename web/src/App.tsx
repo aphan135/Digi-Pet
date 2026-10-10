@@ -15,8 +15,10 @@ function exerciseToProblem(exercise: LearningExercise, topic: Topic): Problem {
     difficulty: exercise.difficulty,
     type: topic.category === "Systems" ? "system-design" : "leetcode",
     topic: topic.name,
-    prompt: `${exercise.instructions}\n\nStarter code:\n${exercise.starterCode}\n\nExpected output: ${exercise.expectedOutput}`,
+    prompt: exercise.instructions,
     hint: exercise.hint,
+    starterCode: exercise.starterCode,
+    expectedOutput: exercise.expectedOutput,
     expectedConcepts: [topic.name, exercise.hint, `Expected output: ${exercise.expectedOutput}`],
   };
 }

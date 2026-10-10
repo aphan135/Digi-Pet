@@ -59,6 +59,25 @@ function Challenge({ problem }: ChallengeProps) {
           {selectedProblem.difficulty}
         </span>
         <p>{selectedProblem.prompt}</p>
+        {selectedProblem.starterCode && (
+          <div className="starter-code-panel">
+            <div className="code-window-header">
+              <span className="window-dot red" />
+              <span className="window-dot yellow" />
+              <span className="window-dot green" />
+              <span className="code-file-name">starter.js</span>
+            </div>
+            <pre>
+              <code>{selectedProblem.starterCode}</code>
+            </pre>
+          </div>
+        )}
+        {selectedProblem.expectedOutput && (
+          <div className="expected-output-panel">
+            <strong>Expected output</strong>
+            <code>{selectedProblem.expectedOutput}</code>
+          </div>
+        )}
         <div className="hint-box">
           <strong>Pet hint</strong>
           <p>{selectedProblem.hint}</p>

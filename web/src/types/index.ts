@@ -12,6 +12,8 @@ export interface Problem {
   topic: string;
   prompt: string;
   hint: string;
+  starterCode?: string;
+  expectedOutput?: string;
   expectedConcepts?: string[];
 }
 
