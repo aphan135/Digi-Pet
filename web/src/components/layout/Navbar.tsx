@@ -42,6 +42,16 @@ function Navbar({ activePage, onNavigate }: NavbarProps) {
         <h1>Study Companion</h1>
       </div>
       <nav className="nav-actions" aria-label="Main navigation">
+        {navItems.map((item) => (
+          <button
+            className={activePage === item.page ? "active" : ""}
+            key={item.page}
+            onClick={() => onNavigate(item.page)}
+            type="button"
+          >
+            {item.label}
+          </button>
+        ))}
         <div className={`dashboard-profile-nav ${activePage === "dashboard" ? "active" : ""}`}>
           <button
             className="dashboard-nav-button"
@@ -59,16 +69,6 @@ function Navbar({ activePage, onNavigate }: NavbarProps) {
             <ProfileCatIcon />
           </button>
         </div>
-        {navItems.map((item) => (
-          <button
-            className={activePage === item.page ? "active" : ""}
-            key={item.page}
-            onClick={() => onNavigate(item.page)}
-            type="button"
-          >
-            {item.label}
-          </button>
-        ))}
       </nav>
     </header>
   );
