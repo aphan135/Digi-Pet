@@ -827,6 +827,399 @@ textarea:focus-visible {
   font-weight: 800;
 }
 
+.fantasy-map {
+  isolation: isolate;
+  min-height: 820px;
+  max-width: 980px;
+  overflow: hidden;
+  border: 10px solid #d9bc84;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 18% 22%, rgb(255 255 255 / 0.5), transparent 16%),
+    radial-gradient(circle at 78% 18%, rgb(255 255 255 / 0.45), transparent 14%),
+    linear-gradient(135deg, #f8e7ba 0%, #efd39b 48%, #e8c989 100%);
+  box-shadow:
+    inset 0 0 0 3px rgb(105 77 38 / 0.18),
+    0 22px 42px rgb(70 50 24 / 0.22);
+}
+
+.fantasy-map::before {
+  position: absolute;
+  inset: 18px;
+  border: 2px dashed rgb(102 74 34 / 0.22);
+  border-radius: 18px;
+  content: "";
+  pointer-events: none;
+}
+
+.fantasy-map::after {
+  position: absolute;
+  right: -50px;
+  bottom: -38px;
+  z-index: 0;
+  width: 330px;
+  height: 270px;
+  background:
+    linear-gradient(135deg, transparent 48%, #6f7f82 49% 70%, transparent 71%),
+    linear-gradient(45deg, transparent 42%, #91a3a6 43% 69%, transparent 70%),
+    linear-gradient(135deg, transparent 58%, #3f5458 59% 73%, transparent 74%);
+  clip-path: polygon(10% 100%, 32% 30%, 47% 68%, 62% 12%, 95% 100%);
+  content: "";
+  filter: drop-shadow(0 16px 18px rgb(47 58 61 / 0.25));
+}
+
+.map-terrain {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.map-terrain.water {
+  left: -70px;
+  bottom: 55px;
+  width: 280px;
+  height: 250px;
+  border: 5px solid rgb(41 117 141 / 0.22);
+  border-radius: 48% 52% 43% 57%;
+  background:
+    repeating-linear-gradient(145deg, transparent 0 18px, rgb(255 255 255 / 0.28) 18px 23px),
+    #74c7d3;
+  transform: rotate(-15deg);
+}
+
+.map-terrain.forest {
+  width: 220px;
+  height: 170px;
+  background:
+    radial-gradient(circle at 18% 70%, #5c9a67 0 13px, transparent 14px),
+    radial-gradient(circle at 32% 50%, #3f8256 0 17px, transparent 18px),
+    radial-gradient(circle at 52% 72%, #6fa96e 0 15px, transparent 16px),
+    radial-gradient(circle at 70% 46%, #4c8e5e 0 19px, transparent 20px),
+    radial-gradient(circle at 84% 74%, #3f8256 0 14px, transparent 15px);
+  opacity: 0.9;
+}
+
+.map-terrain.forest.one {
+  top: 165px;
+  left: 38px;
+}
+
+.map-terrain.forest.two {
+  right: 72px;
+  top: 275px;
+  transform: rotate(10deg);
+}
+
+.map-terrain.hills {
+  right: 210px;
+  bottom: 110px;
+  width: 190px;
+  height: 120px;
+  border-radius: 50% 50% 0 0;
+  background:
+    radial-gradient(ellipse at 30% 90%, #b2a467 0 58px, transparent 60px),
+    radial-gradient(ellipse at 70% 88%, #9d955e 0 62px, transparent 64px);
+  opacity: 0.75;
+}
+
+.map-road {
+  position: absolute;
+  inset: 95px 115px 110px 130px;
+  z-index: 1;
+  border: 7px dashed rgb(128 83 40 / 0.42);
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 44% 52% 48% 38%;
+  transform: rotate(-8deg);
+}
+
+.fantasy-map .landmark-card {
+  z-index: 3;
+  border-color: #8d6228;
+  background: #fff7db;
+  color: #5b3715;
+}
+
+.fantasy-map .map-start {
+  position: absolute;
+  top: 40px;
+  left: 58px;
+  margin: 0;
+}
+
+.fantasy-map .map-goal {
+  position: absolute;
+  right: 38px;
+  bottom: 34px;
+  margin: 0;
+  padding: 0.85rem 1.25rem;
+}
+
+.fantasy-map .map-node {
+  position: absolute;
+  z-index: 3;
+  width: min(315px, 38vw);
+  min-height: 76px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  border-color: rgb(93 67 31 / 0.28);
+  border-radius: 18px;
+  background: #fff9e8;
+  box-shadow:
+    0 13px 20px rgb(74 53 25 / 0.14),
+    inset 0 0 0 1px rgb(255 255 255 / 0.55);
+}
+
+.fantasy-map .map-node.current {
+  border-color: #1b4d89;
+  box-shadow:
+    0 0 0 5px rgb(27 77 137 / 0.12),
+    0 13px 20px rgb(74 53 25 / 0.14);
+}
+
+.fantasy-map .map-node.locked {
+  filter: saturate(0.72);
+  opacity: 0.82;
+}
+
+.fantasy-map .map-node.completed {
+  border-color: #3f8b52;
+  background: #f3ffe9;
+}
+
+.fantasy-map .node-1 {
+  top: 105px;
+  left: 165px;
+}
+
+.fantasy-map .node-2 {
+  top: 205px;
+  right: 120px;
+}
+
+.fantasy-map .node-3 {
+  top: 315px;
+  left: 88px;
+}
+
+.fantasy-map .node-4 {
+  top: 415px;
+  right: 142px;
+}
+
+.fantasy-map .node-5 {
+  top: 515px;
+  left: 178px;
+}
+
+.fantasy-map .node-6 {
+  top: 615px;
+  right: 220px;
+}
+
+.fantasy-map .node-7 {
+  top: 705px;
+  left: 94px;
+}
+
+.fantasy-map .node-8 {
+  top: 118px;
+  right: 44px;
+}
+
+.fantasy-map .node-9 {
+  top: 598px;
+  left: 465px;
+}
+
+.fantasy-map .node-10 {
+  top: 705px;
+  right: 74px;
+}
+
+.map-landmark {
+  position: relative;
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  background: var(--accent-soft, #e8edf4);
+  color: var(--accent, #1b4d89);
+}
+
+.map-landmark::before,
+.map-landmark::after {
+  position: absolute;
+  content: "";
+}
+
+.map-landmark.cottage::before {
+  inset: 15px 8px 7px;
+  border-radius: 4px;
+  background: currentColor;
+}
+
+.map-landmark.cottage::after {
+  top: 6px;
+  left: 8px;
+  width: 28px;
+  height: 22px;
+  background: #b95b3c;
+  clip-path: polygon(50% 0, 100% 62%, 0 62%);
+}
+
+.map-landmark.dock::before {
+  left: 7px;
+  right: 7px;
+  bottom: 9px;
+  height: 7px;
+  border-radius: 99px;
+  background: currentColor;
+}
+
+.map-landmark.dock::after {
+  left: 13px;
+  top: 7px;
+  width: 18px;
+  height: 24px;
+  border-left: 5px solid currentColor;
+  border-bottom: 5px solid currentColor;
+  transform: skewX(-12deg);
+}
+
+.map-landmark.tower::before {
+  left: 14px;
+  top: 8px;
+  width: 16px;
+  height: 27px;
+  border-radius: 5px 5px 2px 2px;
+  background: currentColor;
+}
+
+.map-landmark.tower::after {
+  left: 10px;
+  top: 5px;
+  width: 24px;
+  height: 9px;
+  border-radius: 4px;
+  background: #b95b3c;
+}
+
+.map-landmark.library::before {
+  inset: 12px 8px 8px;
+  border-radius: 3px;
+  background: currentColor;
+}
+
+.map-landmark.library::after {
+  left: 9px;
+  top: 7px;
+  width: 26px;
+  height: 8px;
+  background: #b95b3c;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.map-landmark.bridge::before {
+  left: 6px;
+  right: 6px;
+  bottom: 12px;
+  height: 15px;
+  border: 5px solid currentColor;
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+}
+
+.map-landmark.bridge::after {
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  height: 4px;
+  background: currentColor;
+}
+
+.map-landmark.observatory::before {
+  left: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 18px;
+  border-radius: 18px 18px 4px 4px;
+  background: currentColor;
+}
+
+.map-landmark.observatory::after {
+  left: 17px;
+  top: 7px;
+  width: 10px;
+  height: 14px;
+  border-radius: 99px 99px 0 0;
+  background: #b95b3c;
+}
+
+.map-landmark.lab::before {
+  left: 13px;
+  bottom: 8px;
+  width: 18px;
+  height: 25px;
+  border-radius: 3px 3px 9px 9px;
+  background: currentColor;
+}
+
+.map-landmark.lab::after {
+  left: 17px;
+  top: 7px;
+  width: 10px;
+  height: 10px;
+  border-radius: 0 0 4px 4px;
+  background: #b95b3c;
+}
+
+.map-landmark.market::before {
+  inset: 16px 8px 8px;
+  border-radius: 3px;
+  background: currentColor;
+}
+
+.map-landmark.market::after {
+  left: 8px;
+  top: 8px;
+  width: 28px;
+  height: 12px;
+  border-radius: 8px 8px 2px 2px;
+  background: repeating-linear-gradient(90deg, #b95b3c 0 7px, #fff4d1 7px 14px);
+}
+
+.map-landmark.camp::before {
+  left: 8px;
+  top: 11px;
+  width: 28px;
+  height: 24px;
+  background: currentColor;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.map-landmark.camp::after {
+  left: 19px;
+  bottom: 8px;
+  width: 6px;
+  height: 12px;
+  background: #fff4d1;
+}
+
+.map-landmark.gate::before {
+  inset: 10px 8px 8px;
+  border: 5px solid currentColor;
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+}
+
+.map-landmark.gate::after {
+  left: 19px;
+  bottom: 8px;
+  width: 6px;
+  height: 16px;
+  background: currentColor;
+}
+
 .stats-grid,
 .topic-grid {
   display: grid;
