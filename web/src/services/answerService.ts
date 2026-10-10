@@ -13,11 +13,17 @@ export async function checkAnswer(
   });
 
   const text = await response.text();
-  const body = text ? JSON.parse(text) : {};
+  let body: Partial<AnswerFeedback> & { error?: string } = {};
+
+  try {
+    body = text ? (JSON.parse(text) as typeof body) : {};
+  } catch {
+    throw new Error("The answer checker returned an invalid response. Check the API server logs.");
+  }
 
   if (!response.ok) {
     throw new Error(body.error || "Could not check answer.");
   }
 
-  return body;
+  return body as AnswerFeedback;
 }

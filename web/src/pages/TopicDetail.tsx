@@ -53,18 +53,20 @@ function TopicDetail({ topic, onBack }: TopicDetailProps) {
         </div>
       </section>
 
-      <section className="exercise-section" aria-labelledby="exercise-title">
-        <div className="detail-section-heading">
-          <p className="eyebrow">Practice lab</p>
-          <h3 id="exercise-title">Learn by building</h3>
-          <p>Open an exercise, edit the starter code, then run it in the browser.</p>
-        </div>
-        <div className="exercise-list">
-          {content.exercises.map((item, index) => (
-            <ExerciseLab exercise={item} index={index} key={item.id} />
-          ))}
-        </div>
-      </section>
+      {content.exercises.length > 0 && (
+        <section className="exercise-section" aria-labelledby="exercise-title">
+          <div className="detail-section-heading">
+            <p className="eyebrow">Practice lab</p>
+            <h3 id="exercise-title">Learn by building</h3>
+            <p>Open an exercise, edit the starter code, then run it in the browser.</p>
+          </div>
+          <div className="exercise-list">
+            {content.exercises.map((item, index) => (
+              <ExerciseLab exercise={item} index={index} key={item.id} />
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }

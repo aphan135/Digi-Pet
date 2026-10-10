@@ -34,4 +34,37 @@ export const problems: Problem[] = [
     hint: "Push opening brackets onto a stack and match each closing bracket against the latest opener.",
     expectedConcepts: ["stack", "matching pairs", "empty stack check", "O(n) time"],
   },
+  {
+    id: "adding-fractions",
+    title: "Adding Fractions",
+    difficulty: "Easy",
+    type: "math",
+    topic: "Fractions",
+    prompt:
+      "What is 3/4 + 2/3? Show how you find a common denominator and simplify your answer.",
+    hint: "Find the least common denominator of 4 and 3, then convert both fractions.",
+    expectedConcepts: ["common denominator", "equivalent fractions", "simplifying"],
+  },
+  {
+    id: "why-ice-floats",
+    title: "Why Does Ice Float?",
+    difficulty: "Easy",
+    type: "science",
+    topic: "Matter and Density",
+    prompt:
+      "Explain why a piece of ice floats in liquid water, using particle arrangement and density in your answer.",
+    hint: "Think about how water molecules arrange themselves when water freezes and what that does to the same amount of matter's volume.",
+    expectedConcepts: ["molecular arrangement", "volume increases when freezing", "lower density than liquid water"],
+  },
+  {
+    id: "american-revolution-causes",
+    title: "Causes of the American Revolution",
+    difficulty: "Medium",
+    type: "history",
+    topic: "American Revolution",
+    prompt:
+      "Name two causes of the American Revolution and explain how each increased tensions between Britain and the colonies.",
+    hint: "Consider taxation and colonial representation, then connect each cause to how colonists responded.",
+    expectedConcepts: ["taxation", "representation", "colonial response", "cause and effect"],
+  },
 ];

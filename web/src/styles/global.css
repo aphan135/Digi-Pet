@@ -49,6 +49,7 @@ textarea:focus-visible {
 }
 
 .navbar,
+.footer,
 .page-shell {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
@@ -64,6 +65,7 @@ textarea:focus-visible {
 
 .navbar h1,
 .navbar p,
+.footer p,
 .problem-card p,
 .topic-card p,
 .stat-card p {
@@ -77,7 +79,8 @@ textarea:focus-visible {
 }
 
 .nav-actions button,
-.workspace-panel button {
+.workspace-panel button,
+.subject-filters button {
   border: 0;
   border-radius: 8px;
   background: #1b4d89;
@@ -88,6 +91,23 @@ textarea:focus-visible {
 .workspace-panel button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.subject-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.subject-filters button {
+  background: #e8edf4;
+  color: #1f2933;
+}
+
+.subject-filters button.active {
+  background: #1b4d89;
+  color: white;
 }
 
 .nav-actions button {
@@ -736,6 +756,18 @@ textarea:focus-visible {
 .problem-card {
   display: grid;
   gap: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.problem-card.selected {
+  border-color: #1b4d89;
+  box-shadow: 0 0 0 2px rgb(27 77 137 / 0.18);
+}
+
+.problem-card:focus-visible {
+  outline: 3px solid #1b4d89;
+  outline-offset: 3px;
 }
 
 .difficulty {
@@ -1215,6 +1247,13 @@ textarea:focus-visible {
     opacity: 0;
     transform: translateY(-80px) scale(1.3);
   }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+  color: #5b677a;
 }
 
 @media (max-width: 800px) {

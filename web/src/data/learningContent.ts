@@ -95,4 +95,22 @@ export const learningContent: Record<string, TopicContent> = {
       exercise("system-rate", "Fixed-window limiter", "Hard", "Allow only the first three calls and print the decisions as JSON.", "function createLimiter(limit) {\n  // Return a function that tracks calls\n}\n\nconst allow = createLimiter(3);\nconsole.log(JSON.stringify([allow(), allow(), allow(), allow()]));", "[true,true,true,false]", "Close over a counter and compare it with the limit."),
     ],
   },
+  math: {
+    overview: "Math builds fluency with numbers and the reasoning used to solve problems. Practice explaining each step, checking results, and choosing efficient strategies.",
+    analogy: "Solving a math problem is like following a recipe: each step transforms what you know into what you need.",
+    levels: levels("Review number sense, operations, and equivalent fractions.", "Choose useful strategies such as common denominators and estimation.", "Explain why a method works and check whether the result is reasonable."),
+    exercises: [],
+  },
+  science: {
+    overview: "Science uses observation and evidence to explain patterns in the natural world. Strong explanations connect what happens to the mechanisms that cause it.",
+    analogy: "A scientific explanation is a detective story: observations are clues, and evidence supports the best explanation.",
+    levels: levels("Describe observations and identify the scientific question.", "Connect evidence to models such as matter, energy, and forces.", "Evaluate explanations by checking predictions against evidence."),
+    exercises: [],
+  },
+  history: {
+    overview: "History examines how people and events shaped the past. Understanding context, sources, causes, and consequences helps explain why events unfolded as they did.",
+    analogy: "Studying history is like assembling a mosaic: each source is one piece, and context helps reveal the larger picture.",
+    levels: levels("Place events in time and identify the people involved.", "Compare sources and connect events through cause and effect.", "Evaluate evidence, perspective, and long-term consequences."),
+    exercises: [],
+  },
 };

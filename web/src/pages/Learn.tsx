@@ -2,7 +2,7 @@ import { useState } from "react";
 import { topics } from "../data/topics";
 import type { CSSProperties } from "react";
 
-type Category = "All" | "Foundations" | "Patterns" | "Systems";
+type Category = "All" | "Foundations" | "Patterns" | "Systems" | "Math" | "Science" | "History";
 
 interface LearnProps {
   onSelectTopic: (topicId: string) => void;
@@ -34,10 +34,7 @@ function Learn({ onSelectTopic }: LearnProps) {
         <div className="learn-hero-copy">
           <p className="eyebrow">Learning studio</p>
           <h2>Build skills, one pattern at a time.</h2>
-          <p>
-            Explore core data structures, problem-solving patterns, and system design
-            concepts at your own pace.
-          </p>
+          <p>Explore coding, math, science, history, and system design at your own pace.</p>
         </div>
         <div className="learn-snapshot" aria-label="Weekly learning progress">
           <div className="snapshot-ring" style={{ "--progress": "72%" } as CSSProperties}>
@@ -71,7 +68,7 @@ function Learn({ onSelectTopic }: LearnProps) {
         </div>
 
         <div className="category-tabs" aria-label="Filter learning topics">
-          {(["All", "Foundations", "Patterns", "Systems"] as Category[]).map((item) => (
+          {(["All", "Foundations", "Patterns", "Systems", "Math", "Science", "History"] as Category[]).map((item) => (
             <button
               className={category === item ? "active" : ""}
               key={item}

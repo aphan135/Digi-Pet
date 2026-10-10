@@ -1,19 +1,30 @@
 # Digi-Pet Web
 
-React + TypeScript website for solving coding and system design challenges.
+React + TypeScript learning website with coding, system design, math, science, and history challenges.
 
 ## Setup
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
+
+The answer checker uses Gemini. Replace the placeholder `GEMINI_API_KEY` in `.env`
+with a valid Gemini API key. `GEMINI_MODEL` defaults to `gemini-2.5-flash`.
+OpenAI settings remain in the environment template for future use, but the current
+answer checker does not call OpenAI.
+
+Keep `.env` local and private; API keys are read by the server and must not be added
+to frontend code or committed to source control. If a key has been shared publicly
+or in a chat, revoke it and use a newly generated key.
+
+After changing `.env`, restart the API server for the new settings to take effect.
 
 ## Structure
 
 - `src/components/` - Reusable UI components.
 - `src/pages/` - Page-level screens.
-- `src/data/` - Mock data for hackathon demo.
+- `src/data/` - Mock data and learning content.
 - `src/types/` - Shared TypeScript types.
 - `src/services/` - API/backend communication layer.
-
