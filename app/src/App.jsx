@@ -12,7 +12,8 @@ const lift = (on) => window.pet.setInteractive(on)
 
 function Cat({ c, className }) {
   return (
-    <svg className={className} viewBox="0 0 160 150" role="img" aria-label="Cat">
+    // viewBox padded 10 units each side: the wagging tail (+14deg) reaches x≈165, past the original 160.
+    <svg className={className} viewBox="-10 0 180 150" role="img" aria-label="Cat">
       <path className="tail" d="M128 112 Q158 98 150 70" stroke={c.tail} strokeWidth="10" strokeLinecap="round" fill="none" />
       <ellipse cx="80" cy="102" rx="48" ry="38" fill={c.fur} />
       <ellipse cx="58" cy="138" rx="14" ry="8" fill={c.paws} />

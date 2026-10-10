@@ -48,7 +48,7 @@ html,body{margin:0;background:transparent;overflow:hidden;user-select:none}
 .petarea{position:relative}
 .petbtn{display:block;border:0;padding:0;background:none;cursor:pointer;margin-top:4px}
 .petbtn:focus-visible{outline:3px dashed #3B2A35;outline-offset:4px;border-radius:24px}
-.pet{display:block;width:210px;height:197px;transform-origin:50% 100%;animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.15))}
+.pet{display:block;width:236px;height:197px;transform-origin:50% 100%;animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.15))}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 /* Two identical keyframes so alternating the class restarts the hop on every click. */
 .jumpA{animation:jumpA .5s ease,bob 2.4s ease-in-out .5s infinite}
