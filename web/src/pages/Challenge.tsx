@@ -9,7 +9,6 @@ const subjectFilters: { id: ProblemType | "all"; label: string }[] = [
   { id: "system-design", label: "System design" },
   { id: "math", label: "Math" },
   { id: "science", label: "Science" },
-  { id: "history", label: "History" },
 ];
 
 function getSubjectLabel(type: ProblemType) {

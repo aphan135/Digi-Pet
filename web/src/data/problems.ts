@@ -56,15 +56,4 @@ export const problems: Problem[] = [
     hint: "Think about how water molecules arrange themselves when water freezes and what that does to the same amount of matter's volume.",
     expectedConcepts: ["molecular arrangement", "volume increases when freezing", "lower density than liquid water"],
   },
-  {
-    id: "american-revolution-causes",
-    title: "Causes of the American Revolution",
-    difficulty: "Medium",
-    type: "history",
-    topic: "American Revolution",
-    prompt:
-      "Name two causes of the American Revolution and explain how each increased tensions between Britain and the colonies.",
-    hint: "Consider taxation and colonial representation, then connect each cause to how colonists responded.",
-    expectedConcepts: ["taxation", "representation", "colonial response", "cause and effect"],
-  },
 ];

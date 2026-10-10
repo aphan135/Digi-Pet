@@ -2,7 +2,7 @@ export type PageName = "dashboard" | "learn" | "map" | "challenge";
 
 export type ProblemDifficulty = "Easy" | "Medium" | "Hard";
 
-export type ProblemType = "leetcode" | "system-design" | "math" | "science" | "history";
+export type ProblemType = "leetcode" | "system-design" | "math" | "science";
 
 export interface Problem {
   id: string;
@@ -21,7 +21,7 @@ export interface Topic {
   id: string;
   name: string;
   description: string;
-  category: "Foundations" | "Patterns" | "Systems" | "Math" | "Science" | "History";
+  category: "Foundations" | "Patterns" | "Systems" | "Math" | "Science";
   level: ProblemDifficulty;
   lessons: number;
   minutes: number;

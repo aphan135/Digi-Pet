@@ -24,6 +24,29 @@ function levels(
   ];
 }
 
+function mathContent(title: string, overview: string, analogy: string): TopicContent {
+  return {
+    overview,
+    analogy,
+    levels: levels(
+      `Learn the core vocabulary and notation for ${title}.`,
+      "Practice choosing the right method and explaining each step clearly.",
+      "Connect the method to edge cases, alternate strategies, and real applications.",
+    ),
+    exercises: [
+      exercise(
+        `${title.toLowerCase().split(" ").join("-")}-reasoning`,
+        `${title} reasoning check`,
+        "Medium",
+        `Solve a representative ${title} problem and explain the reasoning behind each step.`,
+        "function explainSolution() {\n  // Write your reasoning in the answer box on the Challenge page\n}\n\nconsole.log('ready');",
+        "ready",
+        "State what is given, what you need to find, and why each transformation is valid.",
+      ),
+    ],
+  };
+}
+
 export const learningContent: Record<string, TopicContent> = {
   arrays: {
     overview: "Arrays keep values in an ordered sequence. Hash maps pair unique keys with values for fast lookup. Together they solve a huge range of counting, lookup, and grouping problems.",
@@ -95,22 +118,50 @@ export const learningContent: Record<string, TopicContent> = {
       exercise("system-rate", "Fixed-window limiter", "Hard", "Allow only the first three calls and print the decisions as JSON.", "function createLimiter(limit) {\n  // Return a function that tracks calls\n}\n\nconst allow = createLimiter(3);\nconsole.log(JSON.stringify([allow(), allow(), allow(), allow()]));", "[true,true,true,false]", "Close over a counter and compare it with the limit."),
     ],
   },
-  math: {
-    overview: "Math builds fluency with numbers and the reasoning used to solve problems. Practice explaining each step, checking results, and choosing efficient strategies.",
-    analogy: "Solving a math problem is like following a recipe: each step transforms what you know into what you need.",
-    levels: levels("Review number sense, operations, and equivalent fractions.", "Choose useful strategies such as common denominators and estimation.", "Explain why a method works and check whether the result is reasonable."),
-    exercises: [],
-  },
+  "algebra-2": mathContent(
+    "Algebra 2",
+    "Algebra 2 builds fluency with functions, polynomials, exponentials, logarithms, and equation solving.",
+    "Think of algebra as a toolkit for transforming expressions without changing their meaning.",
+  ),
+  precalculus: mathContent(
+    "Precalculus",
+    "Precalculus connects advanced functions, graphs, trigonometry, limits, and modeling before calculus.",
+    "Precalculus is the bridge between symbolic algebra and motion/change.",
+  ),
+  "calculus-1": mathContent(
+    "Calculus 1",
+    "Calculus 1 focuses on limits, derivatives, rates of change, tangent lines, and optimization.",
+    "A derivative is a speedometer for a changing quantity.",
+  ),
+  "calculus-2": mathContent(
+    "Calculus 2",
+    "Calculus 2 develops integration techniques, accumulation, sequences, and series.",
+    "Integration is a way to add infinitely many tiny pieces into one whole.",
+  ),
+  trigonometry: mathContent(
+    "Trigonometry",
+    "Trigonometry studies angles, cycles, unit-circle relationships, identities, and wave behavior.",
+    "Trig turns rotation and repeating motion into measurable relationships.",
+  ),
+  "calculus-3": mathContent(
+    "Calculus 3",
+    "Calculus 3 extends calculus into vectors, 3D space, multivariable functions, and partial derivatives.",
+    "Instead of walking on a line, Calculus 3 explores movement across landscapes.",
+  ),
+  "discrete-math": mathContent(
+    "Discrete Math",
+    "Discrete Math builds foundations in logic, proofs, sets, counting, recurrence, and graphs.",
+    "Discrete math is the grammar of computer science reasoning.",
+  ),
+  statistics: mathContent(
+    "Statistics",
+    "Statistics explains data, probability, distributions, inference, and uncertainty.",
+    "Statistics is how we make careful claims when the world is noisy.",
+  ),
   science: {
     overview: "Science uses observation and evidence to explain patterns in the natural world. Strong explanations connect what happens to the mechanisms that cause it.",
     analogy: "A scientific explanation is a detective story: observations are clues, and evidence supports the best explanation.",
     levels: levels("Describe observations and identify the scientific question.", "Connect evidence to models such as matter, energy, and forces.", "Evaluate explanations by checking predictions against evidence."),
-    exercises: [],
-  },
-  history: {
-    overview: "History examines how people and events shaped the past. Understanding context, sources, causes, and consequences helps explain why events unfolded as they did.",
-    analogy: "Studying history is like assembling a mosaic: each source is one piece, and context helps reveal the larger picture.",
-    levels: levels("Place events in time and identify the people involved.", "Compare sources and connect events through cause and effect.", "Evaluate evidence, perspective, and long-term consequences."),
     exercises: [],
   },
 };

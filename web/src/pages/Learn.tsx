@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { topics } from "../data/topics";
 
-type Category = "All" | "Foundations" | "Patterns" | "Systems" | "Math" | "Science" | "History";
-
-const categoryHeadings: Record<Exclude<Category, "All">, string> = {
-  Foundations: "Coding Foundations",
-  Patterns: "Coding Patterns",
-  Systems: "System Design",
-  Math: "Math",
-  Science: "Science",
-  History: "History",
-};
+type Category = "All" | "Foundations" | "Patterns" | "Systems" | "Math" | "Science";
 
 interface LearnProps {
   onSelectTopic: (topicId: string) => void;
@@ -57,7 +48,7 @@ function Learn({ onSelectTopic }: LearnProps) {
         </div>
 
         <div className="category-tabs" aria-label="Filter learning topics">
-          {(["All", "Foundations", "Patterns", "Systems", "Math", "Science", "History"] as Category[]).map((item) => (
+          {(["All", "Foundations", "Patterns", "Systems", "Math", "Science"] as Category[]).map((item) => (
             <button
               className={category === item ? "active" : ""}
               key={item}
