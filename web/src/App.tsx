@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
 import PetWidget from "./components/pet/PetWidget";
 import Challenge from "./pages/Challenge";
@@ -69,7 +68,6 @@ function App() {
     <div className="app-shell">
       <Navbar activePage={activePage} onNavigate={navigate} />
       <main className="page-shell">{renderPage()}</main>
-      <Footer />
       <PetWidget />
     </div>
   );

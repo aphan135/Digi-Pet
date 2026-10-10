@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import ProblemList from "../components/problems/ProblemList";
 import { checkAnswer } from "../services/answerService";
-import { getFeaturedProblem, getProblemsByType } from "../services/problemService";
+import { getFeaturedProblem } from "../services/problemService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
 
 const subjectFilters: { id: ProblemType | "all"; label: string }[] = [
@@ -22,8 +21,6 @@ interface ChallengeProps {
 }
 
 function Challenge({ problem }: ChallengeProps) {
-  const [selectedType, setSelectedType] = useState<ProblemType | "all">("all");
-  const [selectedTopic, setSelectedTopic] = useState<string | "all">("all");
   const [selectedProblem, setSelectedProblem] = useState<Problem>(problem ?? getFeaturedProblem());
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
@@ -33,38 +30,10 @@ function Challenge({ problem }: ChallengeProps) {
   useEffect(() => {
     if (!problem) return;
     setSelectedProblem(problem);
-    setSelectedType(problem.type);
-    setSelectedTopic(problem.topic);
     setAnswer("");
     setFeedback(null);
     setError("");
   }, [problem]);
-
-  function selectProblem(problem: Problem) {
-    setSelectedProblem(problem);
-    setAnswer("");
-    setFeedback(null);
-    setError("");
-  }
-
-  function selectType(type: ProblemType | "all") {
-    setSelectedType(type);
-    setSelectedTopic("all");
-    const [firstProblem] = getProblemsByType(type);
-    if (firstProblem) selectProblem(firstProblem);
-  }
-
-  function selectTopic(topic: string | "all") {
-    setSelectedTopic(topic);
-    const [firstProblem] = getProblemsByType(selectedType).filter(
-      (problem) => topic === "all" || problem.topic === topic,
-    );
-    if (firstProblem) selectProblem(firstProblem);
-  }
-
-  const availableTopics = Array.from(
-    new Set(getProblemsByType(selectedType).map((problem) => problem.topic)),
-  );
 
   async function handleSubmit() {
     setError("");
@@ -130,50 +99,6 @@ function Challenge({ problem }: ChallengeProps) {
             </div>
           </div>
         )}
-      </div>
-      <div className="challenge-list">
-        <h2>Choose a subject and question</h2>
-        <div aria-label="Filter questions by subject" className="subject-filters" role="group">
-          {subjectFilters.map((filter) => (
-            <button
-              aria-pressed={selectedType === filter.id}
-              className={selectedType === filter.id ? "active" : ""}
-              key={filter.id}
-              onClick={() => selectType(filter.id)}
-              type="button"
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-        <h3>Choose a topic</h3>
-        <div aria-label="Filter questions by topic" className="subject-filters" role="group">
-          <button
-            aria-pressed={selectedTopic === "all"}
-            className={selectedTopic === "all" ? "active" : ""}
-            onClick={() => selectTopic("all")}
-            type="button"
-          >
-            All topics
-          </button>
-          {availableTopics.map((topic) => (
-            <button
-              aria-pressed={selectedTopic === topic}
-              className={selectedTopic === topic ? "active" : ""}
-              key={topic}
-              onClick={() => selectTopic(topic)}
-              type="button"
-            >
-              {topic}
-            </button>
-          ))}
-        </div>
-        <ProblemList
-          onSelectProblem={selectProblem}
-          selectedProblem={selectedProblem}
-          selectedTopic={selectedTopic}
-          selectedType={selectedType}
-        />
       </div>
     </section>
   );
