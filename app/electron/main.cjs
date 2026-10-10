@@ -2,14 +2,14 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, shell } = 
 const fs = require('fs')
 const path = require('path')
 
-// Window is a transparent box pinned to the bottom-right of the work area (above taskbar/Dock).
-// SCALE shrinks or grows the whole pet (cat, cloud, peek, hover corner) uniformly; 1 = design size.
+// One transparent, click-through window covers the primary display's work area (above taskbar/Dock);
+// the cat is dragged around inside it. SCALE zooms the whole pet uniformly; 1 = design size.
 const SCALE = 0.75
-const W = Math.round(440 * SCALE)
-const H = Math.round(560 * SCALE)
 const COATS = ['Pink', 'Peach', 'Lavender', 'Cloud gray']
+const CORNERS = ['br', 'bl', 'tr', 'tl']
 const DEFAULTS = {
   coat: 'Pink',
+  corner: 'br',
   link: { url: 'https://yourwebsite.com', label: 'Visit yourwebsite.com →' },
   quotes: [
     { text: 'Act as if what you do makes a difference. It does.', by: 'William James' },
@@ -34,6 +34,7 @@ function readSettings() {
   const quotes = Array.isArray(raw.quotes) ? raw.quotes.filter((q) => q && typeof q.text === 'string') : []
   return {
     coat: COATS.includes(raw.coat) ? raw.coat : DEFAULTS.coat,
+    corner: CORNERS.includes(raw.corner) ? raw.corner : DEFAULTS.corner,
     link: raw.link && typeof raw.link.url === 'string' ? raw.link : DEFAULTS.link,
     quotes: quotes.length ? quotes : DEFAULTS.quotes,
   }
@@ -52,14 +53,11 @@ function setCoat(coat) {
 }
 
 function placeWindow() {
-  const { x, y, width, height } = screen.getPrimaryDisplay().workArea
-  win.setBounds({ x: x + width - W, y: y + height - H, width: W, height: H })
+  win.setBounds(screen.getPrimaryDisplay().workArea)
 }
 
 function createWindow() {
   win = new BrowserWindow({
-    width: W,
-    height: H,
     transparent: true,
     backgroundColor: '#00000000',
     frame: false,
@@ -157,6 +155,9 @@ app.whenReady().then(() => {
 
   ipcMain.on('set-interactive', (_e, on) => win.setIgnoreMouseEvents(!on, { forward: true }))
   ipcMain.handle('get-settings', () => readSettings())
+  ipcMain.on('set-corner', (_e, corner) => {
+    if (CORNERS.includes(corner)) saveSettings({ ...readSettings(), corner })
+  })
 
   createWindow()
   tray = new Tray(catIcon([0xff, 0x8f, 0xb3]))
