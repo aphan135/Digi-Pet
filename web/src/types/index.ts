@@ -19,6 +19,37 @@ export interface Topic {
   id: string;
   name: string;
   description: string;
+  category: "Foundations" | "Patterns" | "Systems";
+  level: ProblemDifficulty;
+  lessons: number;
+  minutes: number;
+  progress: number;
+  accent: string;
+  icon: string;
+}
+
+export interface LearningLevel {
+  label: "Beginner" | "Intermediate" | "Advanced";
+  title: string;
+  explanation: string;
+  takeaway: string;
+}
+
+export interface LearningExercise {
+  id: string;
+  title: string;
+  difficulty: ProblemDifficulty;
+  instructions: string;
+  starterCode: string;
+  expectedOutput: string;
+  hint: string;
+}
+
+export interface TopicContent {
+  overview: string;
+  analogy: string;
+  levels: LearningLevel[];
+  exercises: LearningExercise[];
 }
 
 export interface AnswerFeedback {

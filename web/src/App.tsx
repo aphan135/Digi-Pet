@@ -5,23 +5,43 @@ import Challenge from "./pages/Challenge";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import Profile from "./pages/Profile";
-import type { ReactElement } from "react";
+import TopicDetail from "./pages/TopicDetail";
+import { topics } from "./data/topics";
 import type { PageName } from "./types";
 
-const pages: Record<PageName, ReactElement> = {
-  dashboard: <Dashboard />,
-  learn: <Learn />,
-  challenge: <Challenge />,
-  profile: <Profile />,
-};
-
 function App() {
-  const [activePage, setActivePage] = useState<PageName>("challenge");
+  const [activePage, setActivePage] = useState<PageName>("learn");
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+  const selectedTopic = topics.find((topic) => topic.id === selectedTopicId);
+
+  function navigate(page: PageName) {
+    setActivePage(page);
+    setSelectedTopicId(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function selectTopic(topicId: string | null) {
+    setSelectedTopicId(topicId);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderPage() {
+    if (activePage === "learn") {
+      return selectedTopic ? (
+        <TopicDetail topic={selectedTopic} onBack={() => selectTopic(null)} />
+      ) : (
+        <Learn onSelectTopic={selectTopic} />
+      );
+    }
+    if (activePage === "dashboard") return <Dashboard />;
+    if (activePage === "profile") return <Profile />;
+    return <Challenge />;
+  }
 
   return (
     <div className="app-shell">
-      <Navbar activePage={activePage} onNavigate={setActivePage} />
-      <main className="page-shell">{pages[activePage]}</main>
+      <Navbar activePage={activePage} onNavigate={navigate} />
+      <main className="page-shell">{renderPage()}</main>
       <PetWidget />
     </div>
   );
