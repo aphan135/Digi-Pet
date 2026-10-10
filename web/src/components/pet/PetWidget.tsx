@@ -20,7 +20,7 @@ interface Heart {
   top: number;
 }
 
-function Cat({ className }: CatProps) {
+export function Cat({ className }: CatProps) {
   const c = catColors;
 
   return (

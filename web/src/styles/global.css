@@ -229,6 +229,21 @@ button {
   border-color: #ff8fb3;
 }
 
+.profile-pet-page {
+  display: grid;
+  min-height: min(520px, calc(100vh - 180px));
+  place-items: center;
+}
+
+.profile-cat-sprite {
+  display: block;
+  width: min(360px, 70vw);
+  height: auto;
+  filter: drop-shadow(0 18px 20px rgb(31 41 51 / 0.16));
+  transform-origin: 50% 100%;
+  animation: pet-bob 2.4s ease-in-out infinite;
+}
+
 .complexity-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
