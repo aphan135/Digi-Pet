@@ -81,10 +81,31 @@ button {
   color: white;
 }
 
+.nav-actions button.profile-nav-button,
+.nav-actions button.profile-nav-button.active {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+}
+
+.nav-actions button.profile-nav-button:hover {
+  background: rgb(255 194 214 / 0.22);
+}
+
+.nav-actions button.profile-nav-button:focus-visible {
+  outline: 3px solid #1b4d89;
+  outline-offset: 3px;
+}
+
 .nav-cat-icon {
   display: block;
-  width: 2rem;
-  height: 2rem;
+  width: 2.65rem;
+  height: 2.65rem;
   filter: drop-shadow(0 3px 4px rgb(31 41 51 / 0.16));
 }
 

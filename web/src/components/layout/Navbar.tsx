@@ -19,7 +19,7 @@ function ProfileCatIcon() {
       <polygon points="62,34 52,8 38,32" fill="#FFC2D6" />
       <polygon points="25,29 29,18 36,30" fill="#FF8FB3" />
       <polygon points="55,29 51,18 44,30" fill="#FF8FB3" />
-      <circle cx="40" cy="44" r="30" fill="#FFC2D6" />
+      <circle cx="40" cy="44" r="33" fill="#FFC2D6" />
       <circle cx="29" cy="42" r="4.5" fill="#3B2A35" />
       <circle cx="51" cy="42" r="4.5" fill="#3B2A35" />
       <circle cx="30.5" cy="40.5" r="1.4" fill="#FFFFFF" />
@@ -46,7 +46,9 @@ function Navbar({ activePage, onNavigate }: NavbarProps) {
       <nav className="nav-actions" aria-label="Main navigation">
         {navItems.map((item) => (
           <button
-            className={activePage === item.page ? "active" : ""}
+            className={`${activePage === item.page ? "active" : ""} ${
+              item.page === "profile" ? "profile-nav-button" : ""
+            }`}
             key={item.page}
             onClick={() => onNavigate(item.page)}
             type="button"
