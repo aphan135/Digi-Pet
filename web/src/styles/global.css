@@ -1555,6 +1555,33 @@ textarea:focus-visible {
   gap: 0.8rem;
 }
 
+.exercise-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 1rem;
+  align-items: center;
+  border: 1px solid #d8d5cb;
+  border-radius: 14px;
+  background: #fbfaf6;
+  padding: 1rem;
+  box-shadow: 0 7px 18px rgb(41 49 43 / 0.04);
+}
+
+.exercise-card-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.exercise-card button {
+  border: 0;
+  border-radius: 8px;
+  background: #1b4d89;
+  color: white;
+  padding: 0.75rem 1rem;
+}
+
 .exercise-lab {
   border: 1px solid #d8d5cb;
   border-radius: 14px;
@@ -1777,6 +1804,14 @@ textarea:focus-visible {
 
   .exercise-lab summary {
     grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .exercise-card {
+    grid-template-columns: 1fr;
+  }
+
+  .exercise-card-main {
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .exercise-lab summary .difficulty {

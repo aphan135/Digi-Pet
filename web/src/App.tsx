@@ -7,16 +7,33 @@ import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import TopicDetail from "./pages/TopicDetail";
 import { topics } from "./data/topics";
-import type { PageName } from "./types";
+import type { LearningExercise, PageName, Problem, Topic } from "./types";
+
+function exerciseToProblem(exercise: LearningExercise, topic: Topic): Problem {
+  return {
+    id: exercise.id,
+    title: exercise.title,
+    difficulty: exercise.difficulty,
+    type: topic.category === "Systems" ? "system-design" : "leetcode",
+    topic: topic.name,
+    prompt: `${exercise.instructions}\n\nStarter code:\n${exercise.starterCode}\n\nExpected output: ${exercise.expectedOutput}`,
+    hint: exercise.hint,
+    expectedConcepts: [topic.name, exercise.hint, `Expected output: ${exercise.expectedOutput}`],
+  };
+}
 
 function App() {
   const [activePage, setActivePage] = useState<PageName>("learn");
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+  const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
   const selectedTopic = topics.find((topic) => topic.id === selectedTopicId);
 
   function navigate(page: PageName) {
     setActivePage(page);
     setSelectedTopicId(null);
+    if (page !== "challenge") {
+      setSelectedProblem(null);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -25,16 +42,27 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function startExercise(exercise: LearningExercise, topic: Topic) {
+    setSelectedProblem(exerciseToProblem(exercise, topic));
+    setActivePage("challenge");
+    setSelectedTopicId(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function renderPage() {
     if (activePage === "learn") {
       return selectedTopic ? (
-        <TopicDetail topic={selectedTopic} onBack={() => selectTopic(null)} />
+        <TopicDetail
+          topic={selectedTopic}
+          onBack={() => selectTopic(null)}
+          onStartExercise={startExercise}
+        />
       ) : (
         <Learn onSelectTopic={selectTopic} />
       );
     }
     if (activePage === "dashboard") return <Dashboard />;
-    return <Challenge />;
+    return <Challenge problem={selectedProblem ?? undefined} />;
   }
 
   return (

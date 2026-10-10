@@ -1,13 +1,13 @@
-import ExerciseLab from "../components/learn/ExerciseLab";
 import { learningContent } from "../data/learningContent";
-import type { Topic } from "../types";
+import type { LearningExercise, Topic } from "../types";
 
 interface TopicDetailProps {
   topic: Topic;
   onBack: () => void;
+  onStartExercise: (exercise: LearningExercise, topic: Topic) => void;
 }
 
-function TopicDetail({ topic, onBack }: TopicDetailProps) {
+function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   const content = learningContent[topic.id];
 
   return (
@@ -57,12 +57,24 @@ function TopicDetail({ topic, onBack }: TopicDetailProps) {
         <section className="exercise-section" aria-labelledby="exercise-title">
           <div className="detail-section-heading">
             <p className="eyebrow">Practice lab</p>
-            <h3 id="exercise-title">Learn by building</h3>
-            <p>Open an exercise, edit the starter code, then run it in the browser.</p>
+            <h3 id="exercise-title">Practice with AI feedback</h3>
+            <p>Pick an exercise, write your approach on the Challenge page, then submit it for review.</p>
           </div>
           <div className="exercise-list">
             {content.exercises.map((item, index) => (
-              <ExerciseLab exercise={item} index={index} key={item.id} />
+              <article className="exercise-card" key={item.id}>
+                <div className="exercise-card-main">
+                  <span className="exercise-number">{String(index + 1).padStart(2, "0")}</span>
+                  <div className="exercise-title">
+                    <strong>{item.title}</strong>
+                    <small>{item.instructions}</small>
+                  </div>
+                </div>
+                <span className={`difficulty ${item.difficulty.toLowerCase()}`}>{item.difficulty}</span>
+                <button onClick={() => onStartExercise(item, topic)} type="button">
+                  Start challenge
+                </button>
+              </article>
             ))}
           </div>
         </section>

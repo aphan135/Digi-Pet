@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProblemList from "../components/problems/ProblemList";
 import { checkAnswer } from "../services/answerService";
 import { getFeaturedProblem, getProblemsByType } from "../services/problemService";
@@ -17,14 +17,28 @@ function getSubjectLabel(type: ProblemType) {
   return subjectFilters.find((filter) => filter.id === type)?.label ?? type;
 }
 
-function Challenge() {
+interface ChallengeProps {
+  problem?: Problem;
+}
+
+function Challenge({ problem }: ChallengeProps) {
   const [selectedType, setSelectedType] = useState<ProblemType | "all">("all");
   const [selectedTopic, setSelectedTopic] = useState<string | "all">("all");
-  const [selectedProblem, setSelectedProblem] = useState<Problem>(getFeaturedProblem());
+  const [selectedProblem, setSelectedProblem] = useState<Problem>(problem ?? getFeaturedProblem());
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+
+  useEffect(() => {
+    if (!problem) return;
+    setSelectedProblem(problem);
+    setSelectedType(problem.type);
+    setSelectedTopic(problem.topic);
+    setAnswer("");
+    setFeedback(null);
+    setError("");
+  }, [problem]);
 
   function selectProblem(problem: Problem) {
     setSelectedProblem(problem);
