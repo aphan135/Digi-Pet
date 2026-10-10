@@ -302,7 +302,7 @@ textarea:focus-visible {
 }
 
 .path-library {
-  margin-top: 1.5rem;
+  margin-top: 0;
   padding: clamp(1.25rem, 3vw, 2rem);
 }
 

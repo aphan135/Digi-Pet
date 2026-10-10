@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { topics } from "../data/topics";
-import type { CSSProperties } from "react";
 
 type Category = "All" | "Foundations" | "Patterns" | "Systems" | "Math" | "Science" | "History";
+
+const categoryHeadings: Record<Exclude<Category, "All">, string> = {
+  Foundations: "Coding Foundations",
+  Patterns: "Coding Patterns",
+  Systems: "System Design",
+  Math: "Math",
+  Science: "Science",
+  History: "History",
+};
 
 interface LearnProps {
   onSelectTopic: (topicId: string) => void;
@@ -30,25 +38,6 @@ function Learn({ onSelectTopic }: LearnProps) {
 
   return (
     <section className="learn-page">
-      <header className="learn-hero">
-        <div className="learn-hero-copy">
-          <p className="eyebrow">Learning studio</p>
-          <h2>Build skills, one pattern at a time.</h2>
-          <p>Explore coding, math, science, history, and system design at your own pace.</p>
-        </div>
-        <div className="learn-snapshot" aria-label="Weekly learning progress">
-          <div className="snapshot-ring" style={{ "--progress": "72%" } as CSSProperties}>
-            <strong>72%</strong>
-            <span>this week</span>
-          </div>
-          <div>
-            <span className="snapshot-label">Weekly goal</span>
-            <strong>3h 36m of 5h</strong>
-            <p>Two focused sessions to go</p>
-          </div>
-        </div>
-      </header>
-
       <div className="path-library">
         <div className="section-heading">
           <div>
