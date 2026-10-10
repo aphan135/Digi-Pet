@@ -100,20 +100,44 @@ textarea:focus-visible {
   color: white;
 }
 
-.nav-actions button.profile-nav-button,
-.nav-actions button.profile-nav-button.active {
+.dashboard-profile-nav {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #e8edf4;
+}
+
+.dashboard-profile-nav.active {
+  border-color: #1b4d89;
+  background: #1b4d89;
+  color: white;
+}
+
+.dashboard-profile-nav button {
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.dashboard-profile-nav button:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.nav-actions button.dashboard-nav-button {
+  padding-right: 0.85rem;
+}
+
+.nav-actions button.profile-nav-button {
   display: grid;
   width: 3rem;
   height: 3rem;
   place-items: center;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 0;
   background: transparent;
   color: inherit;
-}
-
-.nav-actions button.profile-nav-button:hover {
-  background: rgb(255 194 214 / 0.22);
 }
 
 .nav-actions button.profile-nav-button:focus-visible {

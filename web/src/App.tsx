@@ -4,7 +4,6 @@ import PetWidget from "./components/pet/PetWidget";
 import Challenge from "./pages/Challenge";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
-import Profile from "./pages/Profile";
 import TopicDetail from "./pages/TopicDetail";
 import { topics } from "./data/topics";
 import type { PageName } from "./types";
@@ -34,7 +33,6 @@ function App() {
       );
     }
     if (activePage === "dashboard") return <Dashboard />;
-    if (activePage === "profile") return <Profile />;
     return <Challenge />;
   }
 

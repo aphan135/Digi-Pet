@@ -6,10 +6,8 @@ interface NavbarProps {
 }
 
 const navItems: { label: string; page: PageName }[] = [
-  { label: "Dashboard", page: "dashboard" },
   { label: "Learn", page: "learn" },
   { label: "Challenge", page: "challenge" },
-  { label: "Profile", page: "profile" },
 ];
 
 function ProfileCatIcon() {
@@ -44,16 +42,31 @@ function Navbar({ activePage, onNavigate }: NavbarProps) {
         <h1>Study Companion</h1>
       </div>
       <nav className="nav-actions" aria-label="Main navigation">
+        <div className={`dashboard-profile-nav ${activePage === "dashboard" ? "active" : ""}`}>
+          <button
+            className="dashboard-nav-button"
+            onClick={() => onNavigate("dashboard")}
+            type="button"
+          >
+            Dashboard
+          </button>
+          <button
+            aria-label="Profile"
+            className="profile-nav-button"
+            onClick={() => onNavigate("dashboard")}
+            type="button"
+          >
+            <ProfileCatIcon />
+          </button>
+        </div>
         {navItems.map((item) => (
           <button
-            className={`${activePage === item.page ? "active" : ""} ${
-              item.page === "profile" ? "profile-nav-button" : ""
-            }`}
+            className={activePage === item.page ? "active" : ""}
             key={item.page}
             onClick={() => onNavigate(item.page)}
             type="button"
           >
-            {item.page === "profile" ? <ProfileCatIcon /> : item.label}
+            {item.label}
           </button>
         ))}
       </nav>

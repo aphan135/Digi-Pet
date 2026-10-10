@@ -14,9 +14,13 @@ function Dashboard() {
         <StreakCard />
         <XPCard />
       </div>
+      <div className="profile-panel">
+        <p>Pet mood: focused</p>
+        <p>Favorite topic: Arrays + Hash Maps</p>
+        <p>Next goal: complete one Medium challenge</p>
+      </div>
     </section>
   );
 }
 
 export default Dashboard;
-
