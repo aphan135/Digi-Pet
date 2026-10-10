@@ -12,6 +12,7 @@ export interface Problem {
   topic: string;
   prompt: string;
   hint: string;
+  expectedConcepts?: string[];
 }
 
 export interface Topic {
@@ -20,3 +21,13 @@ export interface Topic {
   description: string;
 }
 
+export interface AnswerFeedback {
+  isCorrect: boolean;
+  score: number;
+  feedback: string;
+  timeComplexity: string;
+  spaceComplexity: string;
+  missedConcepts: string[];
+  hint: string;
+  petMood: "celebrate" | "encourage" | "nudge";
+}
