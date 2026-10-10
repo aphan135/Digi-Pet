@@ -3,8 +3,10 @@ const fs = require('fs')
 const path = require('path')
 
 // Window is a transparent box pinned to the bottom-right of the work area (above taskbar/Dock).
-const W = 440
-const H = 560
+// SCALE shrinks or grows the whole pet (cat, cloud, peek, hover corner) uniformly; 1 = design size.
+const SCALE = 0.75
+const W = Math.round(440 * SCALE)
+const H = Math.round(560 * SCALE)
 const COATS = ['Pink', 'Peach', 'Lavender', 'Cloud gray']
 const DEFAULTS = {
   coat: 'Pink',
@@ -67,7 +69,7 @@ function createWindow() {
     skipTaskbar: true,
     alwaysOnTop: true,
     show: false,
-    webPreferences: { preload: path.join(__dirname, 'preload.cjs') },
+    webPreferences: { preload: path.join(__dirname, 'preload.cjs'), zoomFactor: SCALE },
   })
   win.setAlwaysOnTop(true, 'floating')
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
