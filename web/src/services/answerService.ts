@@ -12,7 +12,8 @@ export async function checkAnswer(
     body: JSON.stringify({ problem, userAnswer }),
   });
 
-  const body = await response.json();
+  const text = await response.text();
+  const body = text ? JSON.parse(text) : {};
 
   if (!response.ok) {
     throw new Error(body.error || "Could not check answer.");
