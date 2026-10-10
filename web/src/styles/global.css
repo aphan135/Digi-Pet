@@ -835,6 +835,8 @@ textarea:focus-visible {
   border: 10px solid #d9bc84;
   border-radius: 26px;
   background:
+    linear-gradient(rgb(248 231 186 / 0.3), rgb(232 201 137 / 0.3)),
+    url("/assets/images/fantasy-skill-map.svg") center / cover no-repeat,
     radial-gradient(circle at 18% 22%, rgb(255 255 255 / 0.5), transparent 16%),
     radial-gradient(circle at 78% 18%, rgb(255 255 255 / 0.45), transparent 14%),
     linear-gradient(135deg, #f8e7ba 0%, #efd39b 48%, #e8c989 100%);
