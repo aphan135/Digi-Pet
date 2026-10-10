@@ -68,6 +68,11 @@ button {
   padding: 0.75rem 1rem;
 }
 
+.workspace-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .nav-actions button {
   background: #e8edf4;
   color: #1f2933;
@@ -192,6 +197,44 @@ button {
   border-left: 4px solid #1b4d89;
   background: #eef5ff;
   padding: 1rem;
+}
+
+.error-message {
+  margin: 0;
+  color: #9f1239;
+  font-weight: 700;
+}
+
+.feedback-panel {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid #dde4ee;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.feedback-panel h3,
+.feedback-panel p {
+  margin: 0;
+}
+
+.feedback-panel.celebrate {
+  border-color: #5cc98a;
+}
+
+.feedback-panel.encourage {
+  border-color: #f6bd60;
+}
+
+.feedback-panel.nudge {
+  border-color: #ff8fb3;
+}
+
+.complexity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
 }
 
 .pet-stage {
