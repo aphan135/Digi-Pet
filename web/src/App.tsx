@@ -4,6 +4,7 @@ import PetWidget from "./components/pet/PetWidget";
 import Challenge from "./pages/Challenge";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
+import LearningMap from "./pages/LearningMap";
 import TopicDetail from "./pages/TopicDetail";
 import { topics } from "./data/topics";
 import type { LearningExercise, PageName, Problem, Topic } from "./types";
@@ -60,6 +61,17 @@ function App() {
         />
       ) : (
         <Learn onSelectTopic={selectTopic} />
+      );
+    }
+    if (activePage === "map") {
+      return selectedTopic ? (
+        <TopicDetail
+          topic={selectedTopic}
+          onBack={() => selectTopic(null)}
+          onStartExercise={startExercise}
+        />
+      ) : (
+        <LearningMap onSelectTopic={selectTopic} />
       );
     }
     if (activePage === "dashboard") return <Dashboard />;

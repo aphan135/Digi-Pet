@@ -1,4 +1,4 @@
-export type PageName = "dashboard" | "learn" | "challenge";
+export type PageName = "dashboard" | "learn" | "map" | "challenge";
 
 export type ProblemDifficulty = "Easy" | "Medium" | "Hard";
 

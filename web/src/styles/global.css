@@ -668,6 +668,165 @@ textarea:focus-visible {
   font-size: 0.82rem;
 }
 
+.map-page {
+  display: grid;
+  gap: 2rem;
+}
+
+.map-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.38fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.map-hero h2,
+.map-hero p,
+.map-progress-card p {
+  margin: 0;
+}
+
+.map-hero > div:first-child {
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+}
+
+.map-progress-card {
+  display: grid;
+  gap: 0.45rem;
+  border: 1px solid #dde4ee;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 1.25rem;
+  box-shadow: 0 10px 24px rgb(31 41 51 / 0.08);
+}
+
+.map-progress-card span {
+  color: #5b677a;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.learning-map {
+  position: relative;
+  display: grid;
+  gap: 1.2rem;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+}
+
+.map-path-line {
+  position: absolute;
+  top: 4.5rem;
+  bottom: 5rem;
+  left: 50%;
+  width: 5px;
+  border-radius: 999px;
+  background: linear-gradient(#9fd7ff, #f6bd60, #ff8fb3);
+  transform: translateX(-50%);
+}
+
+.map-start,
+.map-goal {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  margin: 0 auto;
+  border: 2px solid #1b4d89;
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 0.7rem 1.1rem;
+  color: #1b4d89;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgb(31 41 51 / 0.1);
+}
+
+.map-goal {
+  display: grid;
+  gap: 0.15rem;
+  text-align: center;
+}
+
+.map-goal span,
+.map-start span {
+  font-size: 0.72rem;
+  letter-spacing: 0;
+}
+
+.map-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+  width: min(540px, 88%);
+  border: 2px solid #dde4ee;
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 0.85rem 1rem;
+  color: #1f2933;
+  text-align: left;
+  box-shadow: 0 12px 24px rgb(31 41 51 / 0.09);
+}
+
+.map-node:nth-of-type(odd) {
+  justify-self: start;
+}
+
+.map-node:nth-of-type(even) {
+  justify-self: end;
+}
+
+.map-node.current {
+  border-color: #1b4d89;
+}
+
+.map-node.completed {
+  border-color: #45b36b;
+  background: #f0fff5;
+}
+
+.map-node.locked {
+  opacity: 0.68;
+}
+
+.map-node-index {
+  color: #7b8495;
+  font-weight: 900;
+}
+
+.map-node-icon {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft, #eef5ff);
+  color: var(--accent, #1b4d89);
+  font-weight: 900;
+}
+
+.map-node-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.map-node-copy small {
+  color: #6b7280;
+}
+
+.map-node-progress {
+  border-radius: 999px;
+  background: #e8edf4;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
 .stats-grid,
 .topic-grid {
   display: grid;
