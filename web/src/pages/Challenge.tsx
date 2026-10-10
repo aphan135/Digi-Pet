@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ProblemList from "../components/problems/ProblemList";
 import { checkAnswer } from "../services/answerService";
 import { getFeaturedProblem } from "../services/problemService";
 import type { AnswerFeedback } from "../types";
@@ -72,10 +71,6 @@ function Challenge() {
             </div>
           </div>
         )}
-      </div>
-      <div className="challenge-list">
-        <h2>Question queue</h2>
-        <ProblemList />
       </div>
     </section>
   );
