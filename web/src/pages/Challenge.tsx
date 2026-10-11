@@ -7,6 +7,7 @@ import {
 } from "../data/codeRuntimes";
 import { checkAnswer } from "../services/answerService";
 import { runCode, type CodeRunResult } from "../services/codeRunnerService";
+import { celebratePet } from "../services/petCelebration";
 import { getFeaturedProblem } from "../services/problemService";
 import { markProblemCompleted, recordAttempt } from "../services/progressService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
@@ -109,6 +110,7 @@ function Challenge({ problem }: ChallengeProps) {
       recordAttempt(selectedProblem, result);
       if (result.isCorrect) {
         markProblemCompleted(selectedProblem.id);
+        celebratePet();
       }
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Could not check answer.");

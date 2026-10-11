@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { usePetTip } from "../../hooks/usePetTip";
+import { onPetCelebration } from "../../services/petCelebration";
 
 const catColors = {
   fur: "#FFC2D6",
@@ -13,12 +14,7 @@ const catColors = {
 
 interface CatProps {
   className: string;
-}
-
-interface Heart {
-  id: number;
-  left: number;
-  top: number;
+  onAnimationEnd?: () => void;
 }
 
 interface PetPosition {
@@ -37,8 +33,18 @@ interface DragState {
   moved: boolean;
 }
 
+interface ConfettiPiece {
+  id: number;
+  left: number;
+  delay: number;
+  drift: number;
+  rotation: number;
+  color: string;
+}
+
 const PET_SIZE = 150;
 const CORNER_INSET = 12;
+const CONFETTI_COLORS = ["#FF6B9A", "#FFC857", "#69D2A0", "#65B8E8", "#A78BFA"];
 
 function getCornerPosition(corner: PetCorner): PetPosition {
   const right = Math.max(CORNER_INSET, window.innerWidth - PET_SIZE - CORNER_INSET);
@@ -50,11 +56,109 @@ function getCornerPosition(corner: PetCorner): PetPosition {
   };
 }
 
-export function Cat({ className }: CatProps) {
+export function Cat({ className, onAnimationEnd }: CatProps) {
   const c = catColors;
 
+  if (className.includes("idle-walk-")) {
+    return (
+      <svg
+        className={className}
+        onAnimationEnd={onAnimationEnd}
+        viewBox="0 0 240 210"
+        role="img"
+        aria-label="Cat walking"
+      >
+        <defs>
+          <linearGradient id="walk-cat-body" x1="0" y1="0" x2="0.9" y2="1">
+            <stop offset="0%" stopColor="#FFD4E2" />
+            <stop offset="65%" stopColor={c.fur} />
+            <stop offset="100%" stopColor="#F29BB8" />
+          </linearGradient>
+          <linearGradient id="walk-cat-leg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#F29BB8" />
+            <stop offset="55%" stopColor={c.paws} />
+            <stop offset="100%" stopColor="#F29BB8" />
+          </linearGradient>
+          <radialGradient id="walk-cat-highlight" cx="35%" cy="20%" r="80%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity=".62" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+          </radialGradient>
+          <filter id="walk-cat-shadow" x="-30%" y="-30%" width="160%" height="180%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
+        </defs>
+
+        <ellipse cx="122" cy="187" rx="78" ry="8" fill="#60354A" opacity=".16" filter="url(#walk-cat-shadow)" />
+
+        <g className="walk-leg walk-leg-far-back" transform="rotate(-8 91 119)">
+          <path d="M82 111 Q77 133 80 158 L78 176 Q80 182 94 181 L100 177 L98 157 Q102 133 105 116Z" fill="#D982A1" />
+          <ellipse cx="88" cy="178" rx="13" ry="6" fill="#D982A1" />
+        </g>
+        <g className="walk-leg walk-leg-far-front" transform="rotate(8 151 119)">
+          <path d="M143 113 Q140 136 143 158 L140 176 Q143 182 157 181 L163 177 L160 157 Q163 135 165 115Z" fill="#D982A1" />
+          <ellipse cx="151" cy="178" rx="13" ry="6" fill="#D982A1" />
+        </g>
+
+        <path
+          className="walk-cat-tail"
+          d="M67 111 C42 103 29 82 35 57 C38 44 48 41 55 49 C61 56 54 64 52 72 C49 86 62 94 78 96"
+          fill="none"
+          stroke="url(#walk-cat-body)"
+          strokeLinecap="round"
+          strokeWidth="17"
+        />
+        <path
+          d="M67 111 C42 103 29 82 35 57 C38 44 48 41 55 49"
+          fill="none"
+          stroke="#FFE5ED"
+          strokeLinecap="round"
+          strokeWidth="4"
+          opacity=".55"
+        />
+
+        <g className="pet-walk-body">
+          <ellipse cx="119" cy="119" rx="67" ry="43" fill="url(#walk-cat-body)" />
+          <ellipse cx="109" cy="101" rx="43" ry="16" fill="url(#walk-cat-highlight)" />
+          <path d="M159 124 Q168 143 163 155 Q151 158 144 144 L137 128Z" fill="#FFE0EA" opacity=".68" />
+        </g>
+
+        <g className="walk-leg walk-leg-near-back" transform="rotate(12 101 122)">
+          <path d="M91 112 Q87 137 91 160 L87 177 Q90 184 105 182 L112 178 L107 158 Q111 135 114 116Z" fill="url(#walk-cat-leg)" />
+          <ellipse cx="100" cy="180" rx="14" ry="7" fill={c.paws} />
+          <path d="M93 179 Q99 176 105 180" fill="none" stroke="#E886A8" strokeWidth="1.5" />
+        </g>
+        <g className="walk-leg walk-leg-near-front" transform="rotate(-12 160 122)">
+          <path d="M151 112 Q147 136 151 159 L147 177 Q150 184 165 182 L172 178 L167 158 Q171 135 174 116Z" fill="url(#walk-cat-leg)" />
+          <ellipse cx="160" cy="180" rx="14" ry="7" fill={c.paws} />
+          <path d="M153 179 Q159 176 165 180" fill="none" stroke="#E886A8" strokeWidth="1.5" />
+        </g>
+
+        <g className="pet-walk-head">
+          <path d="M161 64 L163 30 Q164 25 169 29 L190 52Z" fill={c.fur} />
+          <path d="M196 52 L213 32 Q218 28 220 34 L224 68Z" fill={c.fur} />
+          <path d="M169 46 L169 36 L180 52Z" fill="#E987A9" />
+          <path d="M205 51 L215 39 L217 57Z" fill="#E987A9" />
+          <ellipse cx="190" cy="77" rx="39" ry="36" fill="url(#walk-cat-body)" />
+          <path d="M214 84 Q232 87 229 95 Q224 102 207 95Z" fill="#FFE5ED" />
+          <ellipse cx="227" cy="91" rx="4" ry="3" fill={c.nose} />
+          <ellipse cx="207" cy="70" rx="4" ry="6" fill="#3B2A35" />
+          <circle cx="208" cy="68" r="1.5" fill="#FFFFFF" />
+          <ellipse cx="187" cy="95" rx="9" ry="4" fill="#FF8FB3" opacity=".55" />
+          <path d="M224 96 Q229 101 233 97" fill="none" stroke="#3B2A35" strokeLinecap="round" strokeWidth="1.5" />
+          <path d="M222 94 L239 90 M221 98 L238 101" fill="none" stroke="#9B6277" strokeWidth="1.2" opacity=".75" />
+        </g>
+      </svg>
+    );
+  }
+
   return (
-    <svg className={className} viewBox="0 0 160 150" role="img" aria-label="Cat">
+    <svg
+      className={className}
+      onAnimationEnd={onAnimationEnd}
+      viewBox="0 0 160 150"
+      role="img"
+      aria-label="Cat"
+    >
       <path
         className="pet-tail"
         d="M128 112 Q158 98 150 70"
@@ -64,8 +168,8 @@ export function Cat({ className }: CatProps) {
         fill="none"
       />
       <ellipse cx="80" cy="102" rx="48" ry="38" fill={c.fur} />
-      <ellipse cx="58" cy="138" rx="14" ry="8" fill={c.paws} />
-      <ellipse cx="102" cy="138" rx="14" ry="8" fill={c.paws} />
+      <ellipse className="pet-paw-left" cx="58" cy="138" rx="14" ry="8" fill={c.paws} />
+      <ellipse className="pet-paw-right" cx="102" cy="138" rx="14" ry="8" fill={c.paws} />
       <polygon points="36,50 44,12 72,36" fill={c.fur} />
       <polygon points="124,50 116,12 88,36" fill={c.fur} />
       <ellipse cx="80" cy="70" rx="52" ry="44" fill={c.fur} />
@@ -81,12 +185,14 @@ export function Cat({ className }: CatProps) {
       </g>
       <ellipse cx="80" cy="77" rx="3" ry="2.2" fill={c.nose} />
       <path
+        className="pet-smile"
         d="M72 83 Q76 89 80 83 Q84 89 88 83"
         stroke="#3B2A35"
         strokeLinecap="round"
         strokeWidth="2"
         fill="none"
       />
+      <ellipse className="pet-yawn-mouth" cx="80" cy="87" rx="7" ry="9" fill="#3B2A35" />
     </svg>
   );
 }
@@ -119,20 +225,70 @@ function PeekHead({ shown }: PeekHeadProps) {
 
 function PetWidget() {
   const [phase, setPhase] = useState<"hidden" | "peek" | "open">("peek");
+  const [idleAnimation, setIdleAnimation] = useState<
+    "walk-left" | "walk-right" | "purr" | "yawn" | null
+  >(null);
   const [corner, setCorner] = useState<PetCorner>("bottom-right");
   const [position, setPosition] = useState<PetPosition>(() =>
     getCornerPosition("bottom-right"),
   );
   const [isDragging, setIsDragging] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
-  const [jump, setJump] = useState(0);
-  const [hearts, setHearts] = useState<Heart[]>([]);
-  const closeTimer = useRef<number | undefined>(undefined);
+  const [celebrationId, setCelebrationId] = useState(0);
+  const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
+  const stageRef = useRef<HTMLElement | null>(null);
   const dragRef = useRef<DragState | null>(null);
   const positionRef = useRef(position);
   const suppressClickRef = useRef(false);
   const { message, nextTip } = usePetTip();
+  const nextTipRef = useRef(nextTip);
+  nextTipRef.current = nextTip;
   const open = phase === "open";
+  const hide = useCallback(() => {
+    setIsPinned(false);
+    setPhase("hidden");
+    setIdleAnimation(null);
+  }, []);
+
+  useEffect(() => {
+    return onPetCelebration(() => {
+      setPhase("open");
+      setIsPinned(false);
+      setIdleAnimation(null);
+      nextTipRef.current();
+      setCelebrationId((id) => id + 1);
+      setConfetti(
+        Array.from({ length: 22 }, (_, index) => ({
+          id: index,
+          left: 38 + Math.random() * 24,
+          delay: Math.random() * 180,
+          drift: (Math.random() - 0.5) * 180,
+          rotation: Math.random() * 540 - 270,
+          color: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+        })),
+      );
+    });
+  }, []);
+
+  useEffect(() => {
+    if (confetti.length === 0) return;
+    const timer = window.setTimeout(() => setConfetti([]), 1600);
+    return () => window.clearTimeout(timer);
+  }, [confetti]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      const stage = stageRef.current;
+      if (stage && !event.composedPath().includes(stage)) {
+        hide();
+      }
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+  }, [hide, open]);
 
   useEffect(() => {
     function handleResize() {
@@ -144,6 +300,22 @@ function PetWidget() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [corner]);
+
+  useEffect(() => {
+    if (!open || isDragging || idleAnimation) return;
+
+    const timer = window.setTimeout(() => {
+      const choice = Math.random();
+      if (choice < 0.28) {
+        setIdleAnimation(corner.endsWith("right") ? "walk-left" : "walk-right");
+        return;
+      }
+
+      setIdleAnimation(choice < 0.64 ? "purr" : "yawn");
+    }, 5000 + Math.random() * 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [corner, idleAnimation, isDragging, open]);
 
   function beginDrag(event: ReactPointerEvent<HTMLElement>) {
     if (event.button !== 0) return;
@@ -159,7 +331,7 @@ function PetWidget() {
       moved: false,
     };
     setIsDragging(true);
-    window.clearTimeout(closeTimer.current);
+    setIdleAnimation(null);
   }
 
   function movePet(event: ReactPointerEvent<HTMLElement>) {
@@ -208,21 +380,15 @@ function PetWidget() {
     setPosition(snappedPosition);
     setIsPinned(true);
     setPhase("peek");
+    setIdleAnimation(null);
     suppressClickRef.current = true;
     window.setTimeout(() => {
       suppressClickRef.current = false;
     }, 0);
   }
 
-  function hide() {
-    window.clearTimeout(closeTimer.current);
-    setIsPinned(false);
-    setPhase("hidden");
-  }
-
   function openNow() {
     if (suppressClickRef.current) return;
-    window.clearTimeout(closeTimer.current);
     setIsPinned(false);
     if (!open) {
       nextTip();
@@ -230,22 +396,8 @@ function PetWidget() {
     setPhase("open");
   }
 
-  function petIt() {
+  function handleCatClick() {
     if (suppressClickRef.current) return;
-
-    const heart = {
-      id: Math.random(),
-      left: 70 + Math.round(Math.random() * 60),
-      top: 10 + Math.round(Math.random() * 30),
-    };
-
-    setJump((currentJump) => currentJump + 1);
-    setHearts((currentHearts) => [...currentHearts, heart]);
-    window.setTimeout(() => {
-      setHearts((currentHearts) =>
-        currentHearts.filter((currentHeart) => currentHeart.id !== heart.id),
-      );
-    }, 1000);
     nextTip();
   }
 
@@ -254,6 +406,8 @@ function PetWidget() {
       aria-label="Digital pet helper"
       className={`pet-stage${isDragging ? " dragging" : ""}`}
       data-corner={corner}
+      data-idle-animation={idleAnimation ?? undefined}
+      ref={stageRef}
       onPointerCancel={finishDrag}
       onPointerMove={movePet}
       onPointerUp={finishDrag}
@@ -290,15 +444,14 @@ function PetWidget() {
       )}
 
       <div
-        className={open ? "pet-wrap open" : "pet-wrap"}
-        onMouseEnter={() => window.clearTimeout(closeTimer.current)}
-        onMouseLeave={() => {
-          if (!open || dragRef.current) {
-            return;
+        className={`pet-wrap${open ? " open" : ""}`}
+        onAnimationEnd={(event) => {
+          if (
+            event.target === event.currentTarget &&
+            event.animationName.startsWith("pet-stroll-")
+          ) {
+            setIdleAnimation(null);
           }
-
-          window.clearTimeout(closeTimer.current);
-          closeTimer.current = window.setTimeout(hide, 1000);
         }}
       >
         <div className="pet-cloud-group">
@@ -321,28 +474,45 @@ function PetWidget() {
         </div>
 
         <div className="pet-area">
-          {hearts.map((heart) => (
-            <svg
-              aria-hidden="true"
-              className="pet-heart"
-              key={heart.id}
-              style={{ left: heart.left, top: heart.top }}
-              viewBox="0 0 24 22"
-            >
-              <path
-                d="M12 21C12 21 2 14.6 2 8.2A5.2 5.2 0 0 1 12 5.6A5.2 5.2 0 0 1 22 8.2C22 14.6 12 21 12 21Z"
-                fill={catColors.dark}
-              />
-            </svg>
-          ))}
+          {confetti.length > 0 && (
+            <div aria-hidden="true" className="pet-confetti-burst">
+              {confetti.map((piece) => (
+                <span
+                  className="pet-confetti"
+                  key={`${celebrationId}-${piece.id}`}
+                  style={{
+                    left: `${piece.left}%`,
+                    animationDelay: `${piece.delay}ms`,
+                    backgroundColor: piece.color,
+                    "--confetti-drift": `${piece.drift}px`,
+                    "--confetti-rotation": `${piece.rotation}deg`,
+                  } as CSSProperties}
+                />
+              ))}
+            </div>
+          )}
           <button
-            aria-label="Pet the cat"
+            aria-label="Close the cat"
             className="pet-button"
-            onClick={petIt}
+            onClick={handleCatClick}
             onPointerDown={beginDrag}
             type="button"
           >
-            <Cat className={jump ? (jump % 2 ? "pet-cat jump-a" : "pet-cat jump-b") : "pet-cat"} />
+            <Cat
+              key={celebrationId}
+              className={[
+                "pet-cat",
+                idleAnimation ? `idle-${idleAnimation}` : "",
+                celebrationId > 0 ? "pet-celebrating" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              onAnimationEnd={() => {
+                if (idleAnimation === "purr" || idleAnimation === "yawn") {
+                  setIdleAnimation(null);
+                }
+              }}
+            />
           </button>
         </div>
       </div>
