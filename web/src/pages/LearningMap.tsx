@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { learningContent } from "../data/learningContent";
 import { topics } from "../data/topics";
 import { getCompletedProblemIds, subscribeToProgressUpdates } from "../services/progressService";
@@ -17,6 +17,11 @@ interface MapWorld {
   theme: "meadow" | "coast" | "peaks" | "forest" | "kingdom" | "castle";
   position: { x: number; y: number };
   previewPosition: string;
+}
+
+interface ViewportSize {
+  width: number;
+  height: number;
 }
 
 const worlds: MapWorld[] = [
@@ -219,13 +224,23 @@ function MapTopicGroup({
       className={`map-topic-group ${world.theme} ${isSelected ? "selected" : ""}`}
       style={{ left: `${world.position.x}%`, top: `${world.position.y}%` }}
     >
-      <button className="world-marker" onClick={() => onSelectWorld(world)} type="button">
+      <button
+        className="world-marker"
+        onClick={(event) => {
+          event.stopPropagation();
+          onSelectWorld(world);
+        }}
+        type="button"
+      >
         <span className="world-label">{world.shortName}</span>
       </button>
       <button
         aria-label={`${world.name} progress wheel`}
         className="progress-wheel-button"
-        onClick={() => onSelectWorld(world)}
+        onClick={(event) => {
+          event.stopPropagation();
+          onSelectWorld(world);
+        }}
         type="button"
       >
         <ProgressWheel completedIds={completedIds} problems={problems} />
@@ -235,15 +250,48 @@ function MapTopicGroup({
 }
 
 function LearningMap({ onStartExercise }: LearningMapProps) {
+  const mapViewportRef = useRef<HTMLDivElement | null>(null);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [selectedWorldId, setSelectedWorldId] = useState(worlds[0].id);
   const [selectedProblemId, setSelectedProblemId] = useState(getTopicProblems(worlds[0].topicId)[0]?.id ?? "");
+  const [isMapZoomed, setIsMapZoomed] = useState(false);
+  const [viewportSize, setViewportSize] = useState<ViewportSize>({ width: 0, height: 0 });
 
   useEffect(() => {
     const refreshCompletions = () => setCompletedIds(getCompletedProblemIds());
 
     refreshCompletions();
     return subscribeToProgressUpdates(refreshCompletions);
+  }, []);
+
+  useEffect(() => {
+    const viewport = mapViewportRef.current;
+    if (!viewport) return undefined;
+
+    const updateViewportSize = () => {
+      setViewportSize({
+        width: viewport.clientWidth,
+        height: viewport.clientHeight,
+      });
+    };
+
+    updateViewportSize();
+
+    const observer = new ResizeObserver(updateViewportSize);
+    observer.observe(viewport);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsMapZoomed(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const selectedWorld = worlds.find((world) => world.id === selectedWorldId) ?? worlds[0];
@@ -260,10 +308,29 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
     return problem ? total + getProblemXp(problem.difficulty) : total;
   }, 0);
   const currentLevel = Math.max(5, Math.floor(totalXp / 120));
+  const zoomScale = viewportSize.width > 0 && viewportSize.width < 720 ? 1.35 : 1.6;
+  const cameraTransform = useMemo(() => {
+    if (!isMapZoomed || viewportSize.width === 0 || viewportSize.height === 0) {
+      return "translate3d(0, 0, 0) scale(1)";
+    }
+
+    const scale = zoomScale;
+    const targetX = (selectedWorld.position.x / 100) * viewportSize.width;
+    const targetY = (selectedWorld.position.y / 100) * viewportSize.height;
+    const rawX = viewportSize.width / 2 - targetX * scale;
+    const rawY = viewportSize.height / 2 - targetY * scale;
+    const minX = viewportSize.width - viewportSize.width * scale;
+    const minY = viewportSize.height - viewportSize.height * scale;
+    const translateX = Math.min(0, Math.max(minX, rawX));
+    const translateY = Math.min(0, Math.max(minY, rawY));
+
+    return `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`;
+  }, [isMapZoomed, selectedWorld.position.x, selectedWorld.position.y, viewportSize.height, viewportSize.width, zoomScale]);
 
   function selectWorld(world: MapWorld) {
     setSelectedWorldId(world.id);
     setSelectedProblemId(getTopicProblems(world.topicId)[0]?.id ?? "");
+    setIsMapZoomed(true);
   }
 
   function selectProblem(world: MapWorld, problem: LearningExercise) {
@@ -274,6 +341,10 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
   function startSelectedProblem() {
     if (!selectedProblem || !selectedTopic) return;
     onStartExercise(selectedProblem, selectedTopic);
+  }
+
+  function zoomOutMap() {
+    setIsMapZoomed(false);
   }
 
   return (
@@ -297,29 +368,43 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
 
         <div className="codecat-map-shell">
           <div className="codecat-map-board">
-            <div className="adventure-map-canvas">
-              <img
-                alt="Illustrated fantasy islands connected by bridges and ocean paths"
-                className="adventure-map-image"
-                src="/assets/adventure-map.png"
-              />
+            <div
+              className={`adventure-map-canvas ${isMapZoomed ? "zoomed" : ""}`}
+              onClick={zoomOutMap}
+              ref={mapViewportRef}
+            >
+              <div
+                className="adventure-map-world"
+                style={{ transform: cameraTransform }}
+              >
+                <img
+                  alt="Illustrated fantasy islands connected by bridges and ocean paths"
+                  className="adventure-map-image"
+                  src="/assets/adventure-map.png"
+                />
 
-              <button className="compass-card" type="button" aria-label="Map compass">
+                {worlds.map((world) => (
+                  <MapTopicGroup
+                    completedIds={completedIds}
+                    isSelected={world.id === selectedWorld.id}
+                    key={world.id}
+                    onSelectWorld={selectWorld}
+                    problems={getTopicProblems(world.topicId)}
+                    world={world}
+                  />
+                ))}
+              </div>
+
+              <button
+                className="compass-card"
+                onClick={(event) => event.stopPropagation()}
+                type="button"
+                aria-label="Map compass"
+              >
                 <span>N</span>
                 <strong>*</strong>
                 <span>S</span>
               </button>
-
-              {worlds.map((world) => (
-                <MapTopicGroup
-                  completedIds={completedIds}
-                  isSelected={world.id === selectedWorld.id}
-                  key={world.id}
-                  onSelectWorld={selectWorld}
-                  problems={getTopicProblems(world.topicId)}
-                  world={world}
-                />
-              ))}
             </div>
           </div>
 

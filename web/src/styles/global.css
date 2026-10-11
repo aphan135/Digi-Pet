@@ -3385,6 +3385,18 @@ textarea:focus-visible {
   border-radius: 24px;
 }
 
+.adventure-map-canvas.zoomed {
+  cursor: zoom-out;
+}
+
+.adventure-map-world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
 .adventure-map-image {
   position: absolute;
   inset: 0;
@@ -3526,6 +3538,12 @@ textarea:focus-visible {
 .adventure-map-canvas .compass-card {
   background: rgb(255 255 255 / 0.76);
   backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adventure-map-world {
+    transition-duration: 1ms;
+  }
 }
 
 .codecat-map-board {
