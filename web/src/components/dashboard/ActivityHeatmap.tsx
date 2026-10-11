@@ -15,7 +15,7 @@ export default function ActivityHeatmap({ days, hasAttempts, current, longest, o
   const weeks = Array.from({ length: 12 }, (_, week) => days.slice(week * 7, week * 7 + 7));
   const summary = `${total} attempts in the last 84 local days. Current streak ${current} days; longest ${longest} days.`;
   return <section className="dashboard-panel dashboard-activity" aria-labelledby="activity-title">
-    <div className="dashboard-panel-heading"><div><h3 id="activity-title">A little, often.</h3><p>Your activity over the last 12 weeks</p></div>
+    <div className="dashboard-panel-heading"><div><h3 id="activity-title"> Consistency Heat Map</h3><p>Your activity over the last 12 weeks</p></div>
       <p className="dashboard-streaks"><strong>{current}</strong> day streak <span>/</span> <strong>{longest}</strong> best</p>
     </div>
     {!hasAttempts ? <EmptyState message="Your first attempt is the start of a learning rhythm. Every practice day will find a place here." onStartChallenge={onStartChallenge} /> : <>
