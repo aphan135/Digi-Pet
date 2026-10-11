@@ -457,7 +457,7 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
               <div className="challenge-detail-card">
                 <span className="panel-kicker">Selected challenge</span>
                 <h3>{selectedProblem.title}</h3>
-                <p>{selectedProblem.instructions}</p>
+                <p className="selected-challenge-description">{selectedProblem.instructions}</p>
                 <div className="detail-meta compact">
                   <span>{selectedProblem.difficulty}</span>
                   <span>{selectedWorld.shortName}</span>
