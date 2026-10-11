@@ -6,9 +6,9 @@ interface NavbarProps {
 }
 
 const navItems: { label: string; page: PageName }[] = [
-  { label: "Learn", page: "learn" },
-  { label: "Map", page: "map" },
   { label: "Challenge", page: "challenge" },
+  { label: "Map", page: "map" },
+  { label: "Learn", page: "learn" },
 ];
 
 export function ProfileCatIcon() {
