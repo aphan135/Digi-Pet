@@ -10,6 +10,24 @@ const COMPLETION_EVENT = "digipet-progress-updated";
 // Preserve progress for this session when storage is unavailable or full.
 const fallback = new Map<string, string>();
 let syncPromise: Promise<void> | null = null;
+
+type RemoteAttemptRow = {
+  problem_id: string;
+  title: string;
+  topic: string;
+  type: ProblemType;
+  difficulty: Attempt["difficulty"];
+  score: number;
+  is_correct: boolean;
+  missed_concepts: string[];
+  at: string;
+};
+
+type RemoteProgressRow = {
+  problem_id: string;
+  status: "incomplete" | "completed";
+};
+
 function read(key: string): unknown {
   try {
     const raw = fallback.get(key) ?? window.localStorage.getItem(key);
@@ -108,11 +126,11 @@ export async function syncProgress(): Promise<void> {
       ]);
       if (remoteAttempts.error) throw remoteAttempts.error;
       if (progress.error) throw progress.error;
-      const downloaded = (remoteAttempts.data ?? []).map((row) => ({
+      const downloaded = ((remoteAttempts.data ?? []) as RemoteAttemptRow[]).map((row) => ({
         problemId: row.problem_id, title: row.title, topic: row.topic,
         type: row.type, difficulty: row.difficulty, score: row.score,
         isCorrect: row.is_correct, missedConcepts: row.missed_concepts, at: row.at,
-      })).filter(isAttempt).map((attempt) => ({ ...attempt, at: new Date(attempt.at).toISOString() }));
+      })).filter(isAttempt).map((attempt: Attempt) => ({ ...attempt, at: new Date(attempt.at).toISOString() }));
       const merged = new Map([...downloaded, ...getRealAttempts()].map((attempt) => {
         const at = new Date(attempt.at).toISOString();
         return [JSON.stringify([attempt.problemId, at]), { ...attempt, at }];
@@ -120,10 +138,10 @@ export async function syncProgress(): Promise<void> {
       write(ATTEMPTS_KEY, [...merged.values()].sort((a, b) => Date.parse(a.at) - Date.parse(b.at)));
       write(COMPLETED_PROBLEMS_KEY, Array.from(new Set([
         ...getCompletedProblemIds(),
-        ...(progress.data ?? []).filter((row) => row.status === "completed").map((row) => row.problem_id),
+        ...((progress.data ?? []) as RemoteProgressRow[]).filter((row) => row.status === "completed").map((row) => row.problem_id),
       ])));
       const statuses = getProblemStatuses();
-      for (const row of progress.data ?? []) {
+      for (const row of (progress.data ?? []) as RemoteProgressRow[]) {
         if (statuses[row.problem_id] !== "completed" && (row.status === "incomplete" || row.status === "completed")) {
           statuses[row.problem_id] = row.status;
         }
