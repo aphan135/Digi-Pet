@@ -2326,6 +2326,1094 @@ textarea:focus-visible {
   outline-offset: 3px;
 }
 
+.codecat-map-page {
+  width: 100%;
+  margin-top: -1rem;
+  color: #273244;
+}
+
+.map-layout-container {
+  width: min(1180px, calc(100vw - 2rem));
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.codecat-map-page h2,
+.codecat-map-page h3,
+.codecat-map-page p {
+  margin: 0;
+}
+
+.map-hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #f5ddea;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.92);
+  box-shadow: 0 18px 38px rgb(65 62 98 / 0.09);
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hud-stat strong {
+  display: block;
+  color: #182037;
+  font-weight: 900;
+}
+
+.hud-stat span {
+  display: block;
+  color: #7b8499;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.hud-stat {
+  min-height: 3rem;
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  background: #fff5fa;
+}
+
+.hud-stat.wide {
+  display: grid;
+  min-width: 190px;
+  gap: 0.2rem;
+  border-radius: 16px;
+}
+
+.hud-xp {
+  height: 7px;
+  border-radius: 999px;
+  background: #eadfec;
+  overflow: hidden;
+}
+
+.hud-xp span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff69a8, #ffa7cd);
+}
+
+.codecat-map-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: 0.875rem;
+  align-items: start;
+}
+
+.codecat-map-board {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: auto;
+  overflow: hidden;
+  border: 1px solid #d8edf8;
+  border-radius: 22px;
+  background: #62cdf6;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.56),
+    0 22px 45px rgb(67 126 162 / 0.17);
+}
+
+.island-map-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-wave {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.52);
+  stroke-dasharray: 4 8;
+  stroke-linecap: round;
+  stroke-width: 1.3;
+}
+
+.map-wave.two {
+  opacity: 0.72;
+}
+
+.map-cloud {
+  fill: rgb(255 255 255 / 0.78);
+}
+
+.map-cloud.right {
+  opacity: 0.74;
+}
+
+.water-current {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.42);
+  stroke-dasharray: 0.8 2.8;
+  stroke-linecap: round;
+  stroke-width: 1.1;
+}
+
+.water-current.two {
+  opacity: 0.78;
+}
+
+.water-current.three {
+  opacity: 0.58;
+}
+
+.map-cloud.puff-left,
+.map-cloud.puff-mid,
+.map-cloud.puff-right {
+  fill: rgb(255 255 255 / 0.78);
+}
+
+.world-art {
+  filter: url("#soft-shadow");
+}
+
+.world-shadow {
+  fill: rgb(15 87 115 / 0.18);
+}
+
+.world-cliff {
+  fill: #c8925f;
+}
+
+.world-ground {
+  fill: #8fd26c;
+  stroke: rgb(255 255 255 / 0.35);
+  stroke-width: 0.35;
+}
+
+.world-beach {
+  fill: #f6d79b;
+  opacity: 0.92;
+}
+
+.world-inner-path {
+  fill: none;
+  stroke: #fff1cf;
+  stroke-dasharray: 0.8 1.2;
+  stroke-linecap: round;
+  stroke-width: 0.65;
+}
+
+.world-art.coast .world-ground {
+  fill: #f2cf78;
+}
+
+.world-art.coast .world-cliff {
+  fill: #c9955f;
+}
+
+.world-art.peaks .world-ground {
+  fill: #dff3fb;
+}
+
+.world-art.peaks .world-cliff {
+  fill: #9fb2bf;
+}
+
+.world-art.forest .world-ground,
+.world-art.kingdom .world-ground {
+  fill: #76c767;
+}
+
+.world-art.mountains .world-ground {
+  fill: #ffb5d6;
+}
+
+.world-art.mountains .world-cliff {
+  fill: #c983a8;
+}
+
+.world-art.labyrinth .world-ground {
+  fill: #514b55;
+}
+
+.world-art.labyrinth .world-cliff {
+  fill: #35313a;
+}
+
+.world-art.castle .world-ground {
+  fill: #d8cef2;
+}
+
+.world-art.castle .world-cliff {
+  fill: #9f8fc5;
+}
+
+.tree circle {
+  fill: #2f7c50;
+}
+
+.tree.cluster-left circle:first-child,
+.tree.cluster-right circle:first-child {
+  fill: #46a767;
+}
+
+.tree rect,
+.giant-tree rect,
+.blossom rect {
+  fill: #7c543a;
+}
+
+.house-body,
+.cottage {
+  fill: #ffe0a1;
+  stroke: #b97855;
+  stroke-width: 0.35;
+}
+
+.house-roof,
+.cottage-roof,
+.treehouse-roof {
+  fill: #cf7056;
+}
+
+.flower,
+.sparkle {
+  fill: #fff2a6;
+}
+
+.sand-bank {
+  fill: #ffe0a0;
+}
+
+.palm path:first-child {
+  fill: none;
+  stroke: #8f6244;
+  stroke-linecap: round;
+  stroke-width: 0.8;
+}
+
+.palm path:last-child {
+  fill: none;
+  stroke: #3a9a67;
+  stroke-linecap: round;
+  stroke-width: 0.8;
+}
+
+.wood-bridge,
+.bridge-arch {
+  fill: none;
+  stroke: #9b6741;
+  stroke-linecap: round;
+  stroke-width: 1.1;
+}
+
+.snow-peak {
+  fill: #9aacbb;
+}
+
+.snow-peak.back {
+  fill: #b6c8d4;
+}
+
+.snow-cap {
+  fill: #fff;
+}
+
+.ice-lake {
+  fill: #9ae7ff;
+  opacity: 0.86;
+}
+
+.pine path {
+  fill: #3f8054;
+}
+
+.pine rect {
+  fill: #77523b;
+}
+
+.castle-small rect,
+.magic-castle rect {
+  fill: #e5c1a0;
+  stroke: rgb(115 74 66 / 0.3);
+  stroke-width: 0.25;
+}
+
+.castle-small path,
+.magic-castle path {
+  fill: #c86e59;
+}
+
+.blossom circle {
+  fill: #f48bc2;
+}
+
+.blossom.small circle {
+  fill: #ffa7ce;
+}
+
+.treehouse {
+  fill: #d79a61;
+  stroke: #805636;
+  stroke-width: 0.25;
+}
+
+.giant-tree circle {
+  fill: #2f8153;
+}
+
+.giant-tree circle:first-of-type {
+  fill: #3f9a62;
+}
+
+.volcano {
+  fill: #3e3a43;
+}
+
+.volcano.second {
+  fill: #4c4851;
+}
+
+.lava {
+  fill: none;
+  stroke: #ff714b;
+  stroke-linecap: round;
+  stroke-width: 1;
+}
+
+.ember {
+  fill: #ffb45f;
+}
+
+.magic-castle rect {
+  fill: #d8c7f2;
+}
+
+.magic-castle path {
+  fill: #a587dd;
+}
+
+.crystal {
+  fill: #86e8ff;
+  stroke: #4daed2;
+  stroke-width: 0.2;
+}
+
+.world-number {
+  fill: rgb(255 255 255 / 0.86);
+  font-size: 4px;
+  font-weight: 900;
+  paint-order: stroke;
+  stroke: rgb(54 83 80 / 0.35);
+  stroke-width: 0.3;
+}
+
+.compass-card {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 4;
+  display: grid;
+  width: 5.5rem;
+  height: 5.5rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.58);
+  color: #6d7a91;
+  font-size: 0.72rem;
+  font-weight: 900;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.82);
+}
+
+.compass-card strong {
+  color: #9aabba;
+  font-size: 2rem;
+  line-height: 0.85;
+}
+
+.world-island {
+  --island: #90d472;
+  --rim: #68ac67;
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: 12.5rem;
+  min-height: 9rem;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #22304a;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.world-island:focus-visible,
+.challenge-dot:focus-visible {
+  outline: 4px solid rgb(255 105 168 / 0.42);
+  outline-offset: 5px;
+}
+
+.world-island.selected .island-shape {
+  box-shadow:
+    0 0 0 8px rgb(255 105 168 / 0.22),
+    0 18px 34px rgb(38 89 111 / 0.2);
+  transform: translateY(-4px) scale(1.03);
+}
+
+.world-island.locked {
+  filter: saturate(0.78);
+}
+
+.island-shape {
+  position: absolute;
+  inset: 0.4rem 0.2rem 1.2rem;
+  border: 5px solid rgb(93 134 87 / 0.22);
+  border-radius: 54% 46% 48% 52% / 58% 45% 55% 42%;
+  background:
+    radial-gradient(circle at 24% 30%, rgb(255 255 255 / 0.32) 0 16px, transparent 17px),
+    radial-gradient(circle at 68% 28%, var(--rim) 0 24px, transparent 25px),
+    linear-gradient(145deg, var(--island), #f5d59c 72%);
+  box-shadow:
+    inset 0 -16px 0 rgb(156 104 58 / 0.16),
+    0 15px 24px rgb(30 98 127 / 0.25);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.island-shape::after {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 0.8rem;
+  width: 2.1rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.28);
+  content: "";
+}
+
+.island-landmark {
+  position: absolute;
+  top: 2.05rem;
+  left: 50%;
+  display: block;
+  width: 2.5rem;
+  height: 2.2rem;
+  border-radius: 0.45rem;
+  background: #ffe2a7;
+  box-shadow:
+    -3.8rem 1.2rem 0 -0.9rem #4a9a67,
+    -4.25rem 0.65rem 0 -1.05rem #317a53,
+    3.7rem 0.9rem 0 -0.85rem #4a9a67,
+    4.25rem 0.35rem 0 -1.05rem #317a53;
+  transform: translateX(-50%);
+}
+
+.island-landmark::before {
+  position: absolute;
+  top: -1rem;
+  left: -0.3rem;
+  width: 3.1rem;
+  height: 1.6rem;
+  background: #c47658;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  content: "";
+}
+
+.island-landmark::after {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0;
+  width: 0.55rem;
+  height: 0.9rem;
+  border-radius: 0.45rem 0.45rem 0 0;
+  background: #7c5a45;
+  content: "";
+}
+
+.world-island.coast { --island: #f8d987; --rim: #efb669; }
+.world-island.peaks { --island: #d7ecf7; --rim: #9bb7c7; }
+.world-island.forest { --island: #9bd67f; --rim: #3d8c61; }
+.world-island.mountains { --island: #ffc5dc; --rim: #d58baf; }
+.world-island.kingdom { --island: #93cc82; --rim: #4e9054; }
+.world-island.labyrinth { --island: #6d6570; --rim: #41414b; }
+.world-island.castle { --island: #ded5ee; --rim: #9b83c7; }
+
+.world-island.peaks .island-landmark {
+  width: 3.2rem;
+  height: 3.2rem;
+  background: linear-gradient(135deg, transparent 45%, #879ca6 46% 70%, transparent 71%);
+  box-shadow:
+    2rem 0.2rem 0 -0.35rem #b7cbd5,
+    -1.9rem 0.55rem 0 -0.45rem #a8bdc8;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.world-island.forest .island-landmark,
+.world-island.kingdom .island-landmark {
+  border-radius: 50% 50% 42% 42%;
+  background: #2f7c50;
+  box-shadow:
+    -1.2rem 0.3rem 0 #3f9a65,
+    1.3rem 0.35rem 0 #3f9a65,
+    0 1rem 0 -0.4rem #7d5234;
+}
+
+.world-island.labyrinth .island-landmark {
+  border: 5px solid #363b46;
+  border-radius: 50%;
+  background: repeating-linear-gradient(90deg, #ff7a45 0 8px, #2d323c 8px 15px);
+}
+
+.world-island.castle .island-landmark {
+  width: 3.3rem;
+  height: 2.8rem;
+  background:
+    linear-gradient(90deg, #b5a3de 0 22%, transparent 22% 39%, #b5a3de 39% 61%, transparent 61% 78%, #b5a3de 78%),
+    #d8c9f1;
+}
+
+.world-label {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 2;
+  max-width: 10rem;
+  border: 2px solid #d29a68;
+  border-radius: 9px;
+  padding: 0.35rem 0.7rem;
+  background: #ffe2bd;
+  box-shadow: 0 5px 0 rgb(137 86 47 / 0.18);
+  color: #2c2630;
+  font-weight: 900;
+  transform: rotate(-3deg);
+}
+
+.challenge-dot {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  box-sizing: border-box;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  padding: 0;
+  background: #54b9f4;
+  color: white;
+  font-weight: 900;
+  line-height: 0;
+  box-shadow: 0 5px 10px rgb(40 83 114 / 0.2);
+  transform: translate(-50%, -50%);
+}
+
+.challenge-dot svg,
+.panel-challenge svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.75;
+}
+
+.challenge-dot.completed {
+  background: linear-gradient(145deg, #4ebfe9, #5ecb8c);
+}
+
+.challenge-dot.current,
+.challenge-dot.selected {
+  background: #ff5fa4;
+  animation: current-node-pulse 1.5s ease-in-out infinite;
+}
+
+.challenge-dot.locked {
+  background: #a8adbb;
+  color: #f5f6f9;
+  filter: grayscale(0.28);
+}
+
+.challenge-dot.reward {
+  background: #f3bd4d;
+}
+
+.challenge-dot.boss {
+  background: #8d73df;
+}
+
+@keyframes current-node-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 95 164 / 0.35), 0 8px 16px rgb(40 83 114 / 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 0 12px rgb(255 95 164 / 0), 0 8px 16px rgb(40 83 114 / 0.2);
+  }
+}
+
+.map-topic-panel {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  min-width: 0;
+  align-self: start;
+  max-height: calc(100vh - 10rem);
+  overflow: hidden;
+  border: 1px solid #f1deea;
+  border-radius: 18px;
+  padding: 0.8rem;
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 22px 45px rgb(65 62 98 / 0.1);
+}
+
+.topic-preview {
+  min-height: 4.75rem;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 25% 55%, #5ebf79 0 24px, transparent 25px),
+    radial-gradient(circle at 55% 45%, #3b9b61 0 31px, transparent 32px),
+    radial-gradient(circle at 78% 62%, #89d37d 0 22px, transparent 23px),
+    linear-gradient(135deg, #9edaf7, #92dd86);
+}
+
+.topic-preview.coast {
+  background:
+    radial-gradient(circle at 28% 70%, #f4d487 0 34px, transparent 35px),
+    radial-gradient(circle at 66% 54%, #eaba70 0 30px, transparent 31px),
+    linear-gradient(135deg, #61c7f2, #2bb1e0);
+}
+
+.topic-preview.peaks {
+  background:
+    linear-gradient(135deg, transparent 44%, #8fa8b7 45% 70%, transparent 71%),
+    linear-gradient(45deg, transparent 38%, #dfeaf0 39% 68%, transparent 69%),
+    linear-gradient(135deg, #9ed8fa, #e5f7ff);
+}
+
+.topic-preview.forest,
+.topic-preview.kingdom {
+  background:
+    radial-gradient(circle at 22% 60%, #3f8f58 0 32px, transparent 33px),
+    radial-gradient(circle at 52% 40%, #24754b 0 38px, transparent 39px),
+    radial-gradient(circle at 78% 64%, #68b971 0 32px, transparent 33px),
+    linear-gradient(135deg, #89daf9, #9ddf7e);
+}
+
+.topic-preview.mountains {
+  background:
+    radial-gradient(circle at 68% 40%, #f6a2cc 0 40px, transparent 41px),
+    linear-gradient(135deg, transparent 45%, #a8b4c7 46% 70%, transparent 71%),
+    linear-gradient(135deg, #9bd9f5, #ffd7e8);
+}
+
+.topic-preview.labyrinth {
+  background:
+    repeating-linear-gradient(45deg, #303846 0 12px, #f06a42 12px 17px),
+    linear-gradient(135deg, #6fcff3, #4e5463);
+}
+
+.topic-preview.castle {
+  background:
+    linear-gradient(90deg, transparent 0 24%, #bbaee7 24% 36%, transparent 36% 47%, #9d8ad4 47% 62%, transparent 62%),
+    linear-gradient(135deg, #9ed9f7, #e8d9ff);
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.panel-kicker {
+  color: #ff5fa4;
+  font-size: 0.64rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.panel-heading h2 {
+  margin-top: 0.2rem;
+  color: #20243a;
+  font-size: 1.18rem;
+  line-height: 1;
+}
+
+.status-pill {
+  border-radius: 999px;
+  padding: 0.3rem 0.5rem;
+  background: #dff5e6;
+  color: #4d9a63;
+  font-size: 0.66rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.map-topic-panel > p,
+.challenge-detail-card p {
+  color: #697187;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.panel-progress {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.panel-progress > div {
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #ebe7ef;
+  overflow: hidden;
+}
+
+.panel-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff5fa4, #ff98c6);
+}
+
+.panel-progress strong {
+  color: #697187;
+  font-size: 0.75rem;
+}
+
+.challenge-list {
+  display: grid;
+  gap: 0.35rem;
+  max-height: 15.5rem;
+  overflow: auto;
+  padding: 0.15rem 0.15rem 0.15rem 0;
+}
+
+.panel-challenge {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.05rem 0.55rem;
+  align-items: center;
+  border: 0;
+  min-height: 3rem;
+  border-radius: 12px;
+  padding: 0.45rem 0.55rem;
+  background: transparent;
+  color: #283047;
+  text-align: left;
+}
+
+.panel-challenge:hover,
+.panel-challenge.selected {
+  background: #fff1f7;
+}
+
+.panel-challenge > span {
+  display: grid;
+  grid-row: span 2;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #ebedf3;
+  color: #8c93a2;
+  font-weight: 900;
+  line-height: 0;
+}
+
+.panel-challenge.completed > span {
+  background: #58c987;
+  color: white;
+}
+
+.panel-challenge.current > span,
+.panel-challenge.selected > span {
+  background: #ff5fa4;
+  color: white;
+}
+
+.panel-challenge.reward > span {
+  background: #f2bd4e;
+  color: white;
+}
+
+.panel-challenge.boss > span {
+  background: #8d73df;
+  color: white;
+}
+
+.panel-challenge small {
+  color: #8a7280;
+  font-size: 0.7rem;
+}
+
+.challenge-detail-card,
+.mini-map {
+  display: grid;
+  gap: 0.55rem;
+  border-radius: 14px;
+  padding: 0.7rem;
+  background: #fbf8fc;
+  box-shadow: inset 0 0 0 1px #f0e6f0;
+}
+
+.challenge-detail-card h3 {
+  color: #22273b;
+  font-size: 1rem;
+}
+
+.detail-meta.compact {
+  margin-top: 0;
+}
+
+.panel-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+}
+
+.start-problem-button,
+.complete-demo-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.58rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.start-problem-button {
+  background: linear-gradient(135deg, #ff4f9a, #ff7eb9);
+  color: white;
+}
+
+.complete-demo-button {
+  background: #eef2f7;
+  color: #536178;
+}
+
+.start-problem-button:disabled,
+.complete-demo-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+  opacity: 0.62;
+}
+
+.mini-map > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  color: #6b7280;
+  font-size: 0.72rem;
+}
+
+.mini-map strong {
+  color: #263047;
+}
+
+.mini-path {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.mini-path span {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #e3e5ec;
+}
+
+.mini-path span.done {
+  background: #6bcf90;
+}
+
+.mini-path span.active {
+  background: #ff5fa4;
+  box-shadow: 0 0 0 4px rgb(255 95 164 / 0.18);
+}
+
+.adventure-map-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.adventure-map-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.world-marker {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #2c2630;
+  cursor: pointer;
+}
+
+.world-marker .world-label {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  display: block;
+  max-width: none;
+  border: 2px solid rgb(255 255 255 / 0.88);
+  border-radius: 999px;
+  padding: 0.38rem 0.72rem;
+  background: rgb(255 248 234 / 0.88);
+  box-shadow: 0 8px 20px rgb(26 64 92 / 0.18);
+  color: #2b2d3f;
+  font-size: 0.73rem;
+  font-weight: 950;
+  text-align: center;
+  white-space: nowrap;
+  backdrop-filter: blur(7px);
+}
+
+.map-topic-group.selected .world-label {
+  border-color: #ff6aa9;
+  background: #fff;
+  box-shadow:
+    0 0 0 7px rgb(255 106 169 / 0.2),
+    0 14px 25px rgb(26 64 92 / 0.24);
+}
+
+.map-topic-group.locked {
+  filter: saturate(0.84);
+}
+
+.adventure-map-canvas .challenge-dot {
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 2px 0 rgb(42 78 111 / 0.24),
+    0 7px 12px rgb(20 70 96 / 0.2);
+}
+
+.map-topic-group {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  transform: translate(-50%, -50%);
+}
+
+.topic-node-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.38rem;
+}
+
+.map-topic-group .challenge-dot {
+  position: relative;
+  left: auto;
+  top: auto;
+  z-index: auto;
+  flex: 0 0 auto;
+  transform: none;
+}
+
+.adventure-map-canvas .compass-card {
+  background: rgb(255 255 255 / 0.76);
+  backdrop-filter: blur(8px);
+}
+
+.codecat-map-board {
+  min-height: auto;
+  aspect-ratio: 3 / 2;
+  background: #68cdf3;
+}
+
+.topic-preview {
+  min-height: 4.75rem;
+  border: 3px solid rgb(255 255 255 / 0.86);
+  background-size: 220%;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 -22px 36px rgb(37 68 98 / 0.1);
+}
+
+@media (max-width: 1050px) {
+  .map-hud,
+  .codecat-map-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .codecat-map-board {
+    min-height: auto;
+  }
+
+  .map-topic-panel {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    max-height: 74vh;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .codecat-map-page {
+    margin-top: -0.5rem;
+  }
+
+  .map-layout-container {
+    width: min(100%, calc(100vw - 1rem));
+  }
+
+  .map-hud {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .codecat-map-board {
+    min-height: auto;
+    overflow: hidden;
+  }
+
+  .world-marker {
+    min-width: 5.8rem;
+  }
+
+  .world-label {
+    max-width: 7.6rem;
+    font-size: 0.72rem;
+  }
+
+  .challenge-dot {
+    width: 2rem;
+    height: 2rem;
+    border-width: 2px;
+  }
+
+  .challenge-dot svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .panel-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
 .open-topic {
   align-self: end;
   color: var(--accent);
