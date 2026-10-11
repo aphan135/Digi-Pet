@@ -14,7 +14,7 @@ function exerciseToProblem(exercise: LearningExercise, topic: Topic): Problem {
     id: exercise.id,
     title: exercise.title,
     difficulty: exercise.difficulty,
-    type: topic.category === "Systems" ? "system-design" : "leetcode",
+    type: "leetcode",
     topic: topic.name,
     prompt: exercise.instructions,
     hint: exercise.hint,

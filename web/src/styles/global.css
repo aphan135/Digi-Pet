@@ -1278,7 +1278,7 @@ textarea:focus-visible {
 }
 
 .interactive-fantasy-map {
-  min-height: 680px;
+  min-height: 620px;
   max-width: none;
   margin: 0;
   padding: 0;
@@ -1304,16 +1304,30 @@ textarea:focus-visible {
   fill: none;
   stroke: #67b7d1;
   stroke-linecap: round;
-  stroke-width: 6;
+  stroke-width: 6.5;
+}
+
+.map-sun {
+  fill: #f6bd60;
+  filter: drop-shadow(0 0 10px rgb(246 189 96 / 0.55));
+}
+
+.map-clouds {
+  fill: rgb(255 255 255 / 0.72);
+}
+
+.map-lake {
+  fill: #66b9d0;
+  opacity: 0.72;
 }
 
 .map-route {
   fill: none;
   stroke: rgb(117 75 34 / 0.7);
-  stroke-dasharray: 1.8 2.8;
+  stroke-dasharray: 2.2 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.1;
+  stroke-width: 1.45;
 }
 
 .map-tree-cluster {
@@ -1339,7 +1353,7 @@ textarea:focus-visible {
   display: grid;
   justify-items: center;
   gap: 0.3rem;
-  width: 5.3rem;
+  width: 6.2rem;
   border: 0;
   background: transparent;
   color: #1f2933;
@@ -1349,10 +1363,10 @@ textarea:focus-visible {
 }
 
 .map-pin .map-landmark {
-  width: 3.35rem;
-  height: 3.35rem;
+  width: 4rem;
+  height: 4rem;
   border: 3px solid #fff7db;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--accent-soft, #e8edf4);
   box-shadow:
     0 9px 16px rgb(46 35 19 / 0.22),
@@ -1389,13 +1403,13 @@ textarea:focus-visible {
 }
 
 .pin-label {
-  max-width: 6.8rem;
+  max-width: 7.6rem;
   border: 1px solid rgb(93 67 31 / 0.18);
   border-radius: 999px;
   background: rgb(255 249 232 / 0.92);
   padding: 0.25rem 0.5rem;
   color: #4d351b;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 900;
   line-height: 1.15;
   box-shadow: 0 5px 10px rgb(74 53 25 / 0.12);

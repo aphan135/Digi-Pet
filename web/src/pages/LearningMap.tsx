@@ -12,22 +12,12 @@ function getNodeState(progress: number, index: number) {
 }
 
 const mapLocations = [
-  { x: 16, y: 78, landmark: "cottage", label: "Starter Village" },
-  { x: 26, y: 66, landmark: "dock", label: "Stack Dock" },
-  { x: 38, y: 73, landmark: "bridge", label: "Queue Bridge" },
-  { x: 50, y: 58, landmark: "tower", label: "Scale Tower" },
-  { x: 37, y: 45, landmark: "market", label: "Window Market" },
-  { x: 52, y: 35, landmark: "forest", label: "Graph Grove" },
-  { x: 68, y: 42, landmark: "observatory", label: "DP Observatory" },
-  { x: 20, y: 54, landmark: "library", label: "Algebra House" },
-  { x: 28, y: 38, landmark: "gate", label: "Precalc Gate" },
-  { x: 42, y: 28, landmark: "lab", label: "Calc 1 Lab" },
-  { x: 58, y: 22, landmark: "camp", label: "Calc 2 Camp" },
-  { x: 70, y: 29, landmark: "dock", label: "Trig Pier" },
-  { x: 76, y: 18, landmark: "tower", label: "Calc 3 Peak" },
-  { x: 62, y: 12, landmark: "library", label: "Discrete Hall" },
-  { x: 82, y: 9, landmark: "market", label: "Stats Station" },
-  { x: 88, y: 31, landmark: "lab", label: "Science Lab" },
+  { x: 15, y: 76, landmark: "cottage", label: "Array Village" },
+  { x: 29, y: 61, landmark: "tower", label: "Stack Tower" },
+  { x: 45, y: 70, landmark: "dock", label: "Queue Dock" },
+  { x: 55, y: 49, landmark: "bridge", label: "Window Bridge" },
+  { x: 67, y: 31, landmark: "forest", label: "Graph Grove" },
+  { x: 78, y: 25, landmark: "observatory", label: "DP Summit" },
 ];
 
 const routePoints = mapLocations.map((location) => `${location.x},${location.y}`).join(" ");
@@ -76,19 +66,25 @@ function LearningMap({ onSelectTopic }: LearningMapProps) {
               </linearGradient>
             </defs>
             <rect width="100" height="100" fill="url(#mapSky)" />
-            <path d="M0 82 C16 72 30 78 43 69 C59 58 72 63 100 52 L100 100 L0 100 Z" fill="#8dbf72" />
+            <circle cx="11" cy="13" r="5.5" className="map-sun" />
+            <g className="map-clouds">
+              <path d="M21 20 C21 17 24 16 26 18 C27 14 33 14 34 19 C37 18 40 20 40 23 L20 23 C19 22 19 21 21 20 Z" />
+              <path d="M53 15 C54 12 58 12 59 15 C62 14 65 16 65 19 L50 19 C49 17 50 15 53 15 Z" />
+            </g>
+            <path d="M0 82 C16 72 30 78 43 69 C59 58 72 63 100 52 L100 100 L0 100 Z" fill="#93c678" />
             <path d="M0 92 C18 86 35 90 54 79 C70 70 82 73 100 64 L100 100 L0 100 Z" fill="#6fa85f" />
-            <path d="M68 44 L79 9 L91 44 Z" fill="url(#mapMountain)" />
-            <path d="M78.8 10 L82.8 24 L75.2 24 Z" fill="#ffffff" opacity="0.86" />
+            <path d="M63 46 L78 8 L96 46 Z" fill="url(#mapMountain)" />
+            <path d="M77.7 9 L83 25 L72.5 25 Z" fill="#ffffff" opacity="0.88" />
+            <ellipse cx="42" cy="80" rx="15" ry="7" className="map-lake" />
             <path d="M0 72 C10 66 20 68 30 60 C42 51 50 52 58 44 C66 36 77 38 100 26" className="map-river" />
             <polyline points={routePoints} className="map-route" />
             <g className="map-tree-cluster">
               <circle cx="11" cy="47" r="4" />
               <circle cx="17" cy="42" r="5" />
               <circle cx="22" cy="49" r="4" />
-              <circle cx="64" cy="62" r="5" />
-              <circle cx="70" cy="58" r="4" />
-              <circle cx="75" cy="64" r="5" />
+              <circle cx="64" cy="57" r="5" />
+              <circle cx="70" cy="53" r="4" />
+              <circle cx="75" cy="59" r="5" />
             </g>
           </svg>
 

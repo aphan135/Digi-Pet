@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { topics } from "../data/topics";
 
-type Category = "All" | "Foundations" | "Patterns" | "Systems" | "Math" | "Science";
+type Category = "All" | "Foundations" | "Patterns";
 
 interface LearnProps {
   onSelectTopic: (topicId: string) => void;
@@ -48,7 +48,7 @@ function Learn({ onSelectTopic }: LearnProps) {
         </div>
 
         <div className="category-tabs" aria-label="Filter learning topics">
-          {(["All", "Foundations", "Patterns", "Systems", "Math", "Science"] as Category[]).map((item) => (
+          {(["All", "Foundations", "Patterns"] as Category[]).map((item) => (
             <button
               className={category === item ? "active" : ""}
               key={item}

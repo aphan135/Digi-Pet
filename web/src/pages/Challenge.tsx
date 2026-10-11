@@ -4,11 +4,8 @@ import { getFeaturedProblem } from "../services/problemService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
 
 const subjectFilters: { id: ProblemType | "all"; label: string }[] = [
-  { id: "all", label: "All subjects" },
+  { id: "all", label: "All coding" },
   { id: "leetcode", label: "Coding" },
-  { id: "system-design", label: "System design" },
-  { id: "math", label: "Math" },
-  { id: "science", label: "Science" },
 ];
 
 function getSubjectLabel(type: ProblemType) {
@@ -101,8 +98,7 @@ function Challenge({ problem }: ChallengeProps) {
               <h3>{feedback.score}/10</h3>
             </div>
             <p>{feedback.feedback}</p>
-            {(selectedProblem.type === "leetcode" ||
-              selectedProblem.type === "system-design") && (
+            {selectedProblem.type === "leetcode" && (
               <div className="complexity-grid">
                 <span>Time: {feedback.timeComplexity}</span>
                 <span>Space: {feedback.spaceComplexity}</span>
