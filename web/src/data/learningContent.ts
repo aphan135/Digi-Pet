@@ -24,15 +24,34 @@ function levels(
   ];
 }
 
+function mathLevels(title: string): TopicContent["levels"] {
+  return [
+    {
+      label: "Beginner",
+      title: "Learn the language",
+      explanation: `Build the core vocabulary, notation, and formulas for ${title}.`,
+      takeaway: "Know what each symbol represents and what the problem is asking for.",
+    },
+    {
+      label: "Intermediate",
+      title: "Choose the method",
+      explanation: "Practice selecting the right rule, theorem, or transformation for the problem.",
+      takeaway: "Explain why each step is valid before moving to the next one.",
+    },
+    {
+      label: "Advanced",
+      title: "Connect the ideas",
+      explanation: "Relate the method to graphs, edge cases, alternate solution paths, and real applications.",
+      takeaway: "Check your answer, interpret what it means, and compare it with another strategy.",
+    },
+  ];
+}
+
 function mathContent(title: string, overview: string, analogy: string): TopicContent {
   return {
     overview,
     analogy,
-    levels: levels(
-      `Learn the core vocabulary and notation for ${title}.`,
-      "Practice choosing the right method and explaining each step clearly.",
-      "Connect the method to edge cases, alternate strategies, and real applications.",
-    ),
+    levels: mathLevels(title),
     exercises: [
       exercise(
         `${title.toLowerCase().split(" ").join("-")}-reasoning`,
