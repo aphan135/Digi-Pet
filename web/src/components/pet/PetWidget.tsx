@@ -61,6 +61,12 @@ const CONGRATULATIONS = [
   "That's correct! You're on a roll!",
   "Amazing work—you nailed it!",
 ];
+const DIGI_PET_URL = "https://digi-pet-indol.vercel.app/";
+
+interface PetWidgetProps {
+  dailyReminderReady?: boolean;
+  dailyChallengeCompleted?: boolean;
+}
 
 function getCornerPosition(corner: PetCorner): PetPosition {
   const right = Math.max(CORNER_INSET, window.innerWidth - PET_SIZE - CORNER_INSET);
@@ -239,7 +245,10 @@ function PeekHead({ shown }: PeekHeadProps) {
   );
 }
 
-function PetWidget() {
+function PetWidget({
+  dailyReminderReady = false,
+  dailyChallengeCompleted = false,
+}: PetWidgetProps) {
   const [phase, setPhase] = useState<"hidden" | "peek" | "open">("peek");
   const [idleAnimation, setIdleAnimation] = useState<
     "walk-left" | "walk-right" | "purr" | "yawn" | null
@@ -254,6 +263,7 @@ function PetWidget() {
   const [congratulation, setCongratulation] = useState<string | null>(null);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
+  const [dailyReminderVisible, setDailyReminderVisible] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatDraft, setChatDraft] = useState("");
   const [chatError, setChatError] = useState<string | null>(null);
@@ -262,6 +272,9 @@ function PetWidget() {
   const [summaryError, setSummaryError] = useState<{ index: number; message: string } | null>(null);
   const chatHistoryRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLElement | null>(null);
+  const dailyReminderVisibleRef = useRef(false);
+  const chatOpenRef = useRef(chatOpen);
+  chatOpenRef.current = chatOpen;
   const dragRef = useRef<DragState | null>(null);
   const positionRef = useRef(position);
   const suppressClickRef = useRef(false);
@@ -274,6 +287,8 @@ function PetWidget() {
     setPhase("hidden");
     setIdleAnimation(null);
     setChatOpen(false);
+    dailyReminderVisibleRef.current = false;
+    setDailyReminderVisible(false);
   }, []);
 
   useEffect(() => {
@@ -331,7 +346,7 @@ function PetWidget() {
   }, [corner]);
 
   useEffect(() => {
-    if (!open || chatOpen || isDragging || idleAnimation) return;
+    if (!open || chatOpen || dailyReminderVisible || isDragging || idleAnimation) return;
 
     const timer = window.setTimeout(() => {
       const choice = Math.random();
@@ -344,7 +359,57 @@ function PetWidget() {
     }, 5000 + Math.random() * 5000);
 
     return () => window.clearTimeout(timer);
-  }, [chatOpen, corner, idleAnimation, isDragging, open]);
+  }, [chatOpen, corner, dailyReminderVisible, idleAnimation, isDragging, open]);
+
+  useEffect(() => {
+    if (!dailyReminderReady) return;
+
+    if (dailyChallengeCompleted) {
+      if (dailyReminderVisibleRef.current) {
+        dailyReminderVisibleRef.current = false;
+        setDailyReminderVisible(false);
+        setPhase((currentPhase) => currentPhase === "open" ? "hidden" : currentPhase);
+      }
+      return;
+    }
+
+    let showTimer: number;
+    let hideTimer: number;
+    let cancelled = false;
+
+    function scheduleReminder(delay = 0) {
+      showTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        if (chatOpenRef.current || dragRef.current) {
+          scheduleReminder(10_000);
+          return;
+        }
+
+        dailyReminderVisibleRef.current = true;
+        setDailyReminderVisible(true);
+        setChatOpen(false);
+        setCongratulation(null);
+        setIdleAnimation(null);
+        setIsPinned(false);
+        setPhase("open");
+
+        hideTimer = window.setTimeout(() => {
+          if (cancelled) return;
+          dailyReminderVisibleRef.current = false;
+          setDailyReminderVisible(false);
+          setPhase((currentPhase) => currentPhase === "open" ? "hidden" : currentPhase);
+          scheduleReminder(10_000);
+        }, 5000);
+      }, delay);
+    }
+
+    scheduleReminder();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+    };
+  }, [dailyChallengeCompleted, dailyReminderReady]);
 
   useEffect(() => {
     const history = chatHistoryRef.current;
@@ -672,19 +737,38 @@ function PetWidget() {
             ) : (
               <div className="pet-cloud-body">
                 <div className="pet-label" style={{ color: catColors.label }}>
-                  {congratulation ? "Correct!" : message.category}
+                  {dailyReminderVisible
+                    ? "Daily challenge"
+                    : congratulation
+                      ? "Correct!"
+                      : message.category}
                 </div>
-                <p className="pet-quote">{congratulation ?? message.text}</p>
-                <button
-                  className="pet-chat-trigger"
-                  onClick={() => {
-                    setIdleAnimation(null);
-                    setChatOpen(true);
-                  }}
-                  type="button"
-                >
-                  Ask me anything
-                </button>
+                <p className="pet-quote">
+                  {dailyReminderVisible
+                    ? "You haven't completed today's challenge yet. Let's do one together!"
+                    : congratulation ?? message.text}
+                </p>
+                {dailyReminderVisible ? (
+                  <a
+                    className="pet-chat-trigger pet-reminder-link"
+                    href={DIGI_PET_URL}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Start today's challenge
+                  </a>
+                ) : (
+                  <button
+                    className="pet-chat-trigger"
+                    onClick={() => {
+                      setIdleAnimation(null);
+                      setChatOpen(true);
+                    }}
+                    type="button"
+                  >
+                    Ask me anything
+                  </button>
+                )}
               </div>
             )}
           </div>
