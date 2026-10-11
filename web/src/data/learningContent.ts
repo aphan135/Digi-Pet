@@ -677,6 +677,109 @@ const supplementalPractice: Record<string, SupplementalQuestion[]> = {
   ],
 };
 
+const randomizedPracticeVariants: Record<string, SupplementalQuestion[]> = {
+  arrays: [
+    ["Find the largest value", "Easy", "Return the largest number in [4, 9, 2, 7].", "9", "Scan once while keeping the largest value seen so far."],
+    ["Move zeroes to the end", "Medium", "Move all zeroes in [0, 1, 0, 3, 12] to the end while keeping other values in order.", "[1,3,12,0,0]", "Write nonzero values forward, then fill the remaining slots with zeroes."],
+    ["Count subarrays with target sum", "Hard", "Count contiguous subarrays summing to 3 in [1, 2, 1, 2].", "3", "Use prefix sums and a frequency map of prefix values already seen."],
+  ],
+  "two-pointers": [
+    ["Compare from both ends", "Easy", "Use two pointers to check whether 'level' reads the same in both directions.", "true", "Compare the outer characters, moving inward until they meet."],
+    ["Pair sum in a sorted list", "Medium", "Find whether any pair in [1, 2, 4, 6, 9] sums to 10 using two pointers.", "true (4 + 6)", "If the sum is too small, move the left pointer; if too large, move the right."],
+    ["Three values sum to zero", "Hard", "Find unique triplets summing to zero in [-1, 0, 1, 2, -1, -4].", "[[-1,-1,2],[-1,0,1]]", "Sort first, then fix one value and use two pointers while skipping duplicates."],
+  ],
+  stacks: [
+    ["Read the latest page", "Easy", "A stack contains ['home', 'topics', 'quiz'], with the top at the right. What page does pop return?", "quiz", "A stack removes its newest item first."],
+    ["Evaluate postfix notation", "Medium", "Evaluate the postfix expression '2 3 4 * +'.", "14", "Push numbers; when an operator appears, pop its operands and push the result."],
+    ["Largest rectangle", "Hard", "Find the largest rectangle area in histogram [2, 4, 2, 1].", "6", "Use an increasing stack of bar indices to find each bar's widest valid span."],
+  ],
+  queues: [
+    ["First in line", "Easy", "A queue receives A, B, then C. Which item is removed first?", "A", "Queues serve the oldest item first."],
+    ["Time to finish", "Medium", "Jobs need [3, 1, 2] time units and run in that order, one at a time. When does job 3 finish?", "6 time units", "Add the processing times of all jobs through job 3."],
+    ["Shortest grid path", "Hard", "Describe how to find the shortest path through an unweighted grid with blocked cells.", "Use BFS from the start, enqueue each open neighboring cell once, and stop when the destination is reached; the BFS distance is shortest.", "Breadth-first search explores every position at distance d before distance d+1."],
+  ],
+  "linked-lists": [
+    ["Read the list head value", "Easy", "A linked list is 5 -> 8 -> 2. What value is at the head?", "5", "The head reference points to the first node."],
+    ["Remove a node", "Medium", "Remove the node with value 8 from 5 -> 8 -> 2 by changing links.", "5 -> 2", "Set the previous node's next pointer to the removed node's next pointer."],
+    ["Find a cycle", "Hard", "Determine whether a linked list contains a cycle using O(1) extra space.", "Use slow and fast pointers; if they meet, there is a cycle.", "Advance one pointer by one node and the other by two nodes."],
+  ],
+  "system-design": [
+    ["Cache hit or miss", "Easy", "A requested profile is already in the cache. What is this result called, and why is it useful?", "A cache hit; it avoids a slower database read and reduces response time.", "A hit means the requested value is already cached."],
+    ["Prevent duplicate payments", "Medium", "A client retries a payment request after a timeout. Name a design technique that prevents charging twice.", "Use an idempotency key so retries of the same request return the original result.", "Give each logical payment request a stable unique key."],
+    ["Design for traffic spikes", "Hard", "A service receives sudden traffic spikes and sends email notifications. Propose a design that absorbs bursts and recovers from worker failures.", "Place notification jobs in a durable queue, scale workers with backlog, retry failures with limits/backoff, and make delivery idempotent.", "Separate request acceptance from slower work and plan for retries and duplicate delivery."],
+  ],
+  "sliding-window": [
+    ["Sum two values", "Easy", "Find the sum of the first two values in [6, 2, 9].", "8", "Add the values in the length-two window."],
+    ["Longest run of ones", "Medium", "Find the longest contiguous run of 1s in [1, 1, 0, 1, 1, 1].", "3", "Grow the window over ones and reset or shrink it when a zero appears."],
+    ["Smallest subarray at least target", "Hard", "Find the minimum length of a contiguous subarray with sum at least 11 in [1, 2, 3, 4, 5].", "3", "Expand until the sum reaches the target, then shrink while it remains valid."],
+  ],
+  trees: [
+    ["Count the root", "Easy", "A tree has one root and no children. How many nodes does it contain?", "1", "The root itself is a node."],
+    ["Inorder traversal", "Medium", "Give the inorder traversal of a binary tree with root 2, left child 1, and right child 3.", "[1,2,3]", "Visit the left subtree, then the node, then the right subtree."],
+    ["Shortest path in an unweighted graph", "Hard", "Explain how to find the fewest edges from node S to node T in an unweighted graph.", "Run BFS from S with a distance map; the first discovered distance for T is the shortest path length.", "BFS visits nodes in increasing distance from the start."],
+  ],
+  "dynamic-programming": [
+    ["One-step staircase", "Easy", "How many ways are there to climb one step if you can move one or two steps at a time?", "1", "There is only one sequence of moves for a single step."],
+    ["Count coin combinations", "Medium", "How many ways can coins [1, 2] make amount 4 if order does not matter?", "3", "The combinations are 1+1+1+1, 1+1+2, and 2+2."],
+    ["0/1 knapsack", "Hard", "Items have weights [2, 3, 4], values [4, 5, 7], and capacity 5. Find the maximum value when each item can be used once.", "9", "Compare taking or skipping each item while building best values by capacity."],
+  ],
+  "algebra-2": [
+    ["Solve a two-step equation", "Easy", "Solve 2x + 4 = 14.", "x = 5", "Subtract 4 from both sides, then divide by 2."],
+    ["Factor a quadratic", "Medium", "Factor x^2 + x - 12 and state its zeros.", "(x + 4)(x - 3); zeros: -4 and 3", "Find two numbers whose product is -12 and sum is 1."],
+    ["Solve exponential growth", "Hard", "A population follows P(t) = 50(2)^t. At what time t does it reach 400?", "t = 3", "Divide by 50, then determine the exponent that makes 2^t equal 8."],
+  ],
+  precalculus: [
+    ["Evaluate a quadratic", "Easy", "For f(x) = x^2 - 1, find f(3).", "8", "Substitute 3 for x and follow order of operations."],
+    ["Compose functions", "Medium", "If f(x) = x + 2 and g(x) = 3x, find f(g(4)).", "14", "Evaluate the inside function first, then use that result as the input to f."],
+    ["Find a sinusoid's period", "Hard", "Find the period of y = 4sin(2x - pi).", "pi", "For sin(Bx + C), the period is 2pi/|B|."],
+  ],
+  "calculus-1": [
+    ["Differentiate x squared", "Easy", "Find the derivative of f(x) = x^2.", "f'(x) = 2x", "Use the power rule: bring down the exponent and reduce it by one."],
+    ["Find an instantaneous rate", "Medium", "For s(t) = 3t^2 + 2, find the velocity at t = 2.", "s'(t) = 6t; velocity at t=2 is 12", "Differentiate position to get velocity, then substitute t = 2."],
+    ["Optimize a box-free rectangle", "Hard", "A rectangle has perimeter 32. Find the dimensions with maximum area and the maximum area.", "8 by 8; maximum area = 64 square units", "Express one side in terms of the other and maximize the resulting quadratic area function."],
+  ],
+  "calculus-2": [
+    ["Integrate a constant", "Easy", "Evaluate the indefinite integral of 7 dx.", "7x + C", "An antiderivative of a constant is that constant times x."],
+    ["Area under a line", "Medium", "Evaluate the definite integral of 2x from x=0 to x=3.", "9", "An antiderivative is x^2; evaluate it at 3 and subtract its value at 0."],
+    ["Test a p-series", "Hard", "Does the infinite series sum of 1/n^(3/2) converge or diverge?", "Converges because it is a p-series with p = 3/2 > 1.", "For sum 1/n^p, convergence occurs when p is greater than 1."],
+  ],
+  trigonometry: [
+    ["Find cosine at zero", "Easy", "Find cos(0) using the unit circle.", "1", "At angle zero, the unit-circle point is (1, 0), and cosine is the x-coordinate."],
+    ["Solve sine in one cycle", "Medium", "Solve sin(x) = 0 for 0 <= x < 2pi.", "x = 0 and x = pi", "Sine is the y-coordinate and equals zero where the unit circle crosses the x-axis."],
+    ["Verify a trig identity", "Hard", "Simplify (sec^2(x) - 1) / tan(x), stating where the expression is defined.", "tan(x), where tan(x) is defined and nonzero", "Use sec^2(x) - 1 = tan^2(x), then cancel one factor of tan(x)."],
+  ],
+  "calculus-3": [
+    ["Read a point in 3D", "Easy", "How many coordinates are needed to specify a point in three-dimensional space?", "3", "A point in 3D is written with x, y, and z coordinates."],
+    ["Find a partial derivative", "Medium", "For f(x,y) = 3x + y^2, find the partial derivative with respect to y.", "partial f / partial y = 2y", "Treat x as a constant while differentiating with respect to y."],
+    ["Directional derivative along x", "Hard", "For f(x,y) = xy, find the directional derivative at (1,2) in the direction of the positive x-axis.", "The gradient is <2,1>; dotting with <1,0> gives 2.", "Compute the gradient and take its dot product with a unit direction vector."],
+  ],
+  "discrete-math": [
+    ["Negate a statement", "Easy", "Write the negation of 'the number is even'.", "The number is not even (it is odd for an integer).", "Negation changes a statement to its logical opposite."],
+    ["Count ordered choices", "Medium", "How many three-digit codes can be made from digits 0-9 if repetition is allowed?", "1000", "There are 10 independent choices for each of three positions."],
+    ["Prove a sum is odd", "Hard", "Give a direct proof that the sum of an odd integer and an even integer is odd.", "Write the numbers as 2a+1 and 2b. Their sum is 2(a+b)+1, which is odd.", "Represent odd and even integers algebraically and factor the result into 2k+1."],
+  ],
+  statistics: [
+    ["Find the mean", "Easy", "Find the mean of 2, 4, and 6.", "4", "Add the values and divide by the number of values."],
+    ["Find a complement probability", "Medium", "A fair die is rolled once. What is the probability of not rolling a 6?", "5/6", "Use one minus the probability of rolling a 6."],
+    ["Interpret a p-value", "Hard", "A study reports p = 0.03 with significance level 0.05. State the statistical decision and one thing this does not prove.", "Reject the null hypothesis at the 0.05 level; this does not prove the alternative is true or measure practical importance.", "Compare p with alpha and avoid interpreting it as the probability the null is true."],
+  ],
+  biology: [
+    ["Identify the genetic molecule", "Easy", "What molecule carries hereditary information in most living organisms?", "DNA", "It is the molecule organized into genes and chromosomes."],
+    ["Trace cellular respiration", "Medium", "What molecule do cells commonly break down to release usable energy, and what organelle performs most aerobic respiration in eukaryotes?", "Glucose is broken down; most aerobic cellular respiration occurs in mitochondria.", "Connect food molecules to the organelle often called the cell's energy converter."],
+    ["Explain ecosystem energy flow", "Hard", "Why is less usable energy generally available at each higher trophic level in a food chain?", "Organisms use much energy for life processes and lose much as heat, so only a fraction is transferred to the next trophic level.", "Energy flows through organisms rather than cycling perfectly; account for metabolism and heat."],
+  ],
+  chemistry: [
+    ["Identify an element", "Easy", "An atom has 8 protons. Which element is it?", "Oxygen", "The number of protons, called the atomic number, identifies the element."],
+    ["Count atoms in a formula", "Medium", "How many total atoms are in one formula unit of Ca(OH)2?", "5 atoms: 1 calcium, 2 oxygen, and 2 hydrogen.", "The subscript outside parentheses multiplies each atom inside them."],
+    ["Calculate concentration", "Hard", "What is the molarity of 0.5 moles of solute dissolved to make 2.0 liters of solution?", "0.25 mol/L (0.25 M)", "Molarity equals moles of solute divided by liters of solution."],
+  ],
+  physics: [
+    ["Calculate distance", "Easy", "A runner moves at 3 m/s for 4 seconds. How far does the runner travel at constant speed?", "12 m", "Distance equals speed multiplied by time."],
+    ["Find weight", "Medium", "What is the approximate weight of a 2 kg object near Earth's surface if g = 9.8 m/s^2?", "19.6 N", "Weight is the gravitational force mg."],
+    ["Use conservation of energy", "Hard", "A 1 kg ball is dropped from 5 m. Ignoring air resistance, estimate its speed just before impact using g = 9.8 m/s^2.", "About 9.9 m/s, from mgh = (1/2)mv^2.", "Set gravitational potential energy equal to kinetic energy and solve for speed."],
+  ],
+};
+
 for (const [topicId, questions] of Object.entries(supplementalPractice)) {
   const topicContent = learningContent[topicId];
   if (!topicContent) {
@@ -696,4 +799,56 @@ for (const [topicId, questions] of Object.entries(supplementalPractice)) {
       ),
     ),
   );
+}
+
+for (const [topicId, questions] of Object.entries(randomizedPracticeVariants)) {
+  const topicContent = learningContent[topicId];
+  if (!topicContent) {
+    throw new Error(`Randomized practice references unknown topic "${topicId}".`);
+  }
+
+  topicContent.exercises.push(
+    ...questions.map(([title, difficulty, instructions, expectedOutput, hint]) =>
+      exercise(
+        `${topicId}-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        title,
+        difficulty,
+        instructions,
+        "",
+        expectedOutput,
+        hint,
+      ),
+    ),
+  );
+}
+
+export function getRandomPracticeSet(topicId: string): LearningExercise[] {
+  const exercises = learningContent[topicId]?.exercises;
+  if (!exercises) {
+    throw new Error(`No learning content found for topic "${topicId}".`);
+  }
+
+  const questionCounts: Record<ProblemDifficulty, number> = {
+    Easy: 3,
+    Medium: 3,
+    Hard: 2,
+  };
+
+  return (Object.entries(questionCounts) as [ProblemDifficulty, number][])
+    .flatMap(([difficulty, count]) => {
+      const pool = exercises.filter((item) => item.difficulty === difficulty);
+      if (pool.length < count) {
+        throw new Error(
+          `Topic "${topicId}" needs at least ${count} ${difficulty} questions; found ${pool.length}.`,
+        );
+      }
+
+      const shuffled = [...pool];
+      for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+
+      return shuffled.slice(0, count);
+    });
 }

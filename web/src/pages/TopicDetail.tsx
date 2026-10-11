@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { learningContent } from "../data/learningContent";
+import { getRandomPracticeSet, learningContent } from "../data/learningContent";
 import { getCompletedProblemIds, subscribeToProgressUpdates } from "../services/progressService";
 import type { LearningExercise, Topic } from "../types";
 
@@ -51,10 +51,17 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   const content = learningContent[topic.id];
   const copy = getTopicCopy(topic);
   const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [practiceExercises, setPracticeExercises] = useState(() =>
+    getRandomPracticeSet(topic.id),
+  );
   const difficultyOrder = { Easy: 0, Medium: 1, Hard: 2 };
-  const orderedExercises = [...content.exercises].sort(
+  const orderedExercises = [...practiceExercises].sort(
     (first, second) => difficultyOrder[first.difficulty] - difficultyOrder[second.difficulty],
   );
+
+  useEffect(() => {
+    setPracticeExercises(getRandomPracticeSet(topic.id));
+  }, [topic.id]);
 
   useEffect(() => {
     const refreshCompletions = () => setCompletedIds(getCompletedProblemIds());

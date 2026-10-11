@@ -10,8 +10,9 @@ cp .env.example .env
 npm run dev
 ```
 
-The answer checker uses Gemini. Replace the placeholder `GEMINI_API_KEY` in `.env`
-with a valid Gemini API key. `GEMINI_MODEL` defaults to `gemini-2.5-flash`.
+The answer checker and the cat's AI chat use Gemini. Replace the placeholder
+`GEMINI_API_KEY` in `.env` with a valid Gemini API key. `GEMINI_MODEL` defaults
+to `gemini-2.5-flash`.
 OpenAI settings remain in the environment template for future use, but the current
 answer checker does not call OpenAI.
 

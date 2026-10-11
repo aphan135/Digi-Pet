@@ -122,6 +122,140 @@ app.post("/api/run-code", async (request, response) => {
   }
 });
 
+app.post("/api/pet-chat", async (request, response) => {
+  const { messages } = request.body ?? {};
+  if (!Array.isArray(messages) || messages.length === 0 || messages.length > 12) {
+    return response.status(400).json({
+      error: "Send between 1 and 12 recent chat messages.",
+    });
+  }
+
+  const validMessages = messages.map((message) => {
+    if (
+      !message ||
+      (message.role !== "user" && message.role !== "assistant") ||
+      typeof message.content !== "string" ||
+      !message.content.trim() ||
+      message.content.length > 2000
+    ) {
+      return null;
+    }
+    return { role: message.role, content: message.content.trim() };
+  });
+  if (
+    validMessages.some((message) => message === null) ||
+    validMessages[0]?.role !== "user" ||
+    validMessages.at(-1)?.role !== "user"
+  ) {
+    return response.status(400).json({
+      error: "Chat messages must be valid and end with your latest question.",
+    });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey || apiKey === "replace_me_with_your_gemini_api_key") {
+    return response.status(503).json({
+      error: "AI chat isn't configured yet. Add a valid GEMINI_API_KEY to web/.env and restart the API server.",
+    });
+  }
+
+  try {
+    const client = new GoogleGenAI({ apiKey });
+    const result = await client.models.generateContent({
+      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      contents: validMessages.map((message) => ({
+        role: message.role === "assistant" ? "model" : "user",
+        parts: [{ text: message.content }],
+      })),
+      config: {
+        systemInstruction:
+          "You are Digi-Pet, a warm, curious AI learning companion. Help with coding, math, science, history, and general learning. Answer directly in 1-3 short sentences, using at most 45 words. Give only the key explanation; include an example only when it makes the answer clearer. Invite the learner to ask for more detail rather than giving a long explanation. Be accurate; if a question is ambiguous or you are unsure, say so briefly and ask one clarifying question. Do not claim to have taken real-world actions.",
+        maxOutputTokens: 120,
+      },
+    });
+    const reply = result.text?.trim();
+    if (!reply) {
+      throw new Error("Gemini returned an empty chat reply.");
+    }
+    return response.json({ reply });
+  } catch (error) {
+    const status =
+      typeof error === "object" &&
+      error !== null &&
+      "status" in error &&
+      typeof error.status === "number"
+        ? error.status
+        : undefined;
+    const code =
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      typeof error.code === "string"
+        ? error.code
+        : undefined;
+    const errorMessage = error instanceof Error ? error.message : "Unknown Gemini error";
+    console.error("Gemini pet chat failed:", { status, code, message: errorMessage });
+
+    const message = status === 429
+      ? "The AI is busy right now. Please wait a moment and try again."
+      : status === 401 || status === 403
+        ? "The AI service rejected its API key. Check GEMINI_API_KEY in web/.env."
+        : "The cat couldn't reach the AI right now. Please try again.";
+    return response.status(502).json({ error: message });
+  }
+});
+
+app.post("/api/pet-chat/summarize", async (request, response) => {
+  const { text } = request.body ?? {};
+  if (typeof text !== "string" || !text.trim() || text.length > 6000) {
+    return response.status(400).json({
+      error: "Provide an AI answer under 6,000 characters to summarize.",
+    });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey || apiKey === "replace_me_with_your_gemini_api_key") {
+    return response.status(503).json({
+      error: "AI chat isn't configured yet. Add a valid GEMINI_API_KEY to web/.env and restart the API server.",
+    });
+  }
+
+  try {
+    const client = new GoogleGenAI({ apiKey });
+    const result = await client.models.generateContent({
+      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      contents: `Summarize this answer for a learner:\n\n${text.trim()}`,
+      config: {
+        systemInstruction:
+          "Summarize the given answer accurately in one very short sentence of at most 20 words. Include only the main idea. Do not add new facts or introductory filler.",
+        maxOutputTokens: 60,
+      },
+    });
+    const summary = result.text?.trim();
+    if (!summary) {
+      throw new Error("Gemini returned an empty summary.");
+    }
+    return response.json({ summary });
+  } catch (error) {
+    const status =
+      typeof error === "object" &&
+      error !== null &&
+      "status" in error &&
+      typeof error.status === "number"
+        ? error.status
+        : undefined;
+    const errorMessage = error instanceof Error ? error.message : "Unknown Gemini error";
+    console.error("Gemini pet chat summary failed:", { status, message: errorMessage });
+
+    const message = status === 429
+      ? "The AI is busy right now. Please wait a moment and try again."
+      : status === 401 || status === 403
+        ? "The AI service rejected its API key. Check GEMINI_API_KEY in web/.env."
+        : "The cat couldn't summarize that answer right now. Please try again.";
+    return response.status(502).json({ error: message });
+  }
+});
+
 app.post("/api/check-answer", async (request, response) => {
   const { problem, userAnswer } = request.body;
   const apiKey = process.env.GEMINI_API_KEY?.trim();

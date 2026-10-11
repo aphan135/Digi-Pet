@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
+import type {
+  CSSProperties,
+  FormEvent,
+  PointerEvent as ReactPointerEvent,
+} from "react";
 import { usePetTip } from "../../hooks/usePetTip";
 import { onPetCelebration } from "../../services/petCelebration";
 
@@ -42,9 +46,21 @@ interface ConfettiPiece {
   color: string;
 }
 
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  summary?: string;
+}
+
 const PET_SIZE = 150;
 const CORNER_INSET = 12;
 const CONFETTI_COLORS = ["#FF6B9A", "#FFC857", "#69D2A0", "#65B8E8", "#A78BFA"];
+const CONGRATULATIONS = [
+  "You got it! I knew you could do it!",
+  "Purr-fect answer! Great job!",
+  "That's correct! You're on a roll!",
+  "Amazing work—you nailed it!",
+];
 
 function getCornerPosition(corner: PetCorner): PetPosition {
   const right = Math.max(CORNER_INSET, window.innerWidth - PET_SIZE - CORNER_INSET);
@@ -235,7 +251,16 @@ function PetWidget() {
   const [isDragging, setIsDragging] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [celebrationId, setCelebrationId] = useState(0);
+  const [congratulation, setCongratulation] = useState<string | null>(null);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatDraft, setChatDraft] = useState("");
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [isChatSending, setIsChatSending] = useState(false);
+  const [summarizingMessageIndex, setSummarizingMessageIndex] = useState<number | null>(null);
+  const [summaryError, setSummaryError] = useState<{ index: number; message: string } | null>(null);
+  const chatHistoryRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLElement | null>(null);
   const dragRef = useRef<DragState | null>(null);
   const positionRef = useRef(position);
@@ -248,6 +273,7 @@ function PetWidget() {
     setIsPinned(false);
     setPhase("hidden");
     setIdleAnimation(null);
+    setChatOpen(false);
   }, []);
 
   useEffect(() => {
@@ -255,6 +281,9 @@ function PetWidget() {
       setPhase("open");
       setIsPinned(false);
       setIdleAnimation(null);
+      setCongratulation(
+        CONGRATULATIONS[Math.floor(Math.random() * CONGRATULATIONS.length)],
+      );
       nextTipRef.current();
       setCelebrationId((id) => id + 1);
       setConfetti(
@@ -302,7 +331,7 @@ function PetWidget() {
   }, [corner]);
 
   useEffect(() => {
-    if (!open || isDragging || idleAnimation) return;
+    if (!open || chatOpen || isDragging || idleAnimation) return;
 
     const timer = window.setTimeout(() => {
       const choice = Math.random();
@@ -315,7 +344,12 @@ function PetWidget() {
     }, 5000 + Math.random() * 5000);
 
     return () => window.clearTimeout(timer);
-  }, [corner, idleAnimation, isDragging, open]);
+  }, [chatOpen, corner, idleAnimation, isDragging, open]);
+
+  useEffect(() => {
+    const history = chatHistoryRef.current;
+    if (history) history.scrollTop = history.scrollHeight;
+  }, [chatMessages, isChatSending]);
 
   function beginDrag(event: ReactPointerEvent<HTMLElement>) {
     if (event.button !== 0) return;
@@ -390,6 +424,7 @@ function PetWidget() {
   function openNow() {
     if (suppressClickRef.current) return;
     setIsPinned(false);
+    setCongratulation(null);
     if (!open) {
       nextTip();
     }
@@ -398,7 +433,106 @@ function PetWidget() {
 
   function handleCatClick() {
     if (suppressClickRef.current) return;
+    setCongratulation(null);
     nextTip();
+  }
+
+  async function sendChatMessage(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const content = chatDraft.trim();
+    if (!content || isChatSending) return;
+
+    const nextMessages = [...chatMessages, { role: "user" as const, content }];
+    setChatMessages(nextMessages);
+    setChatDraft("");
+    setChatError(null);
+    setIsChatSending(true);
+
+    try {
+      let contextMessages = nextMessages.slice(-12);
+      if (contextMessages[0]?.role === "assistant") contextMessages = contextMessages.slice(1);
+      const response = await fetch("/api/pet-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: contextMessages.map(({ role, content: message }) => ({
+            role,
+            content: message,
+          })),
+        }),
+      });
+      const responseText = await response.text();
+      let result: { reply?: string; error?: string };
+      try {
+        result = responseText ? (JSON.parse(responseText) as typeof result) : {};
+      } catch {
+        throw new Error(
+          `The chat API returned a non-JSON response (HTTP ${response.status}). ` +
+            "For local development, run the app with `npm run dev` from the web folder so the API server starts too. " +
+            "The Chrome extension also needs a deployed Digi-Pet API when used on other websites.",
+        );
+      }
+      if (!response.ok) {
+        throw new Error(result.error || "The cat couldn't answer. Please try again.");
+      }
+      if (typeof result.reply !== "string" || !result.reply.trim()) {
+        throw new Error("The cat returned an empty reply. Please try again.");
+      }
+      const reply = result.reply.trim();
+      setChatMessages((current) => [
+        ...current,
+        { role: "assistant", content: reply },
+      ]);
+    } catch (error) {
+      setChatError(
+        error instanceof Error ? error.message : "The cat couldn't answer. Please try again.",
+      );
+    } finally {
+      setIsChatSending(false);
+    }
+  }
+
+  async function summarizeChatMessage(index: number) {
+    const chatMessage = chatMessages[index];
+    if (!chatMessage || chatMessage.role !== "assistant" || summarizingMessageIndex !== null) {
+      return;
+    }
+
+    setSummarizingMessageIndex(index);
+    setSummaryError(null);
+    try {
+      const response = await fetch("/api/pet-chat/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: chatMessage.content }),
+      });
+      const responseText = await response.text();
+      let result: { summary?: string; error?: string };
+      try {
+        result = responseText ? (JSON.parse(responseText) as typeof result) : {};
+      } catch {
+        throw new Error(`The summary service returned a non-JSON response (HTTP ${response.status}).`);
+      }
+      if (!response.ok) {
+        throw new Error(result.error || "Couldn't summarize this answer. Please try again.");
+      }
+      if (typeof result.summary !== "string" || !result.summary.trim()) {
+        throw new Error("The cat returned an empty summary. Please try again.");
+      }
+      const summary = result.summary.trim();
+      setChatMessages((current) =>
+        current.map((message, messageIndex) =>
+          messageIndex === index ? { ...message, summary } : message,
+        ),
+      );
+    } catch (error) {
+      setSummaryError({
+        index,
+        message: error instanceof Error ? error.message : "Couldn't summarize this answer.",
+      });
+    } finally {
+      setSummarizingMessageIndex(null);
+    }
   }
 
   return (
@@ -456,15 +590,103 @@ function PetWidget() {
       >
         <div className="pet-cloud-group">
           <div className="pet-cloud">
-            <button aria-label="Close" className="pet-close" onClick={hide} type="button">
+            <button aria-label="Close cat" className="pet-close" onClick={hide} type="button">
               x
             </button>
-            <div className="pet-cloud-body">
-              <div className="pet-label" style={{ color: catColors.label }}>
-                {message.category}
+            {chatOpen ? (
+              <section aria-label="Chat with the AI cat" className="pet-chat-panel">
+                <div className="pet-chat-heading">
+                  <div>
+                    <div className="pet-label" style={{ color: catColors.label }}>Digi-Pet AI</div>
+                    <p className="pet-chat-caption">Ask me about what you're learning.</p>
+                  </div>
+                  <button
+                    className="pet-chat-back"
+                    onClick={() => setChatOpen(false)}
+                    type="button"
+                  >
+                    Back
+                  </button>
+                </div>
+                <div
+                  aria-live="polite"
+                  className="pet-chat-history"
+                  ref={chatHistoryRef}
+                  role="log"
+                >
+                  {chatMessages.length === 0 ? (
+                    <p className="pet-chat-welcome">
+                      Hi! I'm here to help with coding, math, science, history, and more. What are
+                      you curious about?
+                    </p>
+                  ) : (
+                    chatMessages.map((chatMessage, index) =>
+                      chatMessage.role === "assistant" ? (
+                        <div className="pet-chat-assistant-message" key={`assistant-${index}`}>
+                          <p className="pet-chat-message assistant">{chatMessage.content}</p>
+                          {chatMessage.summary ? (
+                            <p className="pet-chat-summary">
+                              <strong>Summary:</strong> {chatMessage.summary}
+                            </p>
+                          ) : (
+                            <>
+                              <button
+                                className="pet-chat-summarize"
+                                disabled={summarizingMessageIndex !== null}
+                                onClick={() => void summarizeChatMessage(index)}
+                                type="button"
+                              >
+                                {summarizingMessageIndex === index ? "Summarizing..." : "Summarize"}
+                              </button>
+                              {summaryError?.index === index && (
+                                <p className="pet-chat-error" role="alert">{summaryError.message}</p>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="pet-chat-message user" key={`user-${index}`}>
+                          {chatMessage.content}
+                        </p>
+                      ),
+                    )
+                  )}
+                  {isChatSending && <p className="pet-chat-status">Thinking...</p>}
+                </div>
+                {chatError && <p className="pet-chat-error" role="alert">{chatError}</p>}
+                <form className="pet-chat-form" onSubmit={sendChatMessage}>
+                  <input
+                    aria-label="Your message"
+                    autoComplete="off"
+                    maxLength={2000}
+                    onChange={(event) => setChatDraft(event.target.value)}
+                    placeholder="Ask a question..."
+                    value={chatDraft}
+                  />
+                  <button disabled={!chatDraft.trim() || isChatSending} type="submit">
+                    Send
+                  </button>
+                </form>
+                <p className="pet-chat-disclaimer">Your message is sent to the AI to generate a reply.</p>
+              </section>
+            ) : (
+              <div className="pet-cloud-body">
+                <div className="pet-label" style={{ color: catColors.label }}>
+                  {congratulation ? "Correct!" : message.category}
+                </div>
+                <p className="pet-quote">{congratulation ?? message.text}</p>
+                <button
+                  className="pet-chat-trigger"
+                  onClick={() => {
+                    setIdleAnimation(null);
+                    setChatOpen(true);
+                  }}
+                  type="button"
+                >
+                  Ask me anything
+                </button>
               </div>
-              <p className="pet-quote">{message.text}</p>
-            </div>
+            )}
           </div>
           <div className="pet-trail">
             <span />
