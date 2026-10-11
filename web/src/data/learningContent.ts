@@ -152,6 +152,25 @@ export const learningContent: Record<string, TopicContent> = {
       exercise("array-two-sum", "Two sum", "Hard", "Return the two indices whose values total 9, formatted as JSON.", "function twoSum(values, target) {\n  // Solve in one pass\n}\n\nconsole.log(JSON.stringify(twoSum([2, 7, 11, 15], 9)));", "[0,1]", "Store each value's index, then look for target - value."),
     ],
   },
+  "two-pointers": {
+    overview: "Two pointers use two indexes that move through a sequence together. This turns many pair, boundary, and comparison problems into a single focused pass.",
+    analogy: "Imagine two bookmarks moving through a book from different places until they meet the exact passage you need.",
+    levels: levels(
+      "Two pointers track two positions in an array or string. They often start at opposite ends, neighboring positions, or the beginning of two different sequences.",
+      "Move the pointer that can still improve the answer. In sorted data, comparisons tell you whether to move left, right, or both.",
+      "Prove that each pointer only moves forward or inward enough times to keep the algorithm linear. Watch for duplicates, crossing pointers, and empty inputs.",
+      [
+        ["Compare the first and last characters of a word.", "Use left and right indexes to scan inward."],
+        ["Find whether two sorted numbers sum to a target.", "Merge two sorted lists by advancing the pointer with the smaller value."],
+        ["Skip duplicate values after finding a valid pair.", "Explain why moving the smaller height in Container With Most Water is safe."],
+      ],
+    ),
+    exercises: [
+      exercise("two-pointer-palindrome", "Valid palindrome", "Easy", "Return true when the text reads the same from both ends.", "function isPalindrome(text) {\n  // Compare left and right characters\n}\n\nconsole.log(isPalindrome('level'));", "true", "Move one pointer from the left and one from the right."),
+      exercise("two-pointer-pair-sum", "Sorted pair sum", "Medium", "Find whether any two sorted values add to 10.", "function hasPair(values, target) {\n  // Move inward based on the current sum\n}\n\nconsole.log(hasPair([1, 3, 4, 7, 9], 10));", "true", "If the sum is too small, move left forward; if too large, move right backward."),
+      exercise("two-pointer-three-sum", "Three sum", "Hard", "Return the unique triplets that sum to zero, formatted as JSON.", "function threeSum(values) {\n  // Sort, fix one value, then use two pointers\n}\n\nconsole.log(JSON.stringify(threeSum([-1, 0, 1, 2, -1, -4])));", "[[-1,-1,2],[-1,0,1]]", "Sort first and skip duplicate fixed values and duplicate pointer values."),
+    ],
+  },
   stacks: {
     overview: "A stack stores items in last-in, first-out order. The newest item is always the first one removed, which makes stacks ideal for nested work and undo history.",
     analogy: "Think of a stack of plates: you add and remove from the top.",
@@ -188,6 +207,25 @@ export const learningContent: Record<string, TopicContent> = {
       exercise("queue-basic", "Serve the first item", "Easy", "Add three jobs, remove the first, and print it.", "const queue = [];\nqueue.push('email');\nqueue.push('report');\nqueue.push('backup');\n\n// Remove and print the first job\n", "email", "Array shift removes the front item."),
       exercise("queue-recent", "Recent requests", "Medium", "Keep only the last three requests and print them as JSON.", "function recent(requests, limit) {\n  const queue = [];\n  // Add each request and trim the front\n}\n\nconsole.log(JSON.stringify(recent(['a', 'b', 'c', 'd'], 3)));", "[\"b\",\"c\",\"d\"]", "After enqueueing, dequeue while the queue is too large."),
       exercise("queue-bfs", "Breadth-first traversal", "Hard", "Traverse this tree level by level and print the values as JSON.", "function bfs(root) {\n  // Use a queue beginning with root\n}\n\nconst tree = { value: 1, children: [\n  { value: 2, children: [{ value: 4, children: [] }] },\n  { value: 3, children: [] }\n]};\nconsole.log(JSON.stringify(bfs(tree)));", "[1,2,3,4]", "Dequeue one node, record it, then enqueue all of its children."),
+    ],
+  },
+  "linked-lists": {
+    overview: "Linked lists store values in nodes connected by pointers. Instead of jumping by index, you move from node to node and carefully rewire links.",
+    analogy: "A linked list is a treasure trail where each clue points to the next clue.",
+    levels: levels(
+      "A node stores a value and a next pointer. The head points to the first node, and null marks the end.",
+      "Many linked-list problems use slow and fast pointers, a dummy head, or careful pointer rewiring to avoid losing the rest of the list.",
+      "Track invariants before changing links. Handle empty lists, one-node lists, cycles, and merges without allocating unnecessary extra structures.",
+      [
+        ["Visit each node until next is null.", "Insert a new node after the current node."],
+        ["Reverse a list by redirecting each next pointer.", "Detect a cycle with slow and fast pointers."],
+        ["Merge sorted lists while preserving order.", "Find the start of a cycle after the pointers meet."],
+      ],
+    ),
+    exercises: [
+      exercise("linked-list-count", "Count nodes", "Easy", "Count how many nodes are in the list and print the result.", "function count(head) {\n  // Walk until null\n}\n\nconst list = { value: 1, next: { value: 2, next: null } };\nconsole.log(count(list));", "2", "Move one node at a time and increment a counter."),
+      exercise("linked-list-middle", "Find the middle", "Medium", "Return the middle value from 1 -> 2 -> 3.", "function middle(head) {\n  // Use slow and fast pointers\n}\n\nconst list = { value: 1, next: { value: 2, next: { value: 3, next: null } } };\nconsole.log(middle(list));", "2", "Move slow one step and fast two steps."),
+      exercise("linked-list-reverse", "Reverse a linked list", "Hard", "Reverse 1 -> 2 -> 3 and print the values as JSON.", "function reverse(head) {\n  // Rewire next pointers\n}\n\nconsole.log(JSON.stringify(toArray(reverse(list))));", "[3,2,1]", "Keep previous, current, and next references before changing a pointer."),
     ],
   },
   "sliding-window": {
@@ -498,6 +536,13 @@ const supplementalPractice: Record<string, SupplementalQuestion[]> = {
     ["Group values by key", "Medium", "Group [{name:'Mia', team:'red'}, {name:'Leo', team:'blue'}, {name:'Ava', team:'red'}] by team and print each team's names as JSON.", "{\"red\":[\"Mia\",\"Ava\"],\"blue\":[\"Leo\"]}", "Use a hash map whose keys are team names and whose values are arrays."],
     ["Longest consecutive run", "Hard", "Find the length of the longest consecutive integer sequence in [100, 4, 200, 1, 3, 2] using expected O(n) time.", "4", "Put values in a Set and only grow a sequence from a value with no predecessor."],
   ],
+  "two-pointers": [
+    ["Reverse characters", "Easy", "Reverse ['c', 'a', 't'] in place with two pointers and print it as JSON.", "[\"t\",\"a\",\"c\"]", "Swap the left and right values, then move both pointers inward."],
+    ["Remove duplicates", "Easy", "Given sorted values [1, 1, 2, 3, 3], count how many unique values remain after compacting in place.", "3", "Keep a write pointer for the next unique value."],
+    ["Merge sorted arrays", "Medium", "Merge [1, 4, 6] and [2, 3, 7] into one sorted array.", "[1,2,3,4,6,7]", "Advance the pointer whose current value is smaller."],
+    ["Container with most water", "Medium", "Find the maximum area between heights [1, 8, 6, 2, 5, 4, 8, 3, 7].", "49", "Move the pointer at the shorter wall because it limits the current area."],
+    ["Trap rain water", "Hard", "Compute trapped water for heights [0,1,0,2,1,0,1,3,2,1,2,1].", "6", "Track the best left and right boundaries while moving the lower side inward."],
+  ],
   stacks: [
     ["Inspect the top", "Easy", "Push 'red', then 'blue' onto a stack. Print the top item without removing it.", "blue", "Peek at the last array element."],
     ["Undo the latest action", "Easy", "Push 'type', 'bold', and 'save', then undo once and print the new top action.", "bold", "Undo removes only the most recent item."],
@@ -511,6 +556,13 @@ const supplementalPractice: Record<string, SupplementalQuestion[]> = {
     ["Round-robin turns", "Medium", "Give jobs A and B one unit of work per turn until their remaining work [2, 1] is finished. Print the run order.", "[\"A\",\"B\",\"A\"]", "Re-enqueue a job after a turn only if it still has work."],
     ["Shortest unweighted route", "Medium", "Use breadth-first search to find the fewest edges from A to D in A-B, A-C, B-D, C-D.", "2 edges", "A FIFO queue explores all nodes one step away before nodes two steps away."],
     ["Rotting oranges", "Hard", "In a grid, each minute rotten oranges infect adjacent fresh ones. Describe an algorithm that returns the minutes needed, or -1 if some cannot be reached.", "Multi-source BFS from every initially rotten orange; return the greatest infection minute, or -1 if any fresh orange remains.", "Start the queue with all rotten cells and process them level by level."],
+  ],
+  "linked-lists": [
+    ["Read the head", "Easy", "For a list with head value 7, print the head value without moving the pointer.", "7", "The head reference points at the first node."],
+    ["Append a node", "Easy", "Append value 4 to 1 -> 2 -> 3 and print the list values as JSON.", "[1,2,3,4]", "Walk to the tail node, then set its next pointer."],
+    ["Remove a value", "Medium", "Remove value 2 from 1 -> 2 -> 3 and print the remaining values.", "[1,3]", "A dummy head makes removing the first real node easier too."],
+    ["Detect a cycle", "Medium", "Return true if a linked list contains a cycle.", "true", "Use slow and fast pointers; if they meet, a cycle exists."],
+    ["Merge two sorted lists", "Hard", "Merge 1 -> 3 -> 5 and 2 -> 4 -> 6 into one sorted linked list.", "[1,2,3,4,5,6]", "Use a dummy head and attach the smaller current node each step."],
   ],
   "sliding-window": [
     ["Average of a window", "Easy", "Find the average of the first two values in [3, 7, 2].", "5", "Add the window values and divide by the window size."],
