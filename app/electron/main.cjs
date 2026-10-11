@@ -10,7 +10,7 @@ const CORNERS = ['br', 'bl', 'tr', 'tl']
 const DEFAULTS = {
   coat: 'Pink',
   corner: 'br',
-  link: { url: 'https://yourwebsite.com', label: 'Visit yourwebsite.com →' },
+  link: { url: 'https://digi-pet-indol.vercel.app/', label: 'Visit digi-pet-indol.vercel.app →' },
   quotes: [
     { text: 'Act as if what you do makes a difference. It does.', by: 'William James' },
     { text: 'It always seems impossible until it’s done.', by: 'Nelson Mandela' },
