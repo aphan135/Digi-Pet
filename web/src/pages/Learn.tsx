@@ -7,12 +7,6 @@ interface LearnProps {
   onSelectTopic: (topicId: string) => void;
 }
 
-function formatDuration(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const remainder = minutes % 60;
-  return hours ? `${hours}h ${remainder ? `${remainder}m` : ""}`.trim() : `${minutes}m`;
-}
-
 function Learn({ onSelectTopic }: LearnProps) {
   const [category, setCategory] = useState<Category>("All");
   const [query, setQuery] = useState("");
@@ -83,10 +77,6 @@ function Learn({ onSelectTopic }: LearnProps) {
                 <p className="topic-category">{topic.category}</p>
                 <h4>{topic.name}</h4>
                 <p className="topic-description">{topic.description}</p>
-              </div>
-              <div className="topic-meta">
-                <span>{topic.lessons} lessons</span>
-                <span>{formatDuration(topic.minutes)}</span>
               </div>
               {topic.progress > 0 ? (
                 <div className="topic-progress">

@@ -64,11 +64,6 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
           <p className="eyebrow">{topic.category} / Learning path</p>
           <h2>{topic.name}</h2>
           <p>{content.overview}</p>
-          <div className="detail-meta">
-            <span>{topic.lessons} lessons</span>
-            <span>{topic.minutes} minutes</span>
-            <span>{content.exercises.length} {copy.exerciseLabel}</span>
-          </div>
         </div>
         <div className="concept-card">
           <span className="topic-icon" aria-hidden="true">{topic.icon}</span>
