@@ -2878,47 +2878,17 @@ textarea:focus-visible {
 
 .codecat-map-page {
   --map-header-offset: 5.25rem;
-  --map-section-height: calc(100dvh - var(--map-header-offset));
+  --map-dashboard-height: calc(100dvh - var(--map-header-offset));
   width: 100%;
   margin-top: -1rem;
   color: #273244;
-  height: var(--map-section-height);
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  scroll-snap-type: y proximity;
-  scrollbar-gutter: stable;
 }
 
 .map-layout-container {
-  width: min(1180px, calc(100vw - 2rem));
+  width: min(1180px, calc(100vw - 2rem), calc((var(--map-dashboard-height) - 5.75rem) * 1.5 + 280px));
   max-width: 100%;
   margin: 0 auto;
-}
-
-.map-section,
-.stats-section {
-  min-height: var(--map-section-height);
-  scroll-snap-align: start;
-}
-
-.map-section {
-  display: grid;
-  align-items: center;
   padding: 0.75rem 0;
-}
-
-.map-section .map-layout-container {
-  width: min(
-    1180px,
-    calc(100vw - 2rem),
-    calc((var(--map-section-height) - 1.5rem) * 1.5 + 280px)
-  );
-}
-
-.stats-section {
-  display: grid;
-  align-items: start;
-  padding: 1rem 0 2rem;
 }
 
 .codecat-map-page h2,
@@ -2997,6 +2967,14 @@ textarea:focus-visible {
   box-sizing: border-box;
   gap: 0;
   align-items: start;
+}
+
+.map-primary-column {
+  display: grid;
+  align-content: start;
+  gap: 0.875rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .codecat-map-board {
@@ -4040,15 +4018,8 @@ textarea:focus-visible {
 }
 
 @media (max-width: 1050px) {
-  .codecat-map-page {
-    height: auto;
-    overflow-y: visible;
-    scroll-snap-type: none;
-  }
-
-  .map-section,
-  .stats-section {
-    min-height: auto;
+  .map-layout-container {
+    width: min(100%, calc(100vw - 1.5rem));
   }
 
   .map-hud,
@@ -4056,16 +4027,18 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 
+  .map-primary-column {
+    gap: 0.75rem;
+  }
+
   .codecat-map-board {
     min-height: auto;
   }
 
   .map-topic-panel {
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-    max-height: 74vh;
-    overflow: auto;
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
 }
 

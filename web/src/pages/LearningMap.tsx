@@ -349,9 +349,9 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
 
   return (
     <section className="codecat-map-page" aria-label="CodeCat DSA adventure map">
-      <div className="map-section" aria-label="Adventure map">
-        <div className="map-layout-container">
-          <div className="codecat-map-shell">
+      <div className="map-layout-container">
+        <div className="codecat-map-shell" aria-label="Adventure map">
+          <div className="map-primary-column">
             <div className="codecat-map-board">
               <div
                 className={`adventure-map-canvas ${isMapZoomed ? "zoomed" : ""}`}
@@ -393,7 +393,24 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
               </div>
             </div>
 
-            <aside className="map-topic-panel">
+            <div className="map-hud" aria-label="Map progress">
+              <div className="hud-stat">
+                <span>Streak</span>
+                <strong>7</strong>
+              </div>
+              <div className="hud-stat wide">
+                <span>Lv {currentLevel}</span>
+                <strong>{totalXp} / 500 XP</strong>
+                <div className="hud-xp"><span style={{ width: `${Math.min((totalXp / 500) * 100, 100)}%` }} /></div>
+              </div>
+              <div className="hud-stat">
+                <span>Done</span>
+                <strong>{completedCount}/{totalChallenges}</strong>
+              </div>
+            </div>
+          </div>
+
+          <aside className="map-topic-panel">
               <div
                 aria-hidden="true"
                 className={`topic-preview ${selectedWorld.theme}`}
@@ -471,28 +488,7 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
                   ))}
                 </div>
               </div>
-            </aside>
-          </div>
-        </div>
-      </div>
-
-      <div className="stats-section" aria-label="Player progress">
-        <div className="map-layout-container">
-          <div className="map-hud" aria-label="Map progress">
-            <div className="hud-stat">
-              <span>Streak</span>
-              <strong>7</strong>
-            </div>
-            <div className="hud-stat wide">
-              <span>Lv {currentLevel}</span>
-              <strong>{totalXp} / 500 XP</strong>
-              <div className="hud-xp"><span style={{ width: `${Math.min((totalXp / 500) * 100, 100)}%` }} /></div>
-            </div>
-            <div className="hud-stat">
-              <span>Done</span>
-              <strong>{completedCount}/{totalChallenges}</strong>
-            </div>
-          </div>
+          </aside>
         </div>
       </div>
     </section>
