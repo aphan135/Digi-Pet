@@ -37,8 +37,8 @@ const worlds: MapWorld[] = [
     shortName: "Two Pointers",
     description: "Move paired indices across strings and arrays without repeated scans.",
     theme: "kingdom",
-    position: { x: 82, y: 31 },
-    previewPosition: "80% 32%",
+    position: { x: 84, y: 28 },
+    previewPosition: "84% 28%",
   },
   {
     id: "stacks-tower",
@@ -57,8 +57,8 @@ const worlds: MapWorld[] = [
     shortName: "Queues",
     description: "Process work in first-in, first-out order.",
     theme: "forest",
-    position: { x: 64, y: 43 },
-    previewPosition: "64% 43%",
+    position: { x: 65, y: 43 },
+    previewPosition: "65% 43%",
   },
   {
     id: "linked-list-coast",
@@ -67,8 +67,8 @@ const worlds: MapWorld[] = [
     shortName: "Linked Lists",
     description: "Trace pointer chains through reversals, cycles, and ordered merges.",
     theme: "coast",
-    position: { x: 20, y: 64 },
-    previewPosition: "18% 66%",
+    position: { x: 17, y: 64 },
+    previewPosition: "17% 64%",
   },
   {
     id: "sliding-window-peaks",
@@ -87,8 +87,8 @@ const worlds: MapWorld[] = [
     shortName: "Trees + Graphs",
     description: "Use traversal, recursion, visited sets, and connected structure.",
     theme: "kingdom",
-    position: { x: 81, y: 65 },
-    previewPosition: "81% 61%",
+    position: { x: 82, y: 65 },
+    previewPosition: "82% 65%",
   },
   {
     id: "dp-castle",
