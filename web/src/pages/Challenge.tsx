@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import {
   codeLanguageEntries,
   codeRuntimes,
   createStarterCode,
+  getCodeContract,
   type CodeLanguage,
 } from "../data/codeRuntimes";
 import { checkAnswer } from "../services/answerService";
@@ -88,17 +89,81 @@ function Challenge({ problem }: ChallengeProps) {
     setRunError("");
   }
 
+  function handleCodeEditorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Tab" && event.key !== "Enter") return;
+    event.preventDefault();
+
+    const editor = event.currentTarget;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const indentUnit = language === "javascript" || language === "typescript" || language === "react"
+      ? "  "
+      : "    ";
+    let nextCode = sourceCode;
+    let nextStart = start;
+    let nextEnd = end;
+
+    if (event.key === "Enter") {
+      const lineStart = sourceCode.lastIndexOf("\n", start - 1) + 1;
+      const lineBeforeCursor = sourceCode.slice(lineStart, start);
+      const currentIndent = lineBeforeCursor.match(/^\s*/)?.[0] ?? "";
+      const opensBlock = lineBeforeCursor.trimEnd().endsWith("{");
+      const opensPythonBlock = language === "python" && lineBeforeCursor.trimEnd().endsWith(":");
+
+      if (opensBlock) {
+        const prefix = sourceCode.slice(0, start);
+        const suffix = sourceCode.slice(start);
+        const openBalance = (prefix.match(/{/g)?.length ?? 0) - (prefix.match(/}/g)?.length ?? 0);
+        const availableClosers = (suffix.match(/}/g)?.length ?? 0) - (suffix.match(/{/g)?.length ?? 0);
+        const needsClosingBrace = availableClosers < openBalance;
+        const insertion = `\n${currentIndent}${indentUnit}${needsClosingBrace ? `\n${currentIndent}}` : ""}`;
+        nextCode = sourceCode.slice(0, start) + insertion + sourceCode.slice(end);
+        nextStart = start + currentIndent.length + indentUnit.length + 1;
+        nextEnd = nextStart;
+      } else {
+        const nextIndent = currentIndent + (opensPythonBlock ? indentUnit : "");
+        const insertion = `\n${nextIndent}`;
+        nextCode = sourceCode.slice(0, start) + insertion + sourceCode.slice(end);
+        nextStart = start + insertion.length;
+        nextEnd = nextStart;
+      }
+    } else if (event.shiftKey) {
+      const lineStart = sourceCode.lastIndexOf("\n", start - 1) + 1;
+      const indentation = sourceCode.slice(lineStart).match(new RegExp(`^(\\t| {1,${indentUnit.length}})`))?.[0] ?? "";
+      if (!indentation) return;
+
+      nextCode = sourceCode.slice(0, lineStart) + sourceCode.slice(lineStart + indentation.length);
+      nextStart = Math.max(lineStart, start - indentation.length);
+      nextEnd = Math.max(nextStart, end - indentation.length);
+    } else {
+      const indentation = indentUnit;
+      nextCode = sourceCode.slice(0, start) + indentation + sourceCode.slice(start);
+      nextStart = start + indentation.length;
+      nextEnd = end + indentation.length;
+    }
+
+    setCodeDrafts((current) => ({ ...current, [language]: nextCode }));
+    setRunResult(null);
+    setRunError("");
+    window.requestAnimationFrame(() => editor.setSelectionRange(nextStart, nextEnd));
+  }
+
   async function handleRunCode() {
     setIsRunning(true);
     setRunResult(null);
     setRunError("");
     try {
-      setRunResult(await runCode({
+      const result = await runCode({
         sourceCode,
         languageId: runtimeVersion.languageId,
         language,
         expectedOutput: selectedProblem.expectedOutput,
-      }));
+      });
+      setRunResult(result);
+      if (result.status === "passed") {
+        markProblemCompleted(selectedProblem.id);
+        celebratePet();
+      }
     } catch (caughtError) {
       setRunError(caughtError instanceof Error ? caughtError.message : "Could not run code.");
     } finally {
@@ -127,24 +192,47 @@ function Challenge({ problem }: ChallengeProps) {
   }
 
   const showCodePanels = isCodingProblem(selectedProblem);
+  const codeContract = getCodeContract(selectedProblem);
   const answerPlaceholder =
     selectedProblem.type === "math"
       ? "Show your work step by step, including formulas, substitutions, and the final answer..."
       : "Explain your reasoning, show your work, or write your solution idea...";
 
-  return (
-    <section className="challenge-layout">
-      <div className="problem-panel">
-        <p className="eyebrow">{getSubjectLabel(selectedProblem.type)}</p>
-        <h2>{selectedProblem.title}</h2>
-        <span className="status-pill">
-          {statuses[selectedProblem.id] === "completed" ? "Completed" : statuses[selectedProblem.id] === "incomplete" ? "Incomplete" : "Not attempted"}
-        </span>{" "}
-        <span className={`difficulty ${selectedProblem.difficulty.toLowerCase()}`}>
-          {selectedProblem.difficulty}
-        </span>
-        <p>{selectedProblem.prompt}</p>
-        {showCodePanels && selectedProblem.starterCode && (
+  if (showCodePanels) {
+    return (
+      <section className="challenge-layout coding-challenge">
+        <div className="problem-panel coding-instructions">
+          <p className="eyebrow">{getSubjectLabel(selectedProblem.type)}</p>
+          <h2>{selectedProblem.title}</h2>
+          <span className="status-pill">
+            {statuses[selectedProblem.id] === "completed" ? "Completed" : statuses[selectedProblem.id] === "incomplete" ? "Incomplete" : "Not attempted"}
+          </span>
+          <span className={`difficulty ${selectedProblem.difficulty.toLowerCase()}`}>
+            {selectedProblem.difficulty}
+          </span>
+          <p>{selectedProblem.prompt}</p>
+          <div className="code-contract" aria-label="Exercise code contract">
+            <div>
+              <span>Implement</span>
+              <strong>{codeContract.signature}</strong>
+            </div>
+            <div>
+              <span>Test call</span>
+              <code>{codeContract.testCall}</code>
+            </div>
+          </div>
+          {selectedProblem.expectedOutput && (
+            <div className="expected-output-panel">
+              <strong>Expected output</strong>
+              <code>{selectedProblem.expectedOutput}</code>
+            </div>
+          )}
+          <div className="hint-box">
+            <strong>Pet hint</strong>
+            <p>{selectedProblem.hint}</p>
+          </div>
+        </div>
+        <div className="code-workspace-panel">
           <div className="code-lab">
             <div className="runtime-toolbar">
               <label>
@@ -208,6 +296,7 @@ function Challenge({ problem }: ChallengeProps) {
               <textarea
                 aria-label={`${runtime.label} code editor for ${selectedProblem.title}`}
                 className="code-editor"
+                onKeyDown={handleCodeEditorKeyDown}
                 onChange={(event) => {
                   setCodeDrafts((current) => ({ ...current, [language]: event.target.value }));
                   setRunResult(null);
@@ -235,13 +324,23 @@ function Challenge({ problem }: ChallengeProps) {
               </div>
             )}
           </div>
-        )}
-        {showCodePanels && selectedProblem.expectedOutput && (
-          <div className="expected-output-panel">
-            <strong>Expected output</strong>
-            <code>{selectedProblem.expectedOutput}</code>
-          </div>
-        )}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="challenge-layout">
+      <div className="problem-panel">
+        <p className="eyebrow">{getSubjectLabel(selectedProblem.type)}</p>
+        <h2>{selectedProblem.title}</h2>
+        <span className="status-pill">
+          {statuses[selectedProblem.id] === "completed" ? "Completed" : statuses[selectedProblem.id] === "incomplete" ? "Incomplete" : "Not attempted"}
+        </span>
+        <span className={`difficulty ${selectedProblem.difficulty.toLowerCase()}`}>
+          {selectedProblem.difficulty}
+        </span>
+        <p>{selectedProblem.prompt}</p>
         <div className="hint-box">
           <strong>Pet hint</strong>
           <p>{selectedProblem.hint}</p>
