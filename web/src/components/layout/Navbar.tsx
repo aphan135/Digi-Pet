@@ -11,7 +11,7 @@ const navItems: { label: string; page: PageName }[] = [
   { label: "Challenge", page: "challenge" },
 ];
 
-function ProfileCatIcon() {
+export function ProfileCatIcon() {
   return (
     <svg className="nav-cat-icon" viewBox="0 0 80 80" role="img" aria-label="Profile">
       <polygon points="18,34 28,8 42,32" fill="#FFC2D6" />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { checkAnswer } from "../services/answerService";
 import { getFeaturedProblem } from "../services/problemService";
-import { markProblemCompleted } from "../services/progressService";
+import { markProblemCompleted, recordAttempt } from "../services/progressService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
 
 const subjectFilters: { id: ProblemType | "all"; label: string }[] = [
@@ -47,6 +47,7 @@ function Challenge({ problem }: ChallengeProps) {
     try {
       const result = await checkAnswer(selectedProblem, answer);
       setFeedback(result);
+      recordAttempt(selectedProblem, result);
       if (result.isCorrect) {
         markProblemCompleted(selectedProblem.id);
       }

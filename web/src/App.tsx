@@ -81,7 +81,10 @@ function App() {
         <LearningMap onStartExercise={startExercise} />
       );
     }
-    if (activePage === "dashboard") return <Dashboard />;
+    if (activePage === "dashboard") return <Dashboard
+      onOpenTopic={(topicId) => { navigate("learn"); selectTopic(topicId); }}
+      onStartChallenge={() => navigate("challenge")}
+    />;
     return <Challenge problem={selectedProblem ?? undefined} />;
   }
 

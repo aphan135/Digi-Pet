@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import { currentStreak, longestStreak, dailyActivity, xp, subjectBreakdown, scoreTrend, weakSpots, milestones, petState } from '../src/services/dashboardStats.ts';
+
+// Run: node --experimental-strip-types scripts/check-stats.mjs
+process.env.TZ = 'America/Los_Angeles';
+const attempt = (at, extra = {}) => ({ problemId: at, title: 'Practice', topic: 'Arrays', type: 'leetcode', difficulty: 'Easy', score: 8, isCorrect: true, missedConcepts: [], at: new Date(at).toISOString(), ...extra });
+const now = new Date('2026-03-10T12:00:00-07:00');
+const days = ['2026-03-07T12:00:00-08:00', '2026-03-08T12:00:00-07:00', '2026-03-09T12:00:00-07:00'].map((at) => attempt(at));
+assert.equal(currentStreak([], now), 0);
+assert.equal(longestStreak([], now), 0);
+assert.equal(currentStreak(days, now), 3, 'yesterday grace and spring DST');
+assert.equal(currentStreak([...days, days[0]], now), 3, 'duplicates do not extend streak');
+assert.equal(currentStreak([...days, attempt('2026-03-10T09:00:00-07:00')], now), 4, 'today extends streak');
+assert.equal(currentStreak(days, new Date('2026-03-11T00:01:00-07:00')), 0, 'missed yesterday breaks streak');
+assert.equal(longestStreak([...days].reverse(), now), 3, 'unsorted history');
+assert.equal(currentStreak([...days, attempt('2026-03-11T12:00:00-07:00')], now), 3, 'future days ignored');
+assert.equal(currentStreak([attempt('2026-03-10T23:00:00-07:00')], now), 0, 'future time today ignored');
+assert.equal(currentStreak([{ ...days[0], at: 'invalid' }], now), 0, 'invalid dates ignored');
+assert.equal(currentStreak([attempt('2026-10-31T23:30:00-07:00'), attempt('2026-11-01T23:30:00-08:00')], new Date('2026-11-02T09:00:00-08:00')), 2, 'autumn DST');
+assert.equal(currentStreak([attempt('2025-12-31T23:59:00-08:00'), attempt('2026-01-01T00:01:00-08:00')], new Date('2026-01-01T12:00:00-08:00')), 2, 'year boundary');
+assert.equal(currentStreak([attempt('2024-02-28T12:00:00-08:00'), attempt('2024-02-29T12:00:00-08:00')], new Date('2024-03-01T12:00:00-08:00')), 2, 'leap day');
+const activity = dailyActivity(days, 84, now);
+assert.equal(activity.length, 84);
+assert.equal(new Set(activity.map((d) => d.key)).size, 84);
+assert.equal(activity.at(-1).key, '2026-03-10');
+assert.equal(activity.reduce((sum, d) => sum + d.count, 0), 3);
+assert.equal(dailyActivity([attempt('2026-03-10T06:30:00Z')], 1, now)[0].count, 0, 'UTC date differs from local day');
+const retries = [attempt('2026-03-07T12:00:00-08:00', { problemId: 'same', isCorrect: false }), ...days.map((a) => ({ ...a, problemId: 'same' }))];
+assert.equal(xp(retries), 10);
+assert.deepEqual(subjectBreakdown(retries)[0], { type: 'leetcode', label: 'Coding', solved: 1, attempted: 1 });
+assert.equal(scoreTrend(days)[0].average, 8);
+assert.equal(weakSpots([{ ...days[0], missedConcepts: [' Maps ', 'maps'] }], [{ id: 'arrays', name: 'Arrays' }])[0].count, 1);
+assert.equal(weakSpots([{ ...days[0], topic: 'Arrays + Hash Maps', missedConcepts: ['Lookup'] }], [{ id: 'arrays', name: 'Arrays + Hashmaps' }])[0].topicId, 'arrays');
+assert.equal(milestones(days, now).find((m) => m.title === 'Finding a rhythm').earned, true);
+assert.equal(petState([], now).energy, 0);
+console.log('Stats checks passed: streak grace, gaps, duplicates, DST, local dates, future dates, deduplication and milestones.');

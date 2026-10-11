@@ -65,3 +65,16 @@ export interface AnswerFeedback {
   hint: string;
   petMood: "celebrate" | "encourage" | "nudge";
 }
+
+/** A graded submission, including retries. Completion IDs remain a separate legacy index. */
+export interface Attempt {
+  problemId: string;
+  title: string;
+  topic: string;
+  type: ProblemType;
+  difficulty: ProblemDifficulty;
+  score: number;
+  isCorrect: boolean;
+  missedConcepts: string[];
+  at: string;
+}
