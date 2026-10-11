@@ -77,7 +77,12 @@ function createWindow() {
 
   // The quote link opens in the real browser; never navigate the pet window.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url)
+    if (/^https?:\/\//i.test(url)) {
+      // A screen-sized top window that isn't click-through makes Chromium browsers think they're
+      // fully occluded, so they stop painting (gray tab). Go click-through before handing off.
+      win.setIgnoreMouseEvents(true, { forward: true })
+      shell.openExternal(url)
+    }
     return { action: 'deny' }
   })
   win.webContents.on('will-navigate', (e) => e.preventDefault())
