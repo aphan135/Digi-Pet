@@ -308,7 +308,7 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
     return problem ? total + getProblemXp(problem.difficulty) : total;
   }, 0);
   const currentLevel = Math.max(5, Math.floor(totalXp / 120));
-  const zoomScale = viewportSize.width > 0 && viewportSize.width < 720 ? 1.35 : 1.6;
+  const zoomScale = viewportSize.width > 0 && viewportSize.width < 720 ? 1.5 : 1.9;
   const cameraTransform = useMemo(() => {
     if (!isMapZoomed || viewportSize.width === 0 || viewportSize.height === 0) {
       return "translate3d(0, 0, 0) scale(1)";
