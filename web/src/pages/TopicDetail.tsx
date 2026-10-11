@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getRandomPracticeSet, learningContent } from "../data/learningContent";
-import { getCompletedProblemIds, subscribeToProgressUpdates } from "../services/progressService";
+import { getProblemStatuses, subscribeToProgressUpdates } from "../services/progressService";
 import type { LearningExercise, Topic } from "../types";
 
 interface TopicDetailProps {
@@ -50,7 +50,7 @@ function getTopicCopy(topic: Topic) {
 function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   const content = learningContent[topic.id];
   const copy = getTopicCopy(topic);
-  const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [statuses, setStatuses] = useState(getProblemStatuses);
   const [practiceExercises, setPracticeExercises] = useState(() =>
     getRandomPracticeSet(topic.id),
   );
@@ -64,10 +64,10 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   }, [topic.id]);
 
   useEffect(() => {
-    const refreshCompletions = () => setCompletedIds(getCompletedProblemIds());
+    const refreshStatuses = () => setStatuses(getProblemStatuses());
 
-    refreshCompletions();
-    return subscribeToProgressUpdates(refreshCompletions);
+    refreshStatuses();
+    return subscribeToProgressUpdates(refreshStatuses);
   }, []);
 
   return (
@@ -125,11 +125,13 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
           </div>
           <div className="exercise-list">
             {orderedExercises.map((item, index) => (
-              <article className={`exercise-card ${completedIds.includes(item.id) ? "completed" : ""}`} key={item.id}>
+              <article className={`exercise-card ${statuses[item.id] ?? ""}`} key={item.id}>
                 <div className="exercise-card-main">
                   <span className="exercise-number">{String(index + 1).padStart(2, "0")}</span>
                   <div className="exercise-title">
-                    <strong>{item.title}</strong>
+                    <strong>{item.title} {statuses[item.id] && (
+                      <span className="status-pill">{statuses[item.id] === "completed" ? "Completed" : "In progress"}</span>
+                    )}</strong>
                     <small>{item.instructions}</small>
                   </div>
                 </div>

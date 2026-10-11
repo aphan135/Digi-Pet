@@ -1,12 +1,33 @@
 import { topics } from "../data/topics";
 import type { AnswerFeedback, Attempt, Problem, ProblemType } from "../types";
+import { supabase } from "./supabase";
 
 const COMPLETED_PROBLEMS_KEY = "digipet-completed-problems";
 const ATTEMPTS_KEY = "digipet-attempts";
+const PROBLEM_STATUS_KEY = "digipet-problem-status";
 const DEMO_KEY = "digipet-demo-mode";
 const COMPLETION_EVENT = "digipet-progress-updated";
 // Preserve progress for this session when storage is unavailable or full.
 const fallback = new Map<string, string>();
+let syncPromise: Promise<void> | null = null;
+
+type RemoteAttemptRow = {
+  problem_id: string;
+  title: string;
+  topic: string;
+  type: ProblemType;
+  difficulty: Attempt["difficulty"];
+  score: number;
+  is_correct: boolean;
+  missed_concepts: string[];
+  at: string;
+};
+
+type RemoteProgressRow = {
+  problem_id: string;
+  status: "incomplete" | "completed";
+};
+
 function read(key: string): unknown {
   try {
     const raw = fallback.get(key) ?? window.localStorage.getItem(key);
@@ -48,6 +69,98 @@ export function getRealAttempts(): Attempt[] {
   const value = read(ATTEMPTS_KEY);
   return Array.isArray(value) ? value.filter(isAttempt) : [];
 }
+export function getProblemStatuses(): Record<string, "incomplete" | "completed"> {
+  const cached = read(PROBLEM_STATUS_KEY);
+  const statuses: Record<string, "incomplete" | "completed"> = {};
+  if (cached && typeof cached === "object" && !Array.isArray(cached)) {
+    for (const [id, status] of Object.entries(cached)) {
+      if (status === "incomplete" || status === "completed") statuses[id] = status;
+    }
+  }
+  for (const attempt of getRealAttempts()) {
+    if (statuses[attempt.problemId] !== "completed") {
+      statuses[attempt.problemId] = attempt.isCorrect ? "completed" : "incomplete";
+    }
+  }
+  for (const id of getCompletedProblemIds()) statuses[id] = "completed";
+  return statuses;
+}
+function toAttemptRow(attempt: Attempt) {
+  return {
+    problem_id: attempt.problemId, title: attempt.title, topic: attempt.topic,
+    type: attempt.type, difficulty: attempt.difficulty, score: attempt.score,
+    is_correct: attempt.isCorrect, missed_concepts: attempt.missedConcepts,
+    at: new Date(attempt.at).toISOString(),
+  };
+}
+export async function syncProgress(): Promise<void> {
+  if (!supabase) return;
+  if (syncPromise) return syncPromise;
+  const client = supabase;
+  syncPromise = (async () => {
+    try {
+      const { data, error } = await client.auth.getSession();
+      if (error) throw error;
+      if (!data.session) {
+        const { error } = await client.auth.signInAnonymously();
+        if (error) throw error;
+      }
+      const attempts = getRealAttempts();
+      if (attempts.length) {
+        const { error } = await client.from("attempts").upsert(attempts.map(toAttemptRow), {
+          onConflict: "user_id,problem_id,at", ignoreDuplicates: true,
+        });
+        if (error) throw error;
+      }
+      const completedIds = getCompletedProblemIds();
+      if (completedIds.length) {
+        const { error } = await client.from("problem_progress").upsert(
+          completedIds.map((id) => ({ problem_id: id, status: "completed" })),
+          { onConflict: "user_id,problem_id" },
+        );
+        if (error) throw error;
+      }
+      const [remoteAttempts, progress] = await Promise.all([
+        client.from("attempts").select("*").order("at"),
+        client.from("problem_progress").select("*"),
+      ]);
+      if (remoteAttempts.error) throw remoteAttempts.error;
+      if (progress.error) throw progress.error;
+      const downloaded = ((remoteAttempts.data ?? []) as RemoteAttemptRow[]).map((row) => ({
+        problemId: row.problem_id, title: row.title, topic: row.topic,
+        type: row.type, difficulty: row.difficulty, score: row.score,
+        isCorrect: row.is_correct, missedConcepts: row.missed_concepts, at: row.at,
+      })).filter(isAttempt).map((attempt: Attempt) => ({ ...attempt, at: new Date(attempt.at).toISOString() }));
+      const merged = new Map([...downloaded, ...getRealAttempts()].map((attempt) => {
+        const at = new Date(attempt.at).toISOString();
+        return [JSON.stringify([attempt.problemId, at]), { ...attempt, at }];
+      }));
+      write(ATTEMPTS_KEY, [...merged.values()].sort((a, b) => Date.parse(a.at) - Date.parse(b.at)));
+      write(COMPLETED_PROBLEMS_KEY, Array.from(new Set([
+        ...getCompletedProblemIds(),
+        ...((progress.data ?? []) as RemoteProgressRow[]).filter((row) => row.status === "completed").map((row) => row.problem_id),
+      ])));
+      const statuses = getProblemStatuses();
+      for (const row of (progress.data ?? []) as RemoteProgressRow[]) {
+        if (statuses[row.problem_id] !== "completed" && (row.status === "incomplete" || row.status === "completed")) {
+          statuses[row.problem_id] = row.status;
+        }
+      }
+      write(PROBLEM_STATUS_KEY, statuses);
+    } catch (error) { console.warn("Could not sync progress.", error); }
+  })();
+  try { await syncPromise; } finally { syncPromise = null; }
+}
+async function insertAttempt(attempt: Attempt) {
+  if (!supabase) return;
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    if (!data.session) return;
+    const { error: insertError } = await supabase.from("attempts").insert(toAttemptRow(attempt));
+    if (insertError) throw insertError;
+  } catch (error) { console.warn("Could not save attempt.", error); }
+}
 export function recordAttempt(problem: Problem, feedback: AnswerFeedback) {
   const attempt: Attempt = {
     problemId: problem.id, title: problem.title, topic: problem.topic,
@@ -55,7 +168,10 @@ export function recordAttempt(problem: Problem, feedback: AnswerFeedback) {
     score: feedback.score, isCorrect: feedback.isCorrect,
     missedConcepts: feedback.missedConcepts, at: new Date().toISOString(),
   };
-  if (isAttempt(attempt)) write(ATTEMPTS_KEY, [...getRealAttempts(), attempt]);
+  if (isAttempt(attempt)) {
+    write(ATTEMPTS_KEY, [...getRealAttempts(), attempt]);
+    void insertAttempt(attempt);
+  }
 }
 export function isDemoMode() { return read(DEMO_KEY) === true; }
 export function setDemoMode(on: boolean) { write(DEMO_KEY, on); }
@@ -96,7 +212,7 @@ export function getAttempts(now = new Date()): Attempt[] {
 }
 export function subscribeToProgressUpdates(callback: () => void) {
   const handleStorage = (event: StorageEvent) => {
-    if (event.key === null || [COMPLETED_PROBLEMS_KEY, ATTEMPTS_KEY, DEMO_KEY].includes(event.key)) {
+    if (event.key === null || [COMPLETED_PROBLEMS_KEY, ATTEMPTS_KEY, PROBLEM_STATUS_KEY, DEMO_KEY].includes(event.key)) {
       if (event.key === null) fallback.clear();
       else fallback.delete(event.key);
       callback();
