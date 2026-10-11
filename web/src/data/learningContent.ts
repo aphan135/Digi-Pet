@@ -148,7 +148,7 @@ export const learningContent: Record<string, TopicContent> = {
     ),
     exercises: [
       exercise("array-sum", "Sum an array", "Easy", "Complete sum so it returns the total. The final log must print 10.", "function sum(values) {\n  // Your code here\n}\n\nconsole.log(sum([1, 2, 3, 4]));", "10", "Start with a total of zero and visit every value."),
-      exercise("array-frequency", "Build a frequency map", "Medium", "Count each fruit and print the number of apples.", "function frequencies(items) {\n  // Return an object of counts\n}\n\nconst counts = frequencies(['apple', 'pear', 'apple']);\nconsole.log(counts.apple);", "2", "Use the item as an object key and default missing counts to zero."),
+      exercise("array-frequency", "Build a frequency map", "Medium", "Count how many times target appears in items. Build a frequency map as you scan.", "function frequencies(items) {\n  // Return an object of counts\n}\n\nconst counts = frequencies(['apple', 'pear', 'apple']);\nconsole.log(counts.apple);", "2", "Use the item as an object key and default missing counts to zero."),
       exercise("array-two-sum", "Two sum", "Hard", "Return the two indices whose values total 9, formatted as JSON.", "function twoSum(values, target) {\n  // Solve in one pass\n}\n\nconsole.log(JSON.stringify(twoSum([2, 7, 11, 15], 9)));", "[0,1]", "Store each value's index, then look for target - value."),
     ],
   },
@@ -204,7 +204,7 @@ export const learningContent: Record<string, TopicContent> = {
       ],
     ),
     exercises: [
-      exercise("queue-basic", "Serve the first item", "Easy", "Add three jobs, remove the first, and print it.", "const queue = [];\nqueue.push('email');\nqueue.push('report');\nqueue.push('backup');\n\n// Remove and print the first job\n", "email", "Array shift removes the front item."),
+      exercise("queue-basic", "Serve the first item", "Easy", "Jobs were enqueued in order. Return the job that is served first.", "const queue = [];\nqueue.push('email');\nqueue.push('report');\nqueue.push('backup');\n\n// Remove and print the first job\n", "email", "Array shift removes the front item."),
       exercise("queue-recent", "Recent requests", "Medium", "Keep only the last three requests and print them as JSON.", "function recent(requests, limit) {\n  const queue = [];\n  // Add each request and trim the front\n}\n\nconsole.log(JSON.stringify(recent(['a', 'b', 'c', 'd'], 3)));", "[\"b\",\"c\",\"d\"]", "After enqueueing, dequeue while the queue is too large."),
       exercise("queue-bfs", "Breadth-first traversal", "Hard", "Traverse this tree level by level and print the values as JSON.", "function bfs(root) {\n  // Use a queue beginning with root\n}\n\nconst tree = { value: 1, children: [\n  { value: 2, children: [{ value: 4, children: [] }] },\n  { value: 3, children: [] }\n]};\nconsole.log(JSON.stringify(bfs(tree)));", "[1,2,3,4]", "Dequeue one node, record it, then enqueue all of its children."),
     ],
@@ -225,7 +225,7 @@ export const learningContent: Record<string, TopicContent> = {
     exercises: [
       exercise("linked-list-count", "Count nodes", "Easy", "Count how many nodes are in the list and print the result.", "function count(head) {\n  // Walk until null\n}\n\nconst list = { value: 1, next: { value: 2, next: null } };\nconsole.log(count(list));", "2", "Move one node at a time and increment a counter."),
       exercise("linked-list-middle", "Find the middle", "Medium", "Return the middle value from 1 -> 2 -> 3.", "function middle(head) {\n  // Use slow and fast pointers\n}\n\nconst list = { value: 1, next: { value: 2, next: { value: 3, next: null } } };\nconsole.log(middle(list));", "2", "Move slow one step and fast two steps."),
-      exercise("linked-list-reverse", "Reverse a linked list", "Hard", "Reverse 1 -> 2 -> 3 and print the values as JSON.", "function reverse(head) {\n  // Rewire next pointers\n}\n\nconsole.log(JSON.stringify(toArray(reverse(list))));", "[3,2,1]", "Keep previous, current, and next references before changing a pointer."),
+      exercise("linked-list-reverse", "Reverse a linked list", "Hard", "Reverse 1 -> 2 -> 3 and return the new head.", "function reverse(head) {\n  // Rewire next pointers\n}\n\nconsole.log(JSON.stringify(toArray(reverse(list))));", "[3,2,1]", "Keep previous, current, and next references before changing a pointer."),
     ],
   },
   "sliding-window": {
@@ -242,7 +242,7 @@ export const learningContent: Record<string, TopicContent> = {
       ],
     ),
     exercises: [
-      exercise("window-first", "First window sum", "Easy", "Print the sum of the first three values.", "const values = [2, 4, 6, 8];\nconst size = 3;\n// Calculate the first window\n", "12", "Slice the first size values and add them."),
+      exercise("window-first", "First window sum", "Easy", "Return the sum of the first size values.", "const values = [2, 4, 6, 8];\nconst size = 3;\n// Calculate the first window\n", "12", "Slice the first size values and add them."),
       exercise("window-max", "Maximum window sum", "Medium", "Find the largest sum among windows of size three.", "function maxWindowSum(values, size) {\n  // Reuse the previous window sum\n}\n\nconsole.log(maxWindowSum([2, 1, 5, 1, 3, 2], 3));", "9", "Subtract the item leaving and add the item entering."),
       exercise("window-unique", "Longest unique substring", "Hard", "Print the length of the longest substring without repeated characters.", "function longestUnique(text) {\n  // Track each character's latest index\n}\n\nconsole.log(longestUnique('abcabcbb'));", "3", "Move the left edge beyond a repeated character's previous position."),
     ],
@@ -263,7 +263,7 @@ export const learningContent: Record<string, TopicContent> = {
     exercises: [
       exercise("tree-leaves", "Count leaves", "Easy", "Count nodes with no children.", "function countLeaves(node) {\n  // Base case: no children\n}\n\nconst tree = { children: [{ children: [] }, { children: [{ children: [] }] }] };\nconsole.log(countLeaves(tree));", "2", "A leaf contributes one; otherwise sum the child results."),
       exercise("tree-dfs", "Depth-first search", "Medium", "Return true when the target exists in the tree.", "function contains(node, target) {\n  // Search recursively or with a stack\n}\n\nconst tree = { value: 1, children: [{ value: 2, children: [] }] };\nconsole.log(contains(tree, 2));", "true", "Check the current node, then search its children."),
-      exercise("graph-path", "Graph reachability", "Hard", "Determine whether d can be reached from a.", "function hasPath(graph, start, target) {\n  // Remember visited nodes\n}\n\nconst graph = { a: ['b'], b: ['c'], c: ['d'], d: [] };\nconsole.log(hasPath(graph, 'a', 'd'));", "true", "Traverse neighbors and use a Set to avoid revisiting nodes."),
+      exercise("graph-path", "Graph reachability", "Hard", "Nodes are numbered 0 to n - 1 and each edge [from, to] is directed. Return whether node 3 can be reached from node 0.", "function hasPath(graph, start, target) {\n  // Remember visited nodes\n}\n\nconst graph = { a: ['b'], b: ['c'], c: ['d'], d: [] };\nconsole.log(hasPath(graph, 'a', 'd'));", "true", "Build an adjacency list, traverse neighbors, and mark visited nodes."),
     ],
   },
   "dynamic-programming": {
@@ -533,7 +533,7 @@ const supplementalPractice: Record<string, SupplementalQuestion[]> = {
     ["Find the first item", "Easy", "Return the first value in [8, 3, 5] and print it.", "8", "Array indexes start at zero, so the first value is at index 0."],
     ["Double each value", "Easy", "Transform [2, 4, 6] into a new array with every value doubled, then print it as JSON.", "[4,8,12]", "Map each value to value * 2."],
     ["Range sum queries", "Medium", "For values [2, 4, 1, 5], answer the sum from index 1 through index 3 in constant time after preprocessing.", "10", "Build prefix sums so a range sum is one prefix difference."],
-    ["Group values by key", "Medium", "Group [{name:'Mia', team:'red'}, {name:'Leo', team:'blue'}, {name:'Ava', team:'red'}] by team and print each team's names as JSON.", "{\"red\":[\"Mia\",\"Ava\"],\"blue\":[\"Leo\"]}", "Use a hash map whose keys are team names and whose values are arrays."],
+    ["Group values by key", "Medium", "names[i] plays for teams[i]. Group the names by team and return one list per team, in the order each team first appears.", "[[\"Mia\",\"Ava\"],[\"Leo\"]]", "Use a hash map whose keys are team names and whose values are arrays."],
     ["Longest consecutive run", "Hard", "Find the length of the longest consecutive integer sequence in [100, 4, 200, 1, 3, 2] using expected O(n) time.", "4", "Put values in a Set and only grow a sequence from a value with no predecessor."],
   ],
   "two-pointers": [
@@ -544,39 +544,39 @@ const supplementalPractice: Record<string, SupplementalQuestion[]> = {
     ["Trap rain water", "Hard", "Compute trapped water for heights [0,1,0,2,1,0,1,3,2,1,2,1].", "6", "Track the best left and right boundaries while moving the lower side inward."],
   ],
   stacks: [
-    ["Inspect the top", "Easy", "Push 'red', then 'blue' onto a stack. Print the top item without removing it.", "blue", "Peek at the last array element."],
-    ["Undo the latest action", "Easy", "Push 'type', 'bold', and 'save', then undo once and print the new top action.", "bold", "Undo removes only the most recent item."],
+    ["Inspect the top", "Easy", "The stack is given bottom-to-top as ['red', 'blue']. Return the top item without removing it.", "blue", "Peek at the last array element."],
+    ["Undo the latest action", "Easy", "The stack holds actions ['type', 'bold', 'save'] with the top at the end. Undo once and return the new top action.", "bold", "Undo removes only the most recent item."],
     ["Check mixed brackets", "Medium", "Return whether the string '{[()]}' is balanced, respecting bracket types.", "true", "When a closer appears, it must match the most recently pushed opener."],
     ["Simplify a file path", "Medium", "Normalize '/home//sam/./docs/../notes' and print the absolute path.", "/home/sam/notes", "Ignore empty and '.' parts; '..' removes the previous directory."],
     ["Largest rectangle in bars", "Hard", "Find the largest rectangle area in histogram heights [2, 1, 5, 6, 2, 3] using a monotonic stack.", "10", "For each bar, determine the nearest shorter bar on both sides."],
   ],
   queues: [
-    ["Serve two customers", "Easy", "Enqueue 'Ari', 'Bo', and 'Cal'. Dequeue twice and print the names in order as JSON.", "[\"Ari\",\"Bo\"]", "A queue serves items in the order they were added."],
-    ["Process jobs", "Easy", "Start with an empty queue, add 'print' and 'email', then print the next job without removing it.", "print", "The front of the queue is the next item to serve."],
-    ["Round-robin turns", "Medium", "Give jobs A and B one unit of work per turn until their remaining work [2, 1] is finished. Print the run order.", "[\"A\",\"B\",\"A\"]", "Re-enqueue a job after a turn only if it still has work."],
-    ["Shortest unweighted route", "Medium", "Use breadth-first search to find the fewest edges from A to D in A-B, A-C, B-D, C-D.", "2 edges", "A FIFO queue explores all nodes one step away before nodes two steps away."],
-    ["Rotting oranges", "Hard", "In a grid, each minute rotten oranges infect adjacent fresh ones. Describe an algorithm that returns the minutes needed, or -1 if some cannot be reached.", "Multi-source BFS from every initially rotten orange; return the greatest infection minute, or -1 if any fresh orange remains.", "Start the queue with all rotten cells and process them level by level."],
+    ["Serve two customers", "Easy", "The queue holds ['Ari', 'Bo', 'Cal'] front first. Dequeue count customers and return them in order.", "[\"Ari\",\"Bo\"]", "A queue serves items in the order they were added."],
+    ["Process jobs", "Easy", "The queue holds ['print', 'email'] front first. Return the next job without removing it.", "print", "The front of the queue is the next item to serve."],
+    ["Round-robin turns", "Medium", "Give jobs A and B one unit of work per turn until their remaining work [2, 1] is finished. Return the run order.", "[\"A\",\"B\",\"A\"]", "Re-enqueue a job after a turn only if it still has work."],
+    ["Shortest unweighted route", "Medium", "Nodes A, B, C, D are numbered 0-3 with undirected edges [[0,1],[0,2],[1,3],[2,3]]. Use breadth-first search to return the fewest edges from node 0 to node 3, or -1 if unreachable.", "2", "A FIFO queue explores all nodes one step away before nodes two steps away."],
+    ["Rotting oranges", "Hard", "In the grid, 2 is rotten, 1 is fresh, and 0 is empty. Each minute, rotten oranges infect up/down/left/right fresh neighbors. Return the minutes until no fresh orange remains, or -1 if that is impossible.", "4", "Start the queue with all rotten cells and process them level by level."],
   ],
   "linked-lists": [
-    ["Read the head", "Easy", "For a list with head value 7, print the head value without moving the pointer.", "7", "The head reference points at the first node."],
-    ["Append a node", "Easy", "Append value 4 to 1 -> 2 -> 3 and print the list values as JSON.", "[1,2,3,4]", "Walk to the tail node, then set its next pointer."],
-    ["Remove a value", "Medium", "Remove value 2 from 1 -> 2 -> 3 and print the remaining values.", "[1,3]", "A dummy head makes removing the first real node easier too."],
-    ["Detect a cycle", "Medium", "Return true if a linked list contains a cycle.", "true", "Use slow and fast pointers; if they meet, a cycle exists."],
-    ["Merge two sorted lists", "Hard", "Merge 1 -> 3 -> 5 and 2 -> 4 -> 6 into one sorted linked list.", "[1,2,3,4,5,6]", "Use a dummy head and attach the smaller current node each step."],
+    ["Read the head", "Easy", "Return the head value of 7 -> 3 -> 1 without moving the pointer.", "7", "The head reference points at the first node."],
+    ["Append a node", "Easy", "Append value 4 to 1 -> 2 -> 3 and return the head.", "[1,2,3,4]", "Walk to the tail node, then set its next pointer."],
+    ["Remove a value", "Medium", "Remove every node whose value equals target from 1 -> 2 -> 3 and return the head.", "[1,3]", "A dummy head makes removing the first real node easier too."],
+    ["Detect a cycle", "Medium", "Return true if the linked list contains a cycle. In the test, 3 -> 2 -> 0 -> -4 has its tail linked back to the node at index 1.", "true", "Use slow and fast pointers; if they meet, a cycle exists."],
+    ["Merge two sorted lists", "Hard", "Merge 1 -> 3 -> 5 and 2 -> 4 -> 6 into one sorted linked list and return its head.", "[1,2,3,4,5,6]", "Use a dummy head and attach the smaller current node each step."],
   ],
   "sliding-window": [
-    ["Average of a window", "Easy", "Find the average of the first two values in [3, 7, 2].", "5", "Add the window values and divide by the window size."],
-    ["Count matching window", "Easy", "How many length-2 windows in [1, 1, 2, 1] contain a sum of 2?", "2", "Check the windows [1,1], [1,2], and [2,1]."],
+    ["Average of a window", "Easy", "Return the average of the first size values in [3, 7, 2], using integer division.", "5", "Add the window values and divide by the window size."],
+    ["Count matching window", "Easy", "How many length-2 windows in [1, 1, 1, 2] sum to 2?", "2", "Check the windows [1,1], [1,1], and [1,2]."],
     ["Minimum length at least target", "Medium", "Find the shortest contiguous subarray with sum at least 7 in [2, 3, 1, 2, 4, 3].", "2", "Expand the right edge until the sum reaches 7, then shrink from the left."],
     ["Longest two-character substring", "Medium", "Find the longest substring containing at most two distinct characters in 'ccaabbb'.", "5", "Track character counts and shrink while more than two remain."],
-    ["Minimum covering substring", "Hard", "Find the shortest substring of 'ADOBECODEBANC' containing A, B, and C.", "BANC", "Maintain required character counts and record the smallest valid window."],
+    ["Minimum covering substring", "Hard", "Return the shortest substring of 'ADOBECODEBANC' containing every character of required ('ABC').", "BANC", "Maintain required character counts and record the smallest valid window."],
   ],
   trees: [
-    ["Count child nodes", "Easy", "A root has three direct children. How many edges connect the root to those children?", "3", "Each child has one connecting edge from its parent."],
-    ["Find the tree height", "Easy", "A tree's longest root-to-leaf path has 3 edges. What is its height measured in edges?", "3", "Height is the number of edges on the longest downward path."],
+    ["Count child nodes", "Easy", "A root has three direct children. Return the number of edges in the tree.", "3", "Each child has one connecting edge from its parent."],
+    ["Find the tree height", "Easy", "Return the binary tree's height measured in edges (the longest root-to-leaf path). The test tree's deepest leaf is 3 edges down.", "3", "Height is the number of edges on the longest downward path."],
     ["Level-order traversal", "Medium", "Return the breadth-first order for root 1 with children 2 and 3, where 2 has child 4.", "[1,2,3,4]", "Use a queue and add each node's children after visiting it."],
-    ["Detect a graph cycle", "Medium", "Describe how to detect a cycle in a directed graph using depth-first search.", "Track unvisited, active, and completed nodes; an edge to an active node identifies a cycle.", "A node on the current recursion path is active."],
-    ["Course ordering", "Hard", "Find a valid order for courses 0, 1, 2 where 1 depends on 0 and 2 depends on 1; report whether a cycle exists.", "A valid order is [0,1,2]; no cycle exists.", "Use topological sorting and count incoming prerequisite edges."],
+    ["Detect a graph cycle", "Medium", "Nodes are numbered 0 to n - 1 and each edge [from, to] is directed. Return whether the graph contains a cycle. The test graph is 0 -> 1 -> 2 -> 0.", "true", "A node on the current recursion path is active."],
+    ["Course ordering", "Hard", "Each prerequisite [course, required] means required must come first. Return a valid order for all courses, or an empty array if a cycle makes it impossible.", "[0,1,2]", "Use topological sorting and count incoming prerequisite edges."],
   ],
   "dynamic-programming": [
     ["Base cases", "Easy", "If ways(0)=1 and ways(1)=1 and ways(n)=ways(n-1)+ways(n-2), find ways(2).", "2", "Apply the recurrence using the two given base cases."],
@@ -685,7 +685,7 @@ const randomizedPracticeVariants: Record<string, SupplementalQuestion[]> = {
   ],
   "two-pointers": [
     ["Compare from both ends", "Easy", "Use two pointers to check whether 'level' reads the same in both directions.", "true", "Compare the outer characters, moving inward until they meet."],
-    ["Pair sum in a sorted list", "Medium", "Find whether any pair in [1, 2, 4, 6, 9] sums to 10 using two pointers.", "true (4 + 6)", "If the sum is too small, move the left pointer; if too large, move the right."],
+    ["Pair sum in a sorted list", "Medium", "Return whether any pair in [1, 2, 4, 6, 9] sums to 10 using two pointers.", "true", "If the sum is too small, move the left pointer; if too large, move the right."],
     ["Three values sum to zero", "Hard", "Find unique triplets summing to zero in [-1, 0, 1, 2, -1, -4].", "[[-1,-1,2],[-1,0,1]]", "Sort first, then fix one value and use two pointers while skipping duplicates."],
   ],
   stacks: [
@@ -694,14 +694,14 @@ const randomizedPracticeVariants: Record<string, SupplementalQuestion[]> = {
     ["Largest rectangle", "Hard", "Find the largest rectangle area in histogram [2, 4, 2, 1].", "6", "Use an increasing stack of bar indices to find each bar's widest valid span."],
   ],
   queues: [
-    ["First in line", "Easy", "A queue receives A, B, then C. Which item is removed first?", "A", "Queues serve the oldest item first."],
-    ["Time to finish", "Medium", "Jobs need [3, 1, 2] time units and run in that order, one at a time. When does job 3 finish?", "6 time units", "Add the processing times of all jobs through job 3."],
-    ["Shortest grid path", "Hard", "Describe how to find the shortest path through an unweighted grid with blocked cells.", "Use BFS from the start, enqueue each open neighboring cell once, and stop when the destination is reached; the BFS distance is shortest.", "Breadth-first search explores every position at distance d before distance d+1."],
+    ["First in line", "Easy", "A queue receives A, B, then C. Return the item that is removed first.", "A", "Queues serve the oldest item first."],
+    ["Time to finish", "Medium", "Jobs need [3, 1, 2] time units and run in that order, one at a time. Return the time at which the job at index finishes.", "6", "Add the processing times of all jobs through job 3."],
+    ["Shortest grid path", "Hard", "In the grid, 0 is open and 1 is blocked. Return the fewest up/down/left/right moves from the top-left cell to the bottom-right cell, or -1 if it cannot be reached.", "4", "Breadth-first search explores every position at distance d before distance d+1."],
   ],
   "linked-lists": [
-    ["Read the list head value", "Easy", "A linked list is 5 -> 8 -> 2. What value is at the head?", "5", "The head reference points to the first node."],
-    ["Remove a node", "Medium", "Remove the node with value 8 from 5 -> 8 -> 2 by changing links.", "5 -> 2", "Set the previous node's next pointer to the removed node's next pointer."],
-    ["Find a cycle", "Hard", "Determine whether a linked list contains a cycle using O(1) extra space.", "Use slow and fast pointers; if they meet, there is a cycle.", "Advance one pointer by one node and the other by two nodes."],
+    ["Read the list head value", "Easy", "A linked list is 5 -> 8 -> 2. Return the value at the head.", "5", "The head reference points to the first node."],
+    ["Remove a node", "Medium", "Remove the node with value 8 from 5 -> 8 -> 2 by changing links, then return the head.", "[5,2]", "Set the previous node's next pointer to the removed node's next pointer."],
+    ["Find a cycle", "Hard", "Return whether the linked list contains a cycle using O(1) extra space. In the test, 1 -> 2 -> 3 -> 4 has its tail linked back to index 1.", "true", "Advance one pointer by one node and the other by two nodes."],
   ],
   "system-design": [
     ["Cache hit or miss", "Easy", "A requested profile is already in the cache. What is this result called, and why is it useful?", "A cache hit; it avoids a slower database read and reduces response time.", "A hit means the requested value is already cached."],
@@ -714,12 +714,12 @@ const randomizedPracticeVariants: Record<string, SupplementalQuestion[]> = {
     ["Smallest subarray at least target", "Hard", "Find the minimum length of a contiguous subarray with sum at least 11 in [1, 2, 3, 4, 5].", "3", "Expand until the sum reaches the target, then shrink while it remains valid."],
   ],
   trees: [
-    ["Count the root", "Easy", "A tree has one root and no children. How many nodes does it contain?", "1", "The root itself is a node."],
+    ["Count the root", "Easy", "Return how many nodes are in the binary tree. The test tree is a single root with no children.", "1", "The root itself is a node."],
     ["Inorder traversal", "Medium", "Give the inorder traversal of a binary tree with root 2, left child 1, and right child 3.", "[1,2,3]", "Visit the left subtree, then the node, then the right subtree."],
-    ["Shortest path in an unweighted graph", "Hard", "Explain how to find the fewest edges from node S to node T in an unweighted graph.", "Run BFS from S with a distance map; the first discovered distance for T is the shortest path length.", "BFS visits nodes in increasing distance from the start."],
+    ["Shortest path in an unweighted graph", "Hard", "Edges are undirected. Return the fewest edges from start to target, or -1 if target is unreachable.", "3", "BFS visits nodes in increasing distance from the start."],
   ],
   "dynamic-programming": [
-    ["One-step staircase", "Easy", "How many ways are there to climb one step if you can move one or two steps at a time?", "1", "There is only one sequence of moves for a single step."],
+    ["One-step staircase", "Easy", "Return how many ways there are to climb one step if you can move one or two steps at a time.", "1", "There is only one sequence of moves for a single step."],
     ["Count coin combinations", "Medium", "How many ways can coins [1, 2] make amount 4 if order does not matter?", "3", "The combinations are 1+1+1+1, 1+1+2, and 2+2."],
     ["0/1 knapsack", "Hard", "Items have weights [2, 3, 4], values [4, 5, 7], and capacity 5. Find the maximum value when each item can be used once.", "9", "Compare taking or skipping each item while building best values by capacity."],
   ],
