@@ -78,14 +78,6 @@ function Learn({ onSelectTopic }: LearnProps) {
                 <h4>{topic.name}</h4>
                 <p className="topic-description">{topic.description}</p>
               </div>
-              {topic.progress > 0 ? (
-                <div className="topic-progress">
-                  <div><span style={{ width: `${topic.progress}%` }} /></div>
-                  <small>{topic.progress}% complete</small>
-                </div>
-              ) : (
-                <p className="topic-status">Ready to start</p>
-              )}
               <span className="open-topic" aria-hidden="true">Open topic &rarr;</span>
             </article>
           ))}
