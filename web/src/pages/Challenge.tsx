@@ -15,6 +15,10 @@ function getSubjectLabel(type: ProblemType) {
   return subjectFilters.find((filter) => filter.id === type)?.label ?? type;
 }
 
+function isCodingProblem(problem: Problem) {
+  return problem.type === "leetcode";
+}
+
 interface ChallengeProps {
   problem?: Problem;
 }
@@ -49,6 +53,12 @@ function Challenge({ problem }: ChallengeProps) {
     }
   }
 
+  const showCodePanels = isCodingProblem(selectedProblem);
+  const answerPlaceholder =
+    selectedProblem.type === "math"
+      ? "Show your work step by step, including formulas, substitutions, and the final answer..."
+      : "Explain your reasoning, show your work, or write your solution idea...";
+
   return (
     <section className="challenge-layout">
       <div className="problem-panel">
@@ -58,7 +68,7 @@ function Challenge({ problem }: ChallengeProps) {
           {selectedProblem.difficulty}
         </span>
         <p>{selectedProblem.prompt}</p>
-        {selectedProblem.starterCode && (
+        {showCodePanels && selectedProblem.starterCode && (
           <div className="starter-code-panel">
             <div className="code-window-header">
               <span className="window-dot red" />
@@ -71,7 +81,7 @@ function Challenge({ problem }: ChallengeProps) {
             </pre>
           </div>
         )}
-        {selectedProblem.expectedOutput && (
+        {showCodePanels && selectedProblem.expectedOutput && (
           <div className="expected-output-panel">
             <strong>Expected output</strong>
             <code>{selectedProblem.expectedOutput}</code>
@@ -87,7 +97,7 @@ function Challenge({ problem }: ChallengeProps) {
         <textarea
           id="answer"
           onChange={(event) => setAnswer(event.target.value)}
-          placeholder="Explain your reasoning, show your work, or write your solution idea..."
+          placeholder={answerPlaceholder}
           value={answer}
         />
         <button disabled={isChecking || !answer.trim()} onClick={handleSubmit} type="button">

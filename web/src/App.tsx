@@ -9,12 +9,19 @@ import TopicDetail from "./pages/TopicDetail";
 import { topics } from "./data/topics";
 import type { LearningExercise, PageName, Problem, Topic } from "./types";
 
+function topicToProblemType(topic: Topic): Problem["type"] {
+  if (topic.category === "Systems") return "system-design";
+  if (topic.category === "Math") return "math";
+  if (topic.category === "Science") return "science";
+  return "leetcode";
+}
+
 function exerciseToProblem(exercise: LearningExercise, topic: Topic): Problem {
   return {
     id: exercise.id,
     title: exercise.title,
     difficulty: exercise.difficulty,
-    type: topic.category === "Systems" ? "system-design" : "leetcode",
+    type: topicToProblemType(topic),
     topic: topic.name,
     prompt: exercise.instructions,
     hint: exercise.hint,
