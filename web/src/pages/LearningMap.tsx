@@ -349,144 +349,150 @@ function LearningMap({ onStartExercise }: LearningMapProps) {
 
   return (
     <section className="codecat-map-page" aria-label="CodeCat DSA adventure map">
-      <div className="map-layout-container">
-        <div className="map-hud" aria-label="Map progress">
-          <div className="hud-stat">
-            <span>Streak</span>
-            <strong>7</strong>
-          </div>
-          <div className="hud-stat wide">
-            <span>Lv {currentLevel}</span>
-            <strong>{totalXp} / 500 XP</strong>
-            <div className="hud-xp"><span style={{ width: `${Math.min((totalXp / 500) * 100, 100)}%` }} /></div>
-          </div>
-          <div className="hud-stat">
-            <span>Done</span>
-            <strong>{completedCount}/{totalChallenges}</strong>
+      <div className="map-section" aria-label="Adventure map">
+        <div className="map-layout-container">
+          <div className="codecat-map-shell">
+            <div className="codecat-map-board">
+              <div
+                className={`adventure-map-canvas ${isMapZoomed ? "zoomed" : ""}`}
+                onClick={zoomOutMap}
+                ref={mapViewportRef}
+              >
+                <div
+                  className="adventure-map-world"
+                  style={{ transform: cameraTransform }}
+                >
+                  <img
+                    alt="Illustrated fantasy islands connected by bridges and ocean paths"
+                    className="adventure-map-image"
+                    src="/assets/adventure-map.png"
+                  />
+
+                  {worlds.map((world) => (
+                    <MapTopicGroup
+                      completedIds={completedIds}
+                      isSelected={world.id === selectedWorld.id}
+                      key={world.id}
+                      onSelectWorld={selectWorld}
+                      problems={getTopicProblems(world.topicId)}
+                      world={world}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  className="compass-card"
+                  onClick={(event) => event.stopPropagation()}
+                  type="button"
+                  aria-label="Map compass"
+                >
+                  <span>N</span>
+                  <strong>*</strong>
+                  <span>S</span>
+                </button>
+              </div>
+            </div>
+
+            <aside className="map-topic-panel">
+              <div
+                aria-hidden="true"
+                className={`topic-preview ${selectedWorld.theme}`}
+                style={{ backgroundImage: `url("/assets/adventure-map.png")`, backgroundPosition: selectedWorld.previewPosition }}
+              />
+              <div className="panel-heading">
+                <div>
+                  <span className="panel-kicker">Current world</span>
+                  <h2>{selectedWorld.name}</h2>
+                </div>
+                <span className="status-pill">{getCompletedCount(selectedProblems, completedIds)}/8 done</span>
+              </div>
+              <p>{selectedWorld.description}</p>
+
+              <div className="panel-progress">
+                <div><span style={{ width: `${selectedCompletion}%` }} /></div>
+                <strong>{selectedCompletion}% complete</strong>
+              </div>
+
+              <div className="challenge-list grouped" aria-label={`${selectedWorld.name} problems`}>
+                {(["Easy", "Medium", "Hard"] as ProblemDifficulty[]).map((difficulty) => (
+                  <div className="challenge-group" key={difficulty}>
+                    <h3>{difficulty}</h3>
+                    {selectedProblems
+                      .filter((problem) => problem.difficulty === difficulty)
+                      .map((problem, index) => {
+                        const isCompleted = completedIds.includes(problem.id);
+                        return (
+                          <button
+                            className={`panel-challenge ${isCompleted ? "completed" : ""} ${problem.id === selectedProblem?.id ? "selected" : ""}`}
+                            key={problem.id}
+                            onClick={() => selectProblem(selectedWorld, problem)}
+                            type="button"
+                          >
+                            <span>{index + 1}</span>
+                            <strong>{problem.title}</strong>
+                            <small>{problem.difficulty} - {getProblemXp(problem.difficulty)} XP</small>
+                          </button>
+                        );
+                      })}
+                  </div>
+                ))}
+              </div>
+
+              {selectedProblem && (
+                <div className="challenge-detail-card">
+                  <span className="panel-kicker">Selected challenge</span>
+                  <h3>{selectedProblem.title}</h3>
+                  <p className="selected-challenge-description">{selectedProblem.instructions}</p>
+                  <div className="detail-meta compact">
+                    <span>{selectedProblem.difficulty}</span>
+                    <span>{selectedWorld.shortName}</span>
+                    <span>{getProblemXp(selectedProblem.difficulty)} XP</span>
+                  </div>
+                  <div className="panel-actions">
+                    <button className="start-problem-button" onClick={startSelectedProblem} type="button">
+                      Start Problem
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mini-map">
+                <div>
+                  <strong>Your Journey</strong>
+                  <span>{completedCount} / {totalChallenges} problems</span>
+                </div>
+                <div className="mini-path">
+                  {worlds.map((world) => (
+                    <span
+                      className={world.id === selectedWorld.id ? "active" : getWorldCompletion(world, completedIds) > 0 ? "done" : ""}
+                      key={world.id}
+                      title={world.shortName}
+                    />
+                  ))}
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
+      </div>
 
-        <div className="codecat-map-shell">
-          <div className="codecat-map-board">
-            <div
-              className={`adventure-map-canvas ${isMapZoomed ? "zoomed" : ""}`}
-              onClick={zoomOutMap}
-              ref={mapViewportRef}
-            >
-              <div
-                className="adventure-map-world"
-                style={{ transform: cameraTransform }}
-              >
-                <img
-                  alt="Illustrated fantasy islands connected by bridges and ocean paths"
-                  className="adventure-map-image"
-                  src="/assets/adventure-map.png"
-                />
-
-                {worlds.map((world) => (
-                  <MapTopicGroup
-                    completedIds={completedIds}
-                    isSelected={world.id === selectedWorld.id}
-                    key={world.id}
-                    onSelectWorld={selectWorld}
-                    problems={getTopicProblems(world.topicId)}
-                    world={world}
-                  />
-                ))}
-              </div>
-
-              <button
-                className="compass-card"
-                onClick={(event) => event.stopPropagation()}
-                type="button"
-                aria-label="Map compass"
-              >
-                <span>N</span>
-                <strong>*</strong>
-                <span>S</span>
-              </button>
+      <div className="stats-section" aria-label="Player progress">
+        <div className="map-layout-container">
+          <div className="map-hud" aria-label="Map progress">
+            <div className="hud-stat">
+              <span>Streak</span>
+              <strong>7</strong>
+            </div>
+            <div className="hud-stat wide">
+              <span>Lv {currentLevel}</span>
+              <strong>{totalXp} / 500 XP</strong>
+              <div className="hud-xp"><span style={{ width: `${Math.min((totalXp / 500) * 100, 100)}%` }} /></div>
+            </div>
+            <div className="hud-stat">
+              <span>Done</span>
+              <strong>{completedCount}/{totalChallenges}</strong>
             </div>
           </div>
-
-          <aside className="map-topic-panel">
-            <div
-              aria-hidden="true"
-              className={`topic-preview ${selectedWorld.theme}`}
-              style={{ backgroundImage: `url("/assets/adventure-map.png")`, backgroundPosition: selectedWorld.previewPosition }}
-            />
-            <div className="panel-heading">
-              <div>
-                <span className="panel-kicker">Current world</span>
-                <h2>{selectedWorld.name}</h2>
-              </div>
-              <span className="status-pill">{getCompletedCount(selectedProblems, completedIds)}/8 done</span>
-            </div>
-            <p>{selectedWorld.description}</p>
-
-            <div className="panel-progress">
-              <div><span style={{ width: `${selectedCompletion}%` }} /></div>
-              <strong>{selectedCompletion}% complete</strong>
-            </div>
-
-            <div className="challenge-list grouped" aria-label={`${selectedWorld.name} problems`}>
-              {(["Easy", "Medium", "Hard"] as ProblemDifficulty[]).map((difficulty) => (
-                <div className="challenge-group" key={difficulty}>
-                  <h3>{difficulty}</h3>
-                  {selectedProblems
-                    .filter((problem) => problem.difficulty === difficulty)
-                    .map((problem, index) => {
-                      const isCompleted = completedIds.includes(problem.id);
-                      return (
-                        <button
-                          className={`panel-challenge ${isCompleted ? "completed" : ""} ${problem.id === selectedProblem?.id ? "selected" : ""}`}
-                          key={problem.id}
-                          onClick={() => selectProblem(selectedWorld, problem)}
-                          type="button"
-                        >
-                          <span>{index + 1}</span>
-                          <strong>{problem.title}</strong>
-                          <small>{problem.difficulty} - {getProblemXp(problem.difficulty)} XP</small>
-                        </button>
-                      );
-                    })}
-                </div>
-              ))}
-            </div>
-
-            {selectedProblem && (
-              <div className="challenge-detail-card">
-                <span className="panel-kicker">Selected challenge</span>
-                <h3>{selectedProblem.title}</h3>
-                <p className="selected-challenge-description">{selectedProblem.instructions}</p>
-                <div className="detail-meta compact">
-                  <span>{selectedProblem.difficulty}</span>
-                  <span>{selectedWorld.shortName}</span>
-                  <span>{getProblemXp(selectedProblem.difficulty)} XP</span>
-                </div>
-                <div className="panel-actions">
-                  <button className="start-problem-button" onClick={startSelectedProblem} type="button">
-                    Start Problem
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="mini-map">
-              <div>
-                <strong>Your Journey</strong>
-                <span>{completedCount} / {totalChallenges} problems</span>
-              </div>
-              <div className="mini-path">
-                {worlds.map((world) => (
-                  <span
-                    className={world.id === selectedWorld.id ? "active" : getWorldCompletion(world, completedIds) > 0 ? "done" : ""}
-                    key={world.id}
-                    title={world.shortName}
-                  />
-                ))}
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
     </section>
