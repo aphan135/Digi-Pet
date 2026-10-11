@@ -481,3 +481,167 @@ export const learningContent: Record<string, TopicContent> = {
     "Connect the ramp to the cart's motion, propose a measurable quantity such as travel time or distance, and keep the cart and surface conditions consistent.",
   ),
 };
+
+type SupplementalQuestion = [
+  title: string,
+  difficulty: ProblemDifficulty,
+  instructions: string,
+  expectedOutput: string,
+  hint: string,
+];
+
+const supplementalPractice: Record<string, SupplementalQuestion[]> = {
+  arrays: [
+    ["Find the first item", "Easy", "Return the first value in [8, 3, 5] and print it.", "8", "Array indexes start at zero, so the first value is at index 0."],
+    ["Double each value", "Easy", "Transform [2, 4, 6] into a new array with every value doubled, then print it as JSON.", "[4,8,12]", "Map each value to value * 2."],
+    ["Range sum queries", "Medium", "For values [2, 4, 1, 5], answer the sum from index 1 through index 3 in constant time after preprocessing.", "10", "Build prefix sums so a range sum is one prefix difference."],
+    ["Group values by key", "Medium", "Group [{name:'Mia', team:'red'}, {name:'Leo', team:'blue'}, {name:'Ava', team:'red'}] by team and print each team's names as JSON.", "{\"red\":[\"Mia\",\"Ava\"],\"blue\":[\"Leo\"]}", "Use a hash map whose keys are team names and whose values are arrays."],
+    ["Longest consecutive run", "Hard", "Find the length of the longest consecutive integer sequence in [100, 4, 200, 1, 3, 2] using expected O(n) time.", "4", "Put values in a Set and only grow a sequence from a value with no predecessor."],
+  ],
+  stacks: [
+    ["Inspect the top", "Easy", "Push 'red', then 'blue' onto a stack. Print the top item without removing it.", "blue", "Peek at the last array element."],
+    ["Undo the latest action", "Easy", "Push 'type', 'bold', and 'save', then undo once and print the new top action.", "bold", "Undo removes only the most recent item."],
+    ["Check mixed brackets", "Medium", "Return whether the string '{[()]}' is balanced, respecting bracket types.", "true", "When a closer appears, it must match the most recently pushed opener."],
+    ["Simplify a file path", "Medium", "Normalize '/home//sam/./docs/../notes' and print the absolute path.", "/home/sam/notes", "Ignore empty and '.' parts; '..' removes the previous directory."],
+    ["Largest rectangle in bars", "Hard", "Find the largest rectangle area in histogram heights [2, 1, 5, 6, 2, 3] using a monotonic stack.", "10", "For each bar, determine the nearest shorter bar on both sides."],
+  ],
+  queues: [
+    ["Serve two customers", "Easy", "Enqueue 'Ari', 'Bo', and 'Cal'. Dequeue twice and print the names in order as JSON.", "[\"Ari\",\"Bo\"]", "A queue serves items in the order they were added."],
+    ["Process jobs", "Easy", "Start with an empty queue, add 'print' and 'email', then print the next job without removing it.", "print", "The front of the queue is the next item to serve."],
+    ["Round-robin turns", "Medium", "Give jobs A and B one unit of work per turn until their remaining work [2, 1] is finished. Print the run order.", "[\"A\",\"B\",\"A\"]", "Re-enqueue a job after a turn only if it still has work."],
+    ["Shortest unweighted route", "Medium", "Use breadth-first search to find the fewest edges from A to D in A-B, A-C, B-D, C-D.", "2 edges", "A FIFO queue explores all nodes one step away before nodes two steps away."],
+    ["Rotting oranges", "Hard", "In a grid, each minute rotten oranges infect adjacent fresh ones. Describe an algorithm that returns the minutes needed, or -1 if some cannot be reached.", "Multi-source BFS from every initially rotten orange; return the greatest infection minute, or -1 if any fresh orange remains.", "Start the queue with all rotten cells and process them level by level."],
+  ],
+  "sliding-window": [
+    ["Average of a window", "Easy", "Find the average of the first two values in [3, 7, 2].", "5", "Add the window values and divide by the window size."],
+    ["Count matching window", "Easy", "How many length-2 windows in [1, 1, 2, 1] contain a sum of 2?", "2", "Check the windows [1,1], [1,2], and [2,1]."],
+    ["Minimum length at least target", "Medium", "Find the shortest contiguous subarray with sum at least 7 in [2, 3, 1, 2, 4, 3].", "2", "Expand the right edge until the sum reaches 7, then shrink from the left."],
+    ["Longest two-character substring", "Medium", "Find the longest substring containing at most two distinct characters in 'ccaabbb'.", "5", "Track character counts and shrink while more than two remain."],
+    ["Minimum covering substring", "Hard", "Find the shortest substring of 'ADOBECODEBANC' containing A, B, and C.", "BANC", "Maintain required character counts and record the smallest valid window."],
+  ],
+  trees: [
+    ["Count child nodes", "Easy", "A root has three direct children. How many edges connect the root to those children?", "3", "Each child has one connecting edge from its parent."],
+    ["Find the tree height", "Easy", "A tree's longest root-to-leaf path has 3 edges. What is its height measured in edges?", "3", "Height is the number of edges on the longest downward path."],
+    ["Level-order traversal", "Medium", "Return the breadth-first order for root 1 with children 2 and 3, where 2 has child 4.", "[1,2,3,4]", "Use a queue and add each node's children after visiting it."],
+    ["Detect a graph cycle", "Medium", "Describe how to detect a cycle in a directed graph using depth-first search.", "Track unvisited, active, and completed nodes; an edge to an active node identifies a cycle.", "A node on the current recursion path is active."],
+    ["Course ordering", "Hard", "Find a valid order for courses 0, 1, 2 where 1 depends on 0 and 2 depends on 1; report whether a cycle exists.", "A valid order is [0,1,2]; no cycle exists.", "Use topological sorting and count incoming prerequisite edges."],
+  ],
+  "dynamic-programming": [
+    ["Base cases", "Easy", "If ways(0)=1 and ways(1)=1 and ways(n)=ways(n-1)+ways(n-2), find ways(2).", "2", "Apply the recurrence using the two given base cases."],
+    ["Reuse a subproblem", "Easy", "For Fibonacci with F(0)=0 and F(1)=1, find F(4).", "3", "Compute each value once: F(2)=1, F(3)=2, F(4)=3."],
+    ["Grid path count", "Medium", "Count paths through a 2-by-3 grid when moving only right or down from the top-left to the bottom-right.", "3", "Each cell's path count is the sum from the cell above and the cell to its left."],
+    ["Minimum climbing cost", "Medium", "Find the minimum cost to reach the top for costs [10, 15, 20], where each move climbs one or two steps.", "15", "For each step, take its cost plus the smaller of the previous one- or two-step totals."],
+    ["Longest increasing subsequence", "Hard", "Find the length of the longest strictly increasing subsequence in [10, 9, 2, 5, 3, 7, 101, 18].", "4", "Define a state for the best subsequence ending at each value, or maintain minimal tails."],
+  ],
+  "system-design": [
+    ["List core requirements", "Easy", "For a URL shortener, name two essential user actions and one reliability requirement.", "Create a short link, redirect a short link, and keep redirects available and reliable.", "Separate what users do from qualities the service must maintain."],
+    ["Estimate request volume", "Easy", "A service has 10,000 users, each making 20 requests per day. Estimate its average requests per second over a day.", "About 2.3 requests per second (200,000 / 86,400).", "Multiply users by daily requests, then divide by seconds per day."],
+    ["Choose storage", "Medium", "For a photo-sharing service, choose where to store original image bytes and where to store captions and ownership.", "Store image bytes in object storage and captions/ownership in a database with a reference to each image.", "Use storage suited to large binary objects and queryable structured records."],
+    ["Design an API", "Medium", "Propose an endpoint to create a short URL and name two fields in its request and response.", "For example POST /links with targetUrl; respond with shortCode and shortUrl.", "State the method, resource, input, and useful response."],
+    ["Handle a failing worker", "Hard", "Image resizing workers can fail after accepting a job. Describe how to avoid losing work and prevent duplicate processing.", "Persist jobs in a durable queue, retry with backoff, and make processing idempotent using a job/image version key.", "Consider durable delivery, retries, and safe repeated execution."],
+  ],
+  "algebra-2": [
+    ["Solve a linear equation", "Easy", "Solve 3x - 5 = 16 and show the inverse operations.", "x = 7", "Add 5 to both sides, then divide both sides by 3."],
+    ["Evaluate an exponent", "Easy", "Evaluate 2^3 * 2^2 using exponent rules.", "2^5 = 32", "When multiplying powers with the same base, add the exponents."],
+    ["Solve a quadratic", "Medium", "Solve x^2 - 9 = 0 and give both real solutions.", "x = -3 and x = 3", "Factor as (x - 3)(x + 3) and use the zero-product property."],
+    ["Find exponential growth", "Medium", "A $200 balance grows by 5% per year. Write a model and find the balance after two years.", "A(t) = 200(1.05)^t; A(2) = $220.50", "A 5% increase multiplies the balance by 1.05 each year."],
+    ["Solve for an exponent", "Hard", "Solve 3^(x+1) = 81 and explain how you identify x.", "x = 3, because 81 = 3^4", "Rewrite both sides with the same base, then equate exponents."],
+  ],
+  precalculus: [
+    ["Evaluate a function", "Easy", "For f(x) = 3x + 2, find f(4).", "14", "Substitute 4 everywhere you see x."],
+    ["Identify a domain restriction", "Easy", "State the real-number domain of f(x) = 1/(x - 5).", "All real numbers except x = 5", "A denominator cannot equal zero."],
+    ["Transform a graph", "Medium", "Describe how y = (x - 2)^2 + 3 is shifted compared with y = x^2.", "2 units right and 3 units up", "The value inside the squared expression shifts horizontally in the opposite sign direction."],
+    ["Find a sine value", "Medium", "Use the unit circle to find cos(2pi/3) and explain its sign.", "-1/2; cosine is the x-coordinate in Quadrant II", "The reference angle is pi/3 and the angle lies in Quadrant II."],
+    ["Model periodic motion", "Hard", "A wave has midline 4, amplitude 3, and period 2pi. Give one sine model with no horizontal shift.", "y = 4 + 3sin(x)", "Use midline + amplitude times sine; a period of 2pi gives frequency 1."],
+  ],
+  "calculus-1": [
+    ["Find a limit by substitution", "Easy", "Evaluate the limit of x + 4 as x approaches 3.", "7", "For a continuous linear function, substitute the approaching value."],
+    ["Interpret a derivative", "Easy", "A position function is s(t) = t^2. What does s'(3) represent, and what is its value?", "The instantaneous velocity at t = 3; s'(3) = 6", "Differentiate position with respect to time, then substitute t = 3."],
+    ["Use the chain rule", "Medium", "Differentiate y = (3x^2 + 1)^4.", "dy/dx = 24x(3x^2 + 1)^3", "Differentiate the outside power, then multiply by the derivative of the inside."],
+    ["Find critical points", "Medium", "Find the critical x-value of f(x) = x^2 - 6x + 5.", "x = 3", "Set f'(x) = 2x - 6 equal to zero."],
+    ["Optimize a rectangle", "Hard", "A rectangle has perimeter 24. Find the dimensions that maximize its area and justify why they are optimal.", "The maximizing dimensions are 6 by 6, giving a maximum area of 36 square units.", "Use 2L + 2W = 24, express area in one variable, and find its maximum."],
+  ],
+  "calculus-2": [
+    ["Find an antiderivative", "Easy", "Find an antiderivative of 5x^4.", "x^5 + C", "Increase the exponent by one and divide by the new exponent."],
+    ["Evaluate a definite integral", "Easy", "Evaluate the integral of 3 from x = 0 to x = 4.", "12", "The area is a rectangle with height 3 and width 4."],
+    ["Use substitution", "Medium", "Evaluate the integral of 2x cos(x^2) dx.", "sin(x^2) + C", "Let u = x^2, so du = 2x dx."],
+    ["Test a geometric series", "Medium", "Does the infinite series 6 + 3 + 1.5 + 0.75 + ... converge? If so, find its sum.", "It converges to 12 because |r| = 1/2 < 1.", "Use the geometric series sum a/(1-r) when the common ratio has magnitude less than 1."],
+    ["Integration by parts", "Hard", "Evaluate the integral of x e^x dx.", "e^x(x - 1) + C", "Choose u = x and dv = e^x dx, then apply integral u dv = uv - integral v du."],
+  ],
+  trigonometry: [
+    ["Convert degrees to radians", "Easy", "Convert 60 degrees to radians.", "pi/3", "Multiply degrees by pi/180."],
+    ["Find a right-triangle ratio", "Easy", "In a right triangle, the side opposite angle theta is 3 and the hypotenuse is 5. Find sin(theta).", "3/5", "Sine is opposite divided by hypotenuse."],
+    ["Use a Pythagorean identity", "Medium", "If sin(theta) = 3/5 and theta is in Quadrant I, find cos(theta).", "4/5", "Use sin^2(theta) + cos^2(theta) = 1 and choose the positive value in Quadrant I."],
+    ["Find wave features", "Medium", "For y = 2cos(3x), state the amplitude and period.", "Amplitude = 2; period = 2pi/3", "For A cos(Bx), amplitude is |A| and period is 2pi/|B|."],
+    ["Solve across a cycle", "Hard", "Solve 2cos(x) = -1 for 0 <= x < 2pi.", "x = 2pi/3 and x = 4pi/3", "Cosine is -1/2 in Quadrants II and III."],
+  ],
+  "calculus-3": [
+    ["Add two vectors", "Easy", "Add vectors <2, -1> and <3, 4>.", "<5, 3>", "Add corresponding components."],
+    ["Find a vector's magnitude", "Easy", "Find the magnitude of vector <3, 4>.", "5", "Use the square root of the sum of squared components."],
+    ["Compute a partial derivative", "Medium", "For f(x,y) = x^2y + 3y, find the partial derivative with respect to x.", "partial f / partial x = 2xy", "Treat y as a constant while differentiating with respect to x."],
+    ["Find a gradient", "Medium", "For f(x,y) = x^2 + y^2, find the gradient at (1,2).", "gradient f(1,2) = <2,4>", "The gradient contains the partial derivatives with respect to each variable."],
+    ["Find a directional derivative", "Hard", "For f(x,y) = x^2 + y^2, find the directional derivative at (1,2) in the direction of <3,4>.", "The unit direction is <3/5,4/5>; the directional derivative is 22/5.", "Take the dot product of the gradient at the point with the unit direction vector."],
+  ],
+  "discrete-math": [
+    ["Evaluate a proposition", "Easy", "If p is true and q is false, determine the truth value of p AND q.", "False", "AND is true only when both statements are true."],
+    ["Count a set", "Easy", "How many elements are in the set {2, 4, 6, 8}?", "4", "Count the distinct elements; a set does not count duplicates."],
+    ["Use a conditional", "Medium", "The statement p -> q is false only when p is true and q is false. Evaluate it when p is false and q is false.", "True", "An implication with a false premise is true under the standard truth table."],
+    ["Count combinations", "Medium", "How many ways can 2 students be chosen from 5 when order does not matter?", "10", "Use 5 choose 2, which is 5! / (2! 3!)."],
+    ["Prove a divisibility claim", "Hard", "Show that the sum of two even integers is even using a direct proof.", "Let the integers be 2a and 2b. Their sum is 2(a+b), which is divisible by 2.", "Represent each even integer as 2 times an integer."],
+  ],
+  statistics: [
+    ["Find the range", "Easy", "Find the range of the data 3, 8, 8, 11.", "8", "Subtract the minimum value from the maximum value."],
+    ["Find a simple probability", "Easy", "A fair six-sided die is rolled once. What is the probability of rolling a number greater than 4?", "1/3", "The successful outcomes are 5 and 6 out of 6 equally likely outcomes."],
+    ["Find an interquartile range", "Medium", "For sorted data 1, 2, 3, 4, 5, 6, 7, find Q1, Q3, and the interquartile range using the median-of-halves method.", "Q1 = 2; Q3 = 6; IQR = 4", "Find the medians of the lower and upper halves, excluding the overall median."],
+    ["Interpret a confidence interval", "Medium", "A 95% confidence interval for a population mean is [12, 16]. State a careful interpretation.", "We are 95% confident that the interval-making method captures the true population mean; this interval estimates it as 12 to 16.", "Interpret confidence as a property of the repeated sampling method, not a probability assigned to this fixed interval."],
+    ["Compare two groups", "Hard", "A study finds that students who sleep more have higher test scores. Explain why this association alone does not prove that more sleep caused the higher scores, and name one possible confounder.", "Association alone does not establish causation; prior achievement, health, or study time could affect both sleep and scores.", "Identify a third variable that could influence both measured quantities."],
+  ],
+  biology: [
+    ["Identify a cell structure", "Easy", "Which cell structure contains most DNA and helps direct many cell activities?", "The nucleus", "It is the membrane-bound structure that stores most genetic material in eukaryotic cells."],
+    ["Trace food-chain energy", "Easy", "In grass -> rabbit -> fox, identify the producer and the primary consumer.", "Grass is the producer; the rabbit is the primary consumer.", "Producers make their own food; primary consumers eat producers."],
+    ["Use a microscope scale", "Easy", "A cell image is 2 mm wide at 400x magnification. What is the cell's actual width?", "0.005 mm, or 5 micrometers", "Actual size equals image size divided by magnification."],
+    ["Explain photosynthesis", "Medium", "Describe how light energy, carbon dioxide, and water are used by a plant to make sugar, and name the gas released.", "Photosynthesis uses light energy to convert carbon dioxide and water into glucose; oxygen is released.", "Recall the reactants and products of photosynthesis."],
+    ["Predict inheritance", "Medium", "For a cross Aa x Aa where A is dominant, what fraction of offspring are expected to show the recessive trait?", "1/4 (25%), with genotype aa", "List the four equally likely allele combinations in a Punnett square."],
+    ["Explain natural selection", "Hard", "A bacterial population has heritable variation in antibiotic resistance. Explain how antibiotic use can change the frequency of resistance over generations.", "Antibiotics create a selection pressure; resistant bacteria are more likely to survive and reproduce, so resistance becomes more common in the population.", "Distinguish individuals surviving from inherited trait frequencies changing across generations."],
+    ["Analyze a food-web change", "Hard", "If a disease sharply reduces a prey population, predict one likely short-term effect on its predator and explain one possible indirect effect elsewhere in the food web.", "Predators may have less food and decline or switch prey; the alternative prey may decrease, or organisms eaten by the original prey may increase.", "Trace at least two linked feeding relationships and explain that the outcome depends on the web."],
+  ],
+  chemistry: [
+    ["Count subatomic particles", "Easy", "A neutral carbon-12 atom has atomic number 6. How many protons, neutrons, and electrons does it have?", "6 protons, 6 neutrons, and 6 electrons", "Atomic number gives protons; mass number minus atomic number gives neutrons."],
+    ["Classify a change", "Easy", "Is melting solid water a physical or chemical change? Explain briefly.", "A physical change; it changes state but remains H2O.", "Ask whether the substance's chemical identity changes."],
+    ["Read a chemical formula", "Easy", "How many hydrogen atoms are in one molecule of H2O?", "2 hydrogen atoms", "The subscript after an element symbol gives its atom count."],
+    ["Balance a reaction", "Medium", "Balance N2 + H2 -> NH3 using the smallest whole-number coefficients.", "N2 + 3H2 -> 2NH3", "Balance nitrogen first, then hydrogen, without changing subscripts."],
+    ["Explain reaction rate", "Medium", "Explain why crushing a solid reactant into a powder can make a reaction faster.", "Powder exposes more surface area, allowing more frequent effective collisions between reactant particles.", "Connect exposed surface area to opportunities for particle collisions."],
+    ["Determine limiting reactant", "Hard", "The reaction 2H2 + O2 -> 2H2O starts with 5 mol H2 and 2 mol O2. Identify the limiting reactant and maximum moles of water.", "O2 is limiting; at most 4 mol H2O form.", "Two moles of hydrogen are needed per mole of oxygen; compare the available mole ratio."],
+    ["Explain conservation of mass", "Hard", "A sealed container has 10 g of reactants before a reaction. What total mass of products should it have afterward, and why?", "10 g; atoms are rearranged during a chemical reaction, so total mass is conserved in a closed system.", "Count the system as closed and distinguish rearrangement from matter entering or leaving."],
+  ],
+  physics: [
+    ["Calculate average speed", "Easy", "A cyclist travels 120 meters in 20 seconds. Find the average speed and include units.", "6 m/s", "Average speed equals distance divided by elapsed time."],
+    ["Identify a net force", "Easy", "A box is pushed right with 10 N while friction pushes left with 4 N. Find the net force and direction.", "6 N to the right", "Choose a positive direction and combine forces with their signs."],
+    ["Convert a unit", "Easy", "Convert 2.5 kilometers to meters.", "2500 m", "One kilometer equals 1000 meters."],
+    ["Use Newton's second law", "Medium", "What acceleration results when a 4 kg object experiences a net force of 12 N?", "3 m/s^2", "Use F = ma and solve for acceleration."],
+    ["Calculate kinetic energy", "Medium", "Find the kinetic energy of a 2 kg object moving at 3 m/s.", "9 J", "Use KE = (1/2)mv^2."],
+    ["Explain momentum conservation", "Hard", "A moving cart collides with a stationary cart on a nearly frictionless track and they stick together. Explain what is conserved and how their shared speed can be found.", "Total momentum is conserved: m1v1 = (m1 + m2)vf, so vf = m1v1/(m1 + m2).", "Treat both carts as one isolated system and equate initial and final total momentum."],
+    ["Analyze a falling object", "Hard", "Ignoring air resistance, describe how a dropped object's speed and gravitational potential energy change as it falls, and explain where the energy goes.", "Speed increases, gravitational potential energy decreases, and that energy becomes kinetic energy; total mechanical energy is conserved.", "Use conservation of mechanical energy for the falling object-Earth system."],
+  ],
+};
+
+for (const [topicId, questions] of Object.entries(supplementalPractice)) {
+  const topicContent = learningContent[topicId];
+  if (!topicContent) {
+    throw new Error(`Supplemental practice references unknown topic "${topicId}".`);
+  }
+
+  topicContent.exercises.push(
+    ...questions.map(([title, difficulty, instructions, expectedOutput, hint]) =>
+      exercise(
+        `${topicId}-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        title,
+        difficulty,
+        instructions,
+        "",
+        expectedOutput,
+        hint,
+      ),
+    ),
+  );
+}

@@ -259,9 +259,11 @@ function PetWidget() {
       onPointerUp={finishDrag}
       style={{ left: position.x, top: position.y }}
     >
-      <div className="pet-peek-clip">
-        <PeekHead shown={phase === "peek"} />
-      </div>
+      {phase !== "open" && (
+        <div className="pet-peek-clip">
+          <PeekHead shown={phase === "peek"} />
+        </div>
+      )}
 
       {!open && (
         <button

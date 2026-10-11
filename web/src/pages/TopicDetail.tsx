@@ -48,6 +48,10 @@ function getTopicCopy(topic: Topic) {
 function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   const content = learningContent[topic.id];
   const copy = getTopicCopy(topic);
+  const difficultyOrder = { Easy: 0, Medium: 1, Hard: 2 };
+  const orderedExercises = [...content.exercises].sort(
+    (first, second) => difficultyOrder[first.difficulty] - difficultyOrder[second.difficulty],
+  );
 
   return (
     <section className={`topic-detail accent-${topic.accent}`}>
@@ -103,7 +107,7 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
             <p>{copy.practiceText}</p>
           </div>
           <div className="exercise-list">
-            {content.exercises.map((item, index) => (
+            {orderedExercises.map((item, index) => (
               <article className="exercise-card" key={item.id}>
                 <div className="exercise-card-main">
                   <span className="exercise-number">{String(index + 1).padStart(2, "0")}</span>

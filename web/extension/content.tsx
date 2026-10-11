@@ -4,7 +4,12 @@ import PetWidget from "../src/components/pet/PetWidget";
 import petStyles from "../src/styles/global.css?inline";
 
 function mountPet() {
-  if (document.getElementById("digi-pet-extension")) return;
+  if (
+    document.documentElement.hasAttribute("data-digi-pet-app") ||
+    document.getElementById("digi-pet-extension")
+  ) {
+    return;
+  }
 
   const host = document.createElement("div");
   host.id = "digi-pet-extension";
