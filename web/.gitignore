@@ -3,5 +3,4 @@
 !.env.example
 node_modules/
 dist/
-extension-dist/
 *.tsbuildinfo
