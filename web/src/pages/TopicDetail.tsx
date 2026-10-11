@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { learningContent } from "../data/learningContent";
+import { getCompletedProblemIds, subscribeToProgressUpdates } from "../services/progressService";
 import type { LearningExercise, Topic } from "../types";
 
 interface TopicDetailProps {
@@ -48,10 +50,18 @@ function getTopicCopy(topic: Topic) {
 function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   const content = learningContent[topic.id];
   const copy = getTopicCopy(topic);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
   const difficultyOrder = { Easy: 0, Medium: 1, Hard: 2 };
   const orderedExercises = [...content.exercises].sort(
     (first, second) => difficultyOrder[first.difficulty] - difficultyOrder[second.difficulty],
   );
+
+  useEffect(() => {
+    const refreshCompletions = () => setCompletedIds(getCompletedProblemIds());
+
+    refreshCompletions();
+    return subscribeToProgressUpdates(refreshCompletions);
+  }, []);
 
   return (
     <section className={`topic-detail accent-${topic.accent}`}>
@@ -108,7 +118,7 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
           </div>
           <div className="exercise-list">
             {orderedExercises.map((item, index) => (
-              <article className="exercise-card" key={item.id}>
+              <article className={`exercise-card ${completedIds.includes(item.id) ? "completed" : ""}`} key={item.id}>
                 <div className="exercise-card-main">
                   <span className="exercise-number">{String(index + 1).padStart(2, "0")}</span>
                   <div className="exercise-title">

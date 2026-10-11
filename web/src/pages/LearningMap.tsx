@@ -1,19 +1,11 @@
 import { useEffect, useState } from "react";
+import { learningContent } from "../data/learningContent";
+import { topics } from "../data/topics";
+import { getCompletedProblemIds, subscribeToProgressUpdates } from "../services/progressService";
+import type { LearningExercise, ProblemDifficulty, Topic } from "../types";
 
 interface LearningMapProps {
-  onSelectTopic: (topicId: string) => void;
-}
-
-type NodeState = "completed" | "current" | "locked" | "reward" | "boss";
-
-interface MapChallenge {
-  id: string;
-  title: string;
-  difficulty: "Easy" | "Medium" | "Hard";
-  xp: number;
-  state: NodeState;
-  optional?: boolean;
-  position: { x: number; y: number };
+  onStartExercise: (exercise: LearningExercise, topic: Topic) => void;
 }
 
 interface MapWorld {
@@ -22,14 +14,10 @@ interface MapWorld {
   name: string;
   shortName: string;
   description: string;
-  theme: "meadow" | "coast" | "peaks" | "forest" | "mountains" | "kingdom" | "labyrinth" | "castle";
+  theme: "meadow" | "coast" | "peaks" | "forest" | "kingdom" | "castle";
   position: { x: number; y: number };
   previewPosition: string;
-  completion: number;
-  challenges: MapChallenge[];
 }
-
-const STORAGE_KEY = "digipet-map-completed-challenges";
 
 const worlds: MapWorld[] = [
   {
@@ -41,29 +29,26 @@ const worlds: MapWorld[] = [
     theme: "meadow",
     position: { x: 24, y: 29 },
     previewPosition: "22% 34%",
-    completion: 38,
-    challenges: [
-      { id: "two-sum", title: "Two Sum", difficulty: "Easy", xp: 40, state: "completed", position: { x: 18, y: 31 } },
-      { id: "contains-duplicate", title: "Contains Duplicate", difficulty: "Easy", xp: 35, state: "completed", position: { x: 24, y: 27 } },
-      { id: "product-array", title: "Product of Array Except Self", difficulty: "Medium", xp: 70, state: "current", position: { x: 30, y: 33 } },
-      { id: "array-treasure", title: "Bonus Pattern Chest", difficulty: "Easy", xp: 25, state: "reward", optional: true, position: { x: 23, y: 38 } },
-    ],
   },
   {
-    id: "pointer-coast",
-    topicId: "arrays",
-    name: "Pointer Coast",
-    shortName: "Two Pointers",
-    description: "Walk inward, compare ends, and remove repeated scanning.",
+    id: "stacks-tower",
+    topicId: "stacks",
+    name: "Stack Tower",
+    shortName: "Stacks",
+    description: "Use last-in, first-out state for nested work and undo history.",
+    theme: "forest",
+    position: { x: 43, y: 43 },
+    previewPosition: "43% 43%",
+  },
+  {
+    id: "queue-coast",
+    topicId: "queues",
+    name: "Queue Coast",
+    shortName: "Queues",
+    description: "Process work in first-in, first-out order.",
     theme: "coast",
     position: { x: 20, y: 64 },
     previewPosition: "18% 66%",
-    completion: 0,
-    challenges: [
-      { id: "valid-palindrome", title: "Valid Palindrome", difficulty: "Easy", xp: 35, state: "locked", position: { x: 12, y: 66 } },
-      { id: "container-water", title: "Container With Most Water", difficulty: "Medium", xp: 80, state: "locked", position: { x: 20, y: 60 } },
-      { id: "three-sum", title: "3Sum Boss", difficulty: "Medium", xp: 110, state: "boss", position: { x: 28, y: 68 } },
-    ],
   },
   {
     id: "sliding-window-peaks",
@@ -74,44 +59,6 @@ const worlds: MapWorld[] = [
     theme: "peaks",
     position: { x: 50, y: 19 },
     previewPosition: "50% 20%",
-    completion: 0,
-    challenges: [
-      { id: "max-average", title: "Maximum Average Subarray", difficulty: "Easy", xp: 45, state: "locked", position: { x: 41, y: 23 } },
-      { id: "longest-substring", title: "Longest Substring Without Repeats", difficulty: "Medium", xp: 85, state: "locked", position: { x: 49, y: 28 } },
-      { id: "min-window", title: "Minimum Window Boss", difficulty: "Hard", xp: 140, state: "boss", position: { x: 58, y: 24 } },
-    ],
-  },
-  {
-    id: "hash-forest",
-    topicId: "arrays",
-    name: "Hash Forest",
-    shortName: "Hash Maps",
-    description: "Use lookup tables, counters, and saved state to skip brute force.",
-    theme: "forest",
-    position: { x: 43, y: 43 },
-    previewPosition: "51% 43%",
-    completion: 0,
-    challenges: [
-      { id: "valid-anagram", title: "Valid Anagram", difficulty: "Easy", xp: 35, state: "locked", position: { x: 47, y: 43 } },
-      { id: "top-k", title: "Top K Frequent Elements", difficulty: "Medium", xp: 85, state: "locked", position: { x: 53, y: 39 } },
-      { id: "hash-chest", title: "Frequency Chest", difficulty: "Easy", xp: 30, state: "reward", optional: true, position: { x: 60, y: 45 } },
-    ],
-  },
-  {
-    id: "linked-list-mountains",
-    topicId: "queues",
-    name: "Linked List Mountains",
-    shortName: "Linked Lists",
-    description: "Trace pointers carefully through chains, reversals, and cycles.",
-    theme: "mountains",
-    position: { x: 82, y: 31 },
-    previewPosition: "80% 32%",
-    completion: 0,
-    challenges: [
-      { id: "reverse-list", title: "Reverse Linked List", difficulty: "Easy", xp: 50, state: "locked", position: { x: 74, y: 33 } },
-      { id: "cycle-list", title: "Linked List Cycle", difficulty: "Easy", xp: 50, state: "locked", position: { x: 82, y: 26 } },
-      { id: "merge-k", title: "Merge K Lists Boss", difficulty: "Hard", xp: 150, state: "boss", position: { x: 90, y: 35 } },
-    ],
   },
   {
     id: "tree-kingdom",
@@ -122,28 +69,6 @@ const worlds: MapWorld[] = [
     theme: "kingdom",
     position: { x: 81, y: 65 },
     previewPosition: "81% 61%",
-    completion: 0,
-    challenges: [
-      { id: "max-depth", title: "Maximum Depth", difficulty: "Easy", xp: 45, state: "locked", position: { x: 73, y: 60 } },
-      { id: "invert-tree", title: "Invert Binary Tree", difficulty: "Easy", xp: 45, state: "locked", position: { x: 81, y: 67 } },
-      { id: "tree-boss", title: "Lowest Common Ancestor Boss", difficulty: "Medium", xp: 110, state: "boss", position: { x: 90, y: 69 } },
-    ],
-  },
-  {
-    id: "graph-labyrinth",
-    topicId: "trees",
-    name: "Graph Labyrinth",
-    shortName: "Graphs",
-    description: "Explore neighbors with BFS, DFS, visited sets, and shortest paths.",
-    theme: "labyrinth",
-    position: { x: 60, y: 45 },
-    previewPosition: "51% 73%",
-    completion: 0,
-    challenges: [
-      { id: "islands", title: "Number of Islands", difficulty: "Medium", xp: 95, state: "locked", position: { x: 43, y: 73 } },
-      { id: "clone-graph", title: "Clone Graph", difficulty: "Medium", xp: 100, state: "locked", position: { x: 52, y: 68 } },
-      { id: "graph-boss", title: "Course Schedule Boss", difficulty: "Medium", xp: 125, state: "boss", position: { x: 62, y: 77 } },
-    ],
   },
   {
     id: "dp-castle",
@@ -154,81 +79,102 @@ const worlds: MapWorld[] = [
     theme: "castle",
     position: { x: 52, y: 73 },
     previewPosition: "51% 40%",
-    completion: 0,
-    challenges: [
-      { id: "climbing-stairs", title: "Climbing Stairs", difficulty: "Easy", xp: 60, state: "locked", position: { x: 48, y: 50 } },
-      { id: "house-robber", title: "House Robber", difficulty: "Medium", xp: 100, state: "locked", position: { x: 54, y: 51 } },
-      { id: "dp-final-boss", title: "Final Interview Summit", difficulty: "Hard", xp: 200, state: "boss", position: { x: 52, y: 36 } },
-    ],
   },
 ];
 
-const totalChallenges = worlds.reduce((total, world) => total + world.challenges.length, 0);
+const difficultyOrder: Record<ProblemDifficulty, number> = { Easy: 0, Medium: 1, Hard: 2 };
 
-function getStoredCompletions() {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as string[]) : [];
-  } catch {
-    return [];
-  }
+function getTopicProblems(topicId: string) {
+  return [...(learningContent[topicId]?.exercises ?? [])]
+    .sort((a, b) => difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty])
+    .slice(0, 8);
 }
 
-function getChallengeState(challenge: MapChallenge, completedIds: string[]) {
-  if (completedIds.includes(challenge.id)) return "completed";
-  return challenge.state;
+function getProblemXp(difficulty: ProblemDifficulty) {
+  if (difficulty === "Easy") return 35;
+  if (difficulty === "Medium") return 70;
+  return 120;
+}
+
+function getTopicById(topicId: string) {
+  return topics.find((topic) => topic.id === topicId);
+}
+
+function getCompletedCount(problems: LearningExercise[], completedIds: string[]) {
+  return problems.filter((problem) => completedIds.includes(problem.id)).length;
 }
 
 function getWorldCompletion(world: MapWorld, completedIds: string[]) {
-  const completed = world.challenges.filter(
-    (challenge) => getChallengeState(challenge, completedIds) === "completed"
-  ).length;
-
-  return Math.round((completed / world.challenges.length) * 100);
+  const problems = getTopicProblems(world.topicId);
+  if (problems.length === 0) return 0;
+  return Math.round((getCompletedCount(problems, completedIds) / problems.length) * 100);
 }
 
-function NodeIcon({ state }: { state: NodeState }) {
-  if (state === "completed") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M20 6 9 17l-5-5" />
-      </svg>
-    );
-  }
+function polarToCartesian(cx: number, cy: number, radius: number, angle: number) {
+  const radians = ((angle - 90) * Math.PI) / 180;
+  return {
+    x: cx + radius * Math.cos(radians),
+    y: cy + radius * Math.sin(radians),
+  };
+}
 
-  if (state === "locked") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <rect x="5" y="10" width="14" height="10" rx="2" />
-        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-      </svg>
-    );
-  }
+function segmentPath(index: number) {
+  const gap = 4;
+  const startAngle = index * 45 + gap / 2;
+  const endAngle = (index + 1) * 45 - gap / 2;
+  const outerStart = polarToCartesian(50, 50, 45, endAngle);
+  const outerEnd = polarToCartesian(50, 50, 45, startAngle);
+  const innerStart = polarToCartesian(50, 50, 27, endAngle);
+  const innerEnd = polarToCartesian(50, 50, 27, startAngle);
 
-  if (state === "reward") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M5 9h14v10H5z" />
-        <path d="M3 7h18v4H3z" />
-        <path d="M12 7v12" />
-        <path d="M9 7c-2.5 0-3-4 0-4 1.5 0 2.5 2 3 4" />
-        <path d="M15 7c2.5 0 3-4 0-4-1.5 0-2.5 2-3 4" />
-      </svg>
-    );
-  }
+  return [
+    `M ${outerStart.x} ${outerStart.y}`,
+    `A 45 45 0 0 0 ${outerEnd.x} ${outerEnd.y}`,
+    `L ${innerEnd.x} ${innerEnd.y}`,
+    `A 27 27 0 0 1 ${innerStart.x} ${innerStart.y}`,
+    "Z",
+  ].join(" ");
+}
 
-  if (state === "boss") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="m4 18 1.5-10 5 4 1.5-7 1.5 7 5-4L20 18z" />
-        <path d="M5 21h14" />
-      </svg>
-    );
-  }
+function difficultyColor(difficulty: ProblemDifficulty) {
+  if (difficulty === "Easy") return "#65C99C";
+  if (difficulty === "Medium") return "#F6B94D";
+  return "#AF89E8";
+}
+
+function ProgressWheel({
+  problems,
+  completedIds,
+}: {
+  problems: LearningExercise[];
+  completedIds: string[];
+}) {
+  const completed = getCompletedCount(problems, completedIds);
+  const wheelProblems = [
+    ...problems,
+    ...Array.from({ length: Math.max(0, 8 - problems.length) }, (_, index) => ({
+      id: `empty-${index}`,
+      difficulty: "Easy" as ProblemDifficulty,
+    })),
+  ].slice(0, 8);
 
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="m9 6 8 6-8 6z" />
+    <svg className="progress-wheel" viewBox="0 0 100 100" aria-hidden="true">
+      {wheelProblems.map((problem, index) => {
+        const isRealProblem = problems.some((item) => item.id === problem.id);
+        const isCompleted = isRealProblem && completedIds.includes(problem.id);
+        return (
+          <path
+            d={segmentPath(index)}
+            fill={isCompleted ? difficultyColor(problem.difficulty) : "#DADCE5"}
+            key={problem.id}
+          />
+        );
+      })}
+      <circle className="progress-wheel-center" cx="50" cy="50" r="23" />
+      <text className="progress-wheel-count" x="50" y="54">
+        {completed}/8
+      </text>
     </svg>
   );
 }
@@ -236,89 +182,78 @@ function NodeIcon({ state }: { state: NodeState }) {
 interface MapTopicGroupProps {
   world: MapWorld;
   completedIds: string[];
+  problems: LearningExercise[];
   isSelected: boolean;
-  isLocked: boolean;
-  selectedChallengeId: string;
   onSelectWorld: (world: MapWorld) => void;
-  onSelectChallenge: (world: MapWorld, challenge: MapChallenge) => void;
 }
 
 function MapTopicGroup({
   world,
   completedIds,
+  problems,
   isSelected,
-  isLocked,
-  selectedChallengeId,
   onSelectWorld,
-  onSelectChallenge,
 }: MapTopicGroupProps) {
   return (
     <div
-      className={`map-topic-group ${world.theme} ${isSelected ? "selected" : ""} ${isLocked ? "locked" : ""}`}
+      className={`map-topic-group ${world.theme} ${isSelected ? "selected" : ""}`}
       style={{ left: `${world.position.x}%`, top: `${world.position.y}%` }}
     >
+      <button className="world-marker" onClick={() => onSelectWorld(world)} type="button">
+        <span className="world-label">{world.shortName}</span>
+      </button>
       <button
-        className="world-marker"
+        aria-label={`${world.name} progress wheel`}
+        className="progress-wheel-button"
         onClick={() => onSelectWorld(world)}
         type="button"
       >
-        <span className="world-label">{world.shortName}</span>
+        <ProgressWheel completedIds={completedIds} problems={problems} />
       </button>
-      <div className="topic-node-row" aria-label={`${world.name} challenge nodes`}>
-        {world.challenges.map((challenge) => {
-          const state = getChallengeState(challenge, completedIds);
-          return (
-            <button
-              aria-label={`${challenge.title}, ${state}`}
-              className={`challenge-dot ${state} ${challenge.id === selectedChallengeId ? "selected" : ""}`}
-              key={challenge.id}
-              onClick={() => onSelectChallenge(world, challenge)}
-              type="button"
-            >
-              <NodeIcon state={state} />
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }
 
-function LearningMap({ onSelectTopic }: LearningMapProps) {
+function LearningMap({ onStartExercise }: LearningMapProps) {
   const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [selectedWorldId, setSelectedWorldId] = useState(worlds[0].id);
-  const [selectedChallengeId, setSelectedChallengeId] = useState("product-array");
+  const [selectedProblemId, setSelectedProblemId] = useState(getTopicProblems(worlds[0].topicId)[0]?.id ?? "");
 
   useEffect(() => {
-    setCompletedIds(getStoredCompletions());
+    const refreshCompletions = () => setCompletedIds(getCompletedProblemIds());
+
+    refreshCompletions();
+    return subscribeToProgressUpdates(refreshCompletions);
   }, []);
 
   const selectedWorld = worlds.find((world) => world.id === selectedWorldId) ?? worlds[0];
-  const selectedChallenge =
-    selectedWorld.challenges.find((challenge) => challenge.id === selectedChallengeId) ??
-    selectedWorld.challenges[0];
-  const completedCount = completedIds.length + 2;
-  const totalXp = 250 + completedIds.length * 45;
-  const currentLevel = Math.max(5, Math.floor(totalXp / 120));
-  const currentState = getChallengeState(selectedChallenge, completedIds);
+  const selectedTopic = getTopicById(selectedWorld.topicId);
+  const selectedProblems = getTopicProblems(selectedWorld.topicId);
+  const selectedProblem =
+    selectedProblems.find((problem) => problem.id === selectedProblemId) ?? selectedProblems[0];
+  const mapProblemIds = worlds.flatMap((world) => getTopicProblems(world.topicId).map((problem) => problem.id));
+  const completedCount = completedIds.filter((id) => mapProblemIds.includes(id)).length;
   const selectedCompletion = getWorldCompletion(selectedWorld, completedIds);
-  const visibleWorlds = worlds.filter((world) => world.id !== "graph-labyrinth");
+  const totalChallenges = mapProblemIds.length;
+  const totalXp = 250 + completedIds.reduce((total, id) => {
+    const problem = worlds.flatMap((world) => getTopicProblems(world.topicId)).find((item) => item.id === id);
+    return problem ? total + getProblemXp(problem.difficulty) : total;
+  }, 0);
+  const currentLevel = Math.max(5, Math.floor(totalXp / 120));
 
   function selectWorld(world: MapWorld) {
     setSelectedWorldId(world.id);
-    setSelectedChallengeId(world.challenges[0].id);
+    setSelectedProblemId(getTopicProblems(world.topicId)[0]?.id ?? "");
   }
 
-  function selectChallenge(world: MapWorld, challenge: MapChallenge) {
+  function selectProblem(world: MapWorld, problem: LearningExercise) {
     setSelectedWorldId(world.id);
-    setSelectedChallengeId(challenge.id);
+    setSelectedProblemId(problem.id);
   }
 
-  function completeChallenge() {
-    if (currentState === "locked") return;
-    const next = Array.from(new Set([...completedIds, selectedChallenge.id]));
-    setCompletedIds(next);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  function startSelectedProblem() {
+    if (!selectedProblem || !selectedTopic) return;
+    onStartExercise(selectedProblem, selectedTopic);
   }
 
   return (
@@ -343,120 +278,109 @@ function LearningMap({ onSelectTopic }: LearningMapProps) {
         <div className="codecat-map-shell">
           <div className="codecat-map-board">
             <div className="adventure-map-canvas">
-            <img
-              alt="Illustrated fantasy islands connected by bridges and ocean paths"
-              className="adventure-map-image"
-              src="/assets/adventure-map.png"
-            />
-
-            <button className="compass-card" type="button" aria-label="Map compass">
-              <span>N</span>
-              <strong>✦</strong>
-              <span>S</span>
-            </button>
-
-            {visibleWorlds.map((world, index) => (
-              <MapTopicGroup
-                completedIds={completedIds}
-                isLocked={index > 0 && getWorldCompletion(world, completedIds) === 0}
-                isSelected={world.id === selectedWorld.id}
-                key={world.id}
-                onSelectChallenge={selectChallenge}
-                onSelectWorld={selectWorld}
-                selectedChallengeId={selectedChallenge.id}
-                world={world}
+              <img
+                alt="Illustrated fantasy islands connected by bridges and ocean paths"
+                className="adventure-map-image"
+                src="/assets/adventure-map.png"
               />
-            ))}
 
-            </div>
-          </div>
-
-          <aside className="map-topic-panel">
-          <div
-            aria-hidden="true"
-            className={`topic-preview ${selectedWorld.theme}`}
-            style={{ backgroundImage: `url("/assets/adventure-map.png")`, backgroundPosition: selectedWorld.previewPosition }}
-          />
-          <div className="panel-heading">
-            <div>
-              <span className="panel-kicker">Current world</span>
-              <h2>{selectedWorld.name}</h2>
-            </div>
-            <span className="status-pill">{currentState === "locked" ? "Locked" : "In Progress"}</span>
-          </div>
-          <p>{selectedWorld.description}</p>
-
-          <div className="panel-progress">
-            <div><span style={{ width: `${selectedCompletion}%` }} /></div>
-            <strong>{selectedCompletion}% complete</strong>
-          </div>
-
-          <div className="challenge-list" aria-label={`${selectedWorld.name} challenges`}>
-            {selectedWorld.challenges.map((challenge, index) => {
-              const state = getChallengeState(challenge, completedIds);
-              return (
-                <button
-                  className={`panel-challenge ${state} ${challenge.id === selectedChallenge.id ? "selected" : ""}`}
-                  key={challenge.id}
-                  onClick={() => selectChallenge(selectedWorld, challenge)}
-                  type="button"
-                >
-                  <span><NodeIcon state={state} /></span>
-                  <strong>{index + 1}. {challenge.title}</strong>
-                  <small>{challenge.difficulty} · {challenge.xp} XP</small>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="challenge-detail-card">
-            <span className="panel-kicker">Selected challenge</span>
-            <h3>{selectedChallenge.title}</h3>
-            <p>
-              {currentState === "locked"
-                ? "Complete the previous required nodes to unlock this challenge."
-                : "Replay this node or open the topic lesson before starting the challenge."}
-            </p>
-            <div className="detail-meta compact">
-              <span>{selectedChallenge.difficulty}</span>
-              <span>{selectedWorld.shortName}</span>
-              <span>{selectedChallenge.xp} XP</span>
-            </div>
-            <div className="panel-actions">
-              <button
-                className="start-problem-button"
-                disabled={currentState === "locked"}
-                onClick={() => onSelectTopic(selectedWorld.topicId)}
-                type="button"
-              >
-                Start Problem
+              <button className="compass-card" type="button" aria-label="Map compass">
+                <span>N</span>
+                <strong>*</strong>
+                <span>S</span>
               </button>
-              <button
-                className="complete-demo-button"
-                disabled={currentState === "locked"}
-                onClick={completeChallenge}
-                type="button"
-              >
-                Mark Complete
-              </button>
-            </div>
-          </div>
 
-          <div className="mini-map">
-            <div>
-              <strong>Your Journey</strong>
-              <span>{completedCount} / {totalChallenges} nodes</span>
-            </div>
-            <div className="mini-path">
-              {visibleWorlds.map((world) => (
-                <span
-                  className={world.id === selectedWorld.id ? "active" : getWorldCompletion(world, completedIds) > 0 ? "done" : ""}
+              {worlds.map((world) => (
+                <MapTopicGroup
+                  completedIds={completedIds}
+                  isSelected={world.id === selectedWorld.id}
                   key={world.id}
-                  title={world.shortName}
+                  onSelectWorld={selectWorld}
+                  problems={getTopicProblems(world.topicId)}
+                  world={world}
                 />
               ))}
             </div>
           </div>
+
+          <aside className="map-topic-panel">
+            <div
+              aria-hidden="true"
+              className={`topic-preview ${selectedWorld.theme}`}
+              style={{ backgroundImage: `url("/assets/adventure-map.png")`, backgroundPosition: selectedWorld.previewPosition }}
+            />
+            <div className="panel-heading">
+              <div>
+                <span className="panel-kicker">Current world</span>
+                <h2>{selectedWorld.name}</h2>
+              </div>
+              <span className="status-pill">{getCompletedCount(selectedProblems, completedIds)}/8 done</span>
+            </div>
+            <p>{selectedWorld.description}</p>
+
+            <div className="panel-progress">
+              <div><span style={{ width: `${selectedCompletion}%` }} /></div>
+              <strong>{selectedCompletion}% complete</strong>
+            </div>
+
+            <div className="challenge-list grouped" aria-label={`${selectedWorld.name} problems`}>
+              {(["Easy", "Medium", "Hard"] as ProblemDifficulty[]).map((difficulty) => (
+                <div className="challenge-group" key={difficulty}>
+                  <h3>{difficulty}</h3>
+                  {selectedProblems
+                    .filter((problem) => problem.difficulty === difficulty)
+                    .map((problem, index) => {
+                      const isCompleted = completedIds.includes(problem.id);
+                      return (
+                        <button
+                          className={`panel-challenge ${isCompleted ? "completed" : ""} ${problem.id === selectedProblem?.id ? "selected" : ""}`}
+                          key={problem.id}
+                          onClick={() => selectProblem(selectedWorld, problem)}
+                          type="button"
+                        >
+                          <span>{index + 1}</span>
+                          <strong>{problem.title}</strong>
+                          <small>{problem.difficulty} - {getProblemXp(problem.difficulty)} XP</small>
+                        </button>
+                      );
+                    })}
+                </div>
+              ))}
+            </div>
+
+            {selectedProblem && (
+              <div className="challenge-detail-card">
+                <span className="panel-kicker">Selected challenge</span>
+                <h3>{selectedProblem.title}</h3>
+                <p>{selectedProblem.instructions}</p>
+                <div className="detail-meta compact">
+                  <span>{selectedProblem.difficulty}</span>
+                  <span>{selectedWorld.shortName}</span>
+                  <span>{getProblemXp(selectedProblem.difficulty)} XP</span>
+                </div>
+                <div className="panel-actions">
+                  <button className="start-problem-button" onClick={startSelectedProblem} type="button">
+                    Start Problem
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="mini-map">
+              <div>
+                <strong>Your Journey</strong>
+                <span>{completedCount} / {totalChallenges} problems</span>
+              </div>
+              <div className="mini-path">
+                {worlds.map((world) => (
+                  <span
+                    className={world.id === selectedWorld.id ? "active" : getWorldCompletion(world, completedIds) > 0 ? "done" : ""}
+                    key={world.id}
+                    title={world.shortName}
+                  />
+                ))}
+              </div>
+            </div>
           </aside>
         </div>
       </div>

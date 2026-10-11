@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { checkAnswer } from "../services/answerService";
 import { getFeaturedProblem } from "../services/problemService";
+import { markProblemCompleted } from "../services/progressService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
 
 const subjectFilters: { id: ProblemType | "all"; label: string }[] = [
@@ -46,6 +47,9 @@ function Challenge({ problem }: ChallengeProps) {
     try {
       const result = await checkAnswer(selectedProblem, answer);
       setFeedback(result);
+      if (result.isCorrect) {
+        markProblemCompleted(selectedProblem.id);
+      }
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Could not check answer.");
     } finally {

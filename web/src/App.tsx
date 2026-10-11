@@ -78,7 +78,7 @@ function App() {
           onStartExercise={startExercise}
         />
       ) : (
-        <LearningMap onSelectTopic={selectTopic} />
+        <LearningMap onStartExercise={startExercise} />
       );
     }
     if (activePage === "dashboard") return <Dashboard />;
