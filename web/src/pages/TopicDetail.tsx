@@ -9,7 +9,6 @@ interface TopicDetailProps {
 
 const topicDetailCopy = {
   coding: {
-    exerciseLabel: "code labs",
     guideTitle: "Three levels of understanding",
     guideText: "Move through the mental model before testing it in code.",
     practiceEyebrow: "Practice lab",
@@ -17,7 +16,6 @@ const topicDetailCopy = {
     practiceText: "Pick an exercise, write your approach on the Challenge page, then submit it for review.",
   },
   math: {
-    exerciseLabel: "practice checks",
     guideTitle: "Three steps to mastery",
     guideText: "Learn the idea, practice the method, then explain each step clearly.",
     practiceEyebrow: "Problem set",
@@ -25,7 +23,6 @@ const topicDetailCopy = {
     practiceText: "Pick a problem, show your work on the Challenge page, then submit it for review.",
   },
   science: {
-    exerciseLabel: "review prompts",
     guideTitle: "Three ways to understand it",
     guideText: "Start with observations, connect the evidence, then explain the mechanism.",
     practiceEyebrow: "Review prompt",
@@ -33,7 +30,6 @@ const topicDetailCopy = {
     practiceText: "Pick a prompt, write your explanation on the Challenge page, then submit it for review.",
   },
   systems: {
-    exerciseLabel: "design drills",
     guideTitle: "Three levels of design thinking",
     guideText: "Clarify the product, choose the architecture, then reason through tradeoffs.",
     practiceEyebrow: "Design drill",
@@ -85,6 +81,14 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
               <p className="level-label">{level.label}</p>
               <h4>{level.title}</h4>
               <p>{level.explanation}</p>
+              <div className="level-examples">
+                <strong>Examples</strong>
+                <ul>
+                  {level.examples.map((example) => (
+                    <li key={example}>{example}</li>
+                  ))}
+                </ul>
+              </div>
               <small>{level.takeaway}</small>
             </article>
           ))}

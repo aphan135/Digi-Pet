@@ -2525,6 +2525,29 @@ textarea:focus-visible {
   font-size: 0.9rem;
 }
 
+.level-examples {
+  color: #5e6862;
+  font-size: 0.84rem;
+}
+
+.level-examples strong {
+  color: #25332c;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.level-examples ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.level-examples li {
+  padding-left: 0.15rem;
+}
+
 .level-card small {
   align-self: end;
   padding-top: 0.8rem;

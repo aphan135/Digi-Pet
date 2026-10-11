@@ -34,6 +34,7 @@ export interface LearningLevel {
   label: "Beginner" | "Intermediate" | "Advanced";
   title: string;
   explanation: string;
+  examples: [string, string];
   takeaway: string;
 }
 
