@@ -123,6 +123,7 @@ function ExtensionPet() {
     <PetWidget
       dailyChallengeCompleted={challengeCompleted}
       dailyReminderReady={reminderReady}
+      enableReminderControls
     />
   );
 }

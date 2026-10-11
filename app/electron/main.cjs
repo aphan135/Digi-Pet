@@ -10,7 +10,7 @@ const CORNERS = ['br', 'bl', 'tr', 'tl']
 const DEFAULTS = {
   coat: 'Pink',
   corner: 'br',
-  link: { url: 'https://yourwebsite.com', label: 'Visit yourwebsite.com →' },
+  link: { url: 'https://digi-pet-indol.vercel.app/', label: 'Visit digi-pet-indol.vercel.app →' },
   quotes: [
     { text: 'Act as if what you do makes a difference. It does.', by: 'William James' },
     { text: 'It always seems impossible until it’s done.', by: 'Nelson Mandela' },
@@ -77,7 +77,12 @@ function createWindow() {
 
   // The quote link opens in the real browser; never navigate the pet window.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url)
+    if (/^https?:\/\//i.test(url)) {
+      // A screen-sized top window that isn't click-through makes Chromium browsers think they're
+      // fully occluded, so they stop painting (gray tab). Go click-through before handing off.
+      win.setIgnoreMouseEvents(true, { forward: true })
+      shell.openExternal(url)
+    }
     return { action: 'deny' }
   })
   win.webContents.on('will-navigate', (e) => e.preventDefault())

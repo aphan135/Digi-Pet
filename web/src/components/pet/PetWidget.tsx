@@ -6,6 +6,15 @@ import type {
 } from "react";
 import { usePetTip } from "../../hooks/usePetTip";
 import { onPetCelebration } from "../../services/petCelebration";
+import {
+  defaultReminderSettings,
+  loadReminderSettings,
+  localDateKey,
+  markReminderShown,
+  nextReminderDate,
+  saveReminderSettings,
+  type ReminderSettings,
+} from "../../services/reminderSettings";
 
 const catColors = {
   fur: "#FFC2D6",
@@ -64,6 +73,7 @@ const CONGRATULATIONS = [
 const DIGI_PET_URL = "https://digi-pet-indol.vercel.app/";
 
 interface PetWidgetProps {
+  enableReminderControls?: boolean;
   dailyReminderReady?: boolean;
   dailyChallengeCompleted?: boolean;
 }
@@ -246,6 +256,7 @@ function PeekHead({ shown }: PeekHeadProps) {
 }
 
 function PetWidget({
+  enableReminderControls = false,
   dailyReminderReady = false,
   dailyChallengeCompleted = false,
 }: PetWidgetProps) {
@@ -271,6 +282,10 @@ function PetWidget({
   const [summarizingMessageIndex, setSummarizingMessageIndex] = useState<number | null>(null);
   const [summaryError, setSummaryError] = useState<{ index: number; message: string } | null>(null);
   const chatHistoryRef = useRef<HTMLDivElement | null>(null);
+  const [reminderSettings, setReminderSettings] = useState<ReminderSettings>(defaultReminderSettings);
+  const [reminderDraft, setReminderDraft] = useState<ReminderSettings>(defaultReminderSettings);
+  const [reminderStatus, setReminderStatus] = useState("");
+  const [reminderMessage, setReminderMessage] = useState<{ category: string; text: string } | null>(null);
   const stageRef = useRef<HTMLElement | null>(null);
   const dailyReminderVisibleRef = useRef(false);
   const chatOpenRef = useRef(chatOpen);
@@ -279,6 +294,7 @@ function PetWidget({
   const positionRef = useRef(position);
   const suppressClickRef = useRef(false);
   const { message, nextTip } = usePetTip();
+  const displayMessage = reminderMessage ?? message;
   const nextTipRef = useRef(nextTip);
   nextTipRef.current = nextTip;
   const open = phase === "open";
@@ -313,6 +329,45 @@ function PetWidget({
       );
     });
   }, []);
+
+  useEffect(() => {
+    if (!enableReminderControls) return;
+
+    let isCurrent = true;
+    loadReminderSettings().then((settings) => {
+      if (!isCurrent) return;
+      setReminderSettings(settings);
+      setReminderDraft(settings);
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [enableReminderControls]);
+
+  useEffect(() => {
+    if (!enableReminderControls || !reminderSettings.enabled) return;
+
+    const nextDate = nextReminderDate(reminderSettings);
+    const timer = window.setTimeout(() => {
+      const today = localDateKey();
+      if (reminderSettings.lastShownDate === today) return;
+
+      setReminderMessage({
+        category: "Challenge reminder",
+        text: reminderSettings.message,
+      });
+      setPhase("open");
+      setIsPinned(false);
+      setIdleAnimation(null);
+      markReminderShown(today).then((settings) => {
+        setReminderSettings(settings);
+        setReminderDraft(settings);
+      });
+    }, Math.max(0, nextDate.getTime() - Date.now()));
+
+    return () => window.clearTimeout(timer);
+  }, [enableReminderControls, reminderSettings]);
 
   useEffect(() => {
     if (confetti.length === 0) return;
@@ -491,6 +546,7 @@ function PetWidget({
     setIsPinned(false);
     setCongratulation(null);
     if (!open) {
+      setReminderMessage(null);
       nextTip();
     }
     setPhase("open");
@@ -499,6 +555,7 @@ function PetWidget({
   function handleCatClick() {
     if (suppressClickRef.current) return;
     setCongratulation(null);
+    setReminderMessage(null);
     nextTip();
   }
 
@@ -597,6 +654,19 @@ function PetWidget({
       });
     } finally {
       setSummarizingMessageIndex(null);
+    }
+  }
+
+  async function saveReminder(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setReminderStatus("Saving...");
+    try {
+      const savedSettings = await saveReminderSettings(reminderDraft);
+      setReminderSettings(savedSettings);
+      setReminderDraft(savedSettings);
+      setReminderStatus(savedSettings.enabled ? `Reminder set for ${savedSettings.time}.` : "Daily reminder off.");
+    } catch {
+      setReminderStatus("Could not save reminder.");
     }
   }
 
@@ -741,12 +811,12 @@ function PetWidget({
                     ? "Daily challenge"
                     : congratulation
                       ? "Correct!"
-                      : message.category}
+                      : displayMessage.category}
                 </div>
                 <p className="pet-quote">
                   {dailyReminderVisible
                     ? "You haven't completed today's challenge yet. Let's do one together!"
-                    : congratulation ?? message.text}
+                    : congratulation ?? displayMessage.text}
                 </p>
                 {dailyReminderVisible ? (
                   <a
@@ -758,16 +828,69 @@ function PetWidget({
                     Start today's challenge
                   </a>
                 ) : (
-                  <button
-                    className="pet-chat-trigger"
-                    onClick={() => {
-                      setIdleAnimation(null);
-                      setChatOpen(true);
-                    }}
-                    type="button"
-                  >
-                    Ask me anything
-                  </button>
+                  <>
+                    {enableReminderControls && (
+                      <form className="pet-reminder-panel" onSubmit={saveReminder}>
+                        <label className="pet-reminder-toggle">
+                          <input
+                            checked={reminderDraft.enabled}
+                            onChange={(event) => {
+                              setReminderDraft((current) => ({
+                                ...current,
+                                enabled: event.target.checked,
+                              }));
+                              setReminderStatus("");
+                            }}
+                            type="checkbox"
+                          />
+                          <span>Daily coding reminder</span>
+                        </label>
+                        <label className="pet-reminder-field">
+                          <span>Time</span>
+                          <input
+                            onChange={(event) => {
+                              setReminderDraft((current) => ({
+                                ...current,
+                                time: event.target.value,
+                              }));
+                              setReminderStatus("");
+                            }}
+                            type="time"
+                            value={reminderDraft.time}
+                          />
+                        </label>
+                        <label className="pet-reminder-field">
+                          <span>Message</span>
+                          <input
+                            maxLength={140}
+                            onChange={(event) => {
+                              setReminderDraft((current) => ({
+                                ...current,
+                                message: event.target.value,
+                              }));
+                              setReminderStatus("");
+                            }}
+                            type="text"
+                            value={reminderDraft.message}
+                          />
+                        </label>
+                        <button className="pet-reminder-save" type="submit">Save reminder</button>
+                        {reminderStatus && (
+                          <span className="pet-reminder-status">{reminderStatus}</span>
+                        )}
+                      </form>
+                    )}
+                    <button
+                      className="pet-chat-trigger"
+                      onClick={() => {
+                        setIdleAnimation(null);
+                        setChatOpen(true);
+                      }}
+                      type="button"
+                    >
+                      Ask me anything
+                    </button>
+                  </>
                 )}
               </div>
             )}

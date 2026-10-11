@@ -337,6 +337,11 @@ app.post("/api/check-answer", async (request, response) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Answer checker API running on http://localhost:${port}`);
-});
+// Vercel imports the app as a serverless function (api/index.js); locally it listens.
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Answer checker API running on http://localhost:${port}`);
+  });
+}
+
+export default app;
