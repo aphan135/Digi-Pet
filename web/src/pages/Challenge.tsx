@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
+import {
+  codeLanguageEntries,
+  codeRuntimes,
+  createStarterCode,
+  type CodeLanguage,
+} from "../data/codeRuntimes";
 import { checkAnswer } from "../services/answerService";
+import { runCode, type CodeRunResult } from "../services/codeRunnerService";
 import { getFeaturedProblem } from "../services/problemService";
 import { markProblemCompleted, recordAttempt } from "../services/progressService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
@@ -24,8 +31,23 @@ interface ChallengeProps {
   problem?: Problem;
 }
 
+const defaultLanguage: CodeLanguage = "javascript";
+
+function latestVersion(language: CodeLanguage) {
+  const versions = codeRuntimes[language].versions;
+  return versions[versions.length - 1];
+}
+
 function Challenge({ problem }: ChallengeProps) {
   const [selectedProblem, setSelectedProblem] = useState<Problem>(problem ?? getFeaturedProblem());
+  const [language, setLanguage] = useState<CodeLanguage>(defaultLanguage);
+  const [runtimeVersion, setRuntimeVersion] = useState(latestVersion(defaultLanguage));
+  const [codeDrafts, setCodeDrafts] = useState<Partial<Record<CodeLanguage, string>>>({
+    [defaultLanguage]: createStarterCode(problem ?? getFeaturedProblem(), defaultLanguage),
+  });
+  const [runResult, setRunResult] = useState<CodeRunResult | null>(null);
+  const [runError, setRunError] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [error, setError] = useState("");
@@ -34,10 +56,47 @@ function Challenge({ problem }: ChallengeProps) {
   useEffect(() => {
     if (!problem) return;
     setSelectedProblem(problem);
+    setLanguage(defaultLanguage);
+    setRuntimeVersion(latestVersion(defaultLanguage));
+    setCodeDrafts({ [defaultLanguage]: createStarterCode(problem, defaultLanguage) });
+    setRunResult(null);
+    setRunError("");
     setAnswer("");
     setFeedback(null);
     setError("");
   }, [problem]);
+
+  const runtime = codeRuntimes[language];
+  const sourceCode = codeDrafts[language] ?? createStarterCode(selectedProblem, language);
+
+  function handleLanguageChange(nextLanguage: CodeLanguage) {
+    setLanguage(nextLanguage);
+    setRuntimeVersion(latestVersion(nextLanguage));
+    setCodeDrafts((current) => ({
+      ...current,
+      [nextLanguage]: current[nextLanguage] ?? createStarterCode(selectedProblem, nextLanguage),
+    }));
+    setRunResult(null);
+    setRunError("");
+  }
+
+  async function handleRunCode() {
+    setIsRunning(true);
+    setRunResult(null);
+    setRunError("");
+    try {
+      setRunResult(await runCode({
+        sourceCode,
+        languageId: runtimeVersion.languageId,
+        language,
+        expectedOutput: selectedProblem.expectedOutput,
+      }));
+    } catch (caughtError) {
+      setRunError(caughtError instanceof Error ? caughtError.message : "Could not run code.");
+    } finally {
+      setIsRunning(false);
+    }
+  }
 
   async function handleSubmit() {
     setError("");
@@ -74,16 +133,95 @@ function Challenge({ problem }: ChallengeProps) {
         </span>
         <p>{selectedProblem.prompt}</p>
         {showCodePanels && selectedProblem.starterCode && (
-          <div className="starter-code-panel">
-            <div className="code-window-header">
-              <span className="window-dot red" />
-              <span className="window-dot yellow" />
-              <span className="window-dot green" />
-              <span className="code-file-name">starter.js</span>
+          <div className="code-lab">
+            <div className="runtime-toolbar">
+              <label>
+                <span>Language</span>
+                <select
+                  aria-label="Programming language"
+                  onChange={(event) => handleLanguageChange(event.target.value as CodeLanguage)}
+                  value={language}
+                >
+                  {codeLanguageEntries.map(([value, option]) => (
+                    <option key={value} value={value}>{option.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Version</span>
+                <select
+                  aria-label="Programming language version"
+                  onChange={(event) => {
+                    const nextVersion = runtime.versions.find(
+                      (version) => version.label === event.target.value,
+                    );
+                    if (nextVersion) setRuntimeVersion(nextVersion);
+                    setRunResult(null);
+                    setRunError("");
+                  }}
+                  value={runtimeVersion.label}
+                >
+                  {runtime.versions.map((version) => (
+                    <option key={version.label} value={version.label}>{version.label}</option>
+                  ))}
+                </select>
+              </label>
+              <button
+                className="reset-code-button"
+                onClick={() => {
+                  setCodeDrafts((current) => ({
+                    ...current,
+                    [language]: createStarterCode(selectedProblem, language),
+                  }));
+                  setRunResult(null);
+                  setRunError("");
+                }}
+                type="button"
+              >
+                Reset code
+              </button>
             </div>
-            <pre>
-              <code>{selectedProblem.starterCode}</code>
-            </pre>
+            {language === "react" && (
+              <p className="runtime-note">
+                React mode compiles JSX and checks console output; visual preview is not included yet.
+              </p>
+            )}
+            <div className="starter-code-panel">
+              <div className="code-window-header">
+                <span className="window-dot red" />
+                <span className="window-dot yellow" />
+                <span className="window-dot green" />
+                <span className="code-file-name">solution.{runtime.extension}</span>
+              </div>
+              <textarea
+                aria-label={`${runtime.label} code editor for ${selectedProblem.title}`}
+                className="code-editor"
+                onChange={(event) => {
+                  setCodeDrafts((current) => ({ ...current, [language]: event.target.value }));
+                  setRunResult(null);
+                  setRunError("");
+                }}
+                spellCheck={false}
+                value={sourceCode}
+              />
+            </div>
+            <div className="code-run-actions">
+              <button disabled={isRunning || !sourceCode.trim()} onClick={handleRunCode} type="button">
+                {isRunning ? "Running..." : `Run ${runtime.label}`}
+                <span aria-hidden="true">{">"}</span>
+              </button>
+              <span>Output is checked against the expected result.</span>
+            </div>
+            {runError && <p className="error-message">{runError}</p>}
+            {runResult && (
+              <div className={`code-run-result ${runResult.status}`} role="status">
+                <div>
+                  <strong>{runResult.status === "passed" ? "Exercise passed" : runResult.status === "failed" ? "Output does not match yet" : "Compile or runtime error"}</strong>
+                  <span>{runResult.detail}</span>
+                </div>
+                <pre>{runResult.output || "No output"}</pre>
+              </div>
+            )}
           </div>
         )}
         {showCodePanels && selectedProblem.expectedOutput && (

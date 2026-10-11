@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import express from "express";
 import { GoogleGenAI } from "@google/genai";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 
 dotenv.config({ path: fileURLToPath(new URL("../.env", import.meta.url)) });
 
 const app = express();
 const port = Number(process.env.API_PORT || 3001);
+const judge0Url = (process.env.JUDGE0_API_URL || "https://ce.judge0.com").replace(/\/$/, "");
+const allowedLanguageIds = new Set([
+  50, 51, 52, 54, 62, 68, 72, 73, 74, 78, 91, 92, 93, 94, 95, 97, 98, 100, 101,
+  102, 103, 105, 106, 107, 108, 109, 110, 111,
+]);
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
@@ -25,6 +31,95 @@ function extractJson(text) {
 
 app.get("/api/health", (_request, response) => {
   response.json({ ok: true });
+});
+
+function compileReactJsx(sourceCode) {
+  const result = ts.transpileModule(sourceCode, {
+    compilerOptions: {
+      jsx: ts.JsxEmit.React,
+      module: ts.ModuleKind.None,
+      target: ts.ScriptTarget.ES2022,
+    },
+    reportDiagnostics: true,
+  });
+  const errors = result.diagnostics?.filter(
+    (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
+  );
+  if (errors?.length) {
+    throw new Error(errors.map((diagnostic) =>
+      ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")).join("\n"));
+  }
+  const reactShim = `
+const React = {
+  createElement(type, props, ...children) {
+    return { type, props: { ...(props || {}), children } };
+  }
+};`;
+  return `${reactShim}\n${result.outputText}`;
+}
+
+app.post("/api/run-code", async (request, response) => {
+  const { sourceCode, languageId, language, expectedOutput } = request.body;
+  if (typeof sourceCode !== "string" || !sourceCode.trim()) {
+    return response.status(400).json({ error: "Enter some code before running it." });
+  }
+  if (sourceCode.length > 50_000) {
+    return response.status(400).json({ error: "Code must be smaller than 50 KB." });
+  }
+  if (!Number.isInteger(languageId) || !allowedLanguageIds.has(languageId)) {
+    return response.status(400).json({ error: "That language version is not supported." });
+  }
+
+  let executableCode = sourceCode;
+  try {
+    if (language === "react") executableCode = compileReactJsx(sourceCode);
+  } catch (error) {
+    return response.json({
+      status: "error",
+      output: error instanceof Error ? error.message : "JSX could not compile.",
+      detail: "React JSX compilation failed",
+    });
+  }
+
+  const headers = { "Content-Type": "application/json" };
+  if (process.env.JUDGE0_AUTH_TOKEN?.trim()) {
+    headers["X-Auth-Token"] = process.env.JUDGE0_AUTH_TOKEN.trim();
+  }
+
+  try {
+    const runnerResponse = await fetch(`${judge0Url}/submissions?base64_encoded=false&wait=true`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        source_code: executableCode,
+        language_id: languageId,
+        expected_output: typeof expectedOutput === "string" ? expectedOutput : undefined,
+        cpu_time_limit: 3,
+        wall_time_limit: 5,
+      }),
+      signal: AbortSignal.timeout(15_000),
+    });
+    const result = await runnerResponse.json();
+    if (!runnerResponse.ok) {
+      return response.status(502).json({
+        error: result.error || result.message || "The code runner rejected this request.",
+      });
+    }
+    const output = result.stdout || result.compile_output || result.stderr || result.message || "";
+    const statusId = result.status?.id;
+    return response.json({
+      status: statusId === 3 ? "passed" : statusId === 4 ? "failed" : "error",
+      output: String(output).trimEnd(),
+      detail: result.status?.description || "Execution finished",
+    });
+  } catch (error) {
+    console.error("Code runner failed:", error);
+    return response.status(502).json({
+      error: error instanceof Error && error.name === "TimeoutError"
+        ? "The code runner took too long to respond. Try again."
+        : "Could not reach the code runner. Check the API server terminal.",
+    });
+  }
 });
 
 app.post("/api/check-answer", async (request, response) => {
