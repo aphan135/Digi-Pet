@@ -47,22 +47,28 @@ function mathLevels(title: string): TopicContent["levels"] {
   ];
 }
 
-function mathContent(title: string, overview: string, analogy: string): TopicContent {
+function mathExercise(
+  id: string,
+  title: string,
+  difficulty: ProblemDifficulty,
+  instructions: string,
+  expectedAnswer: string,
+  hint: string,
+): LearningExercise {
+  return exercise(id, title, difficulty, instructions, "", expectedAnswer, hint);
+}
+
+function mathContent(
+  title: string,
+  overview: string,
+  analogy: string,
+  exercises: LearningExercise[],
+): TopicContent {
   return {
     overview,
     analogy,
     levels: mathLevels(title),
-    exercises: [
-      exercise(
-        `${title.toLowerCase().split(" ").join("-")}-reasoning`,
-        `${title} reasoning check`,
-        "Medium",
-        `Solve a representative ${title} problem and explain the reasoning behind each step.`,
-        "function explainSolution() {\n  // Write your reasoning in the answer box on the Challenge page\n}\n\nconsole.log('ready');",
-        "ready",
-        "State what is given, what you need to find, and why each transformation is valid.",
-      ),
-    ],
+    exercises,
   };
 }
 
@@ -141,41 +147,81 @@ export const learningContent: Record<string, TopicContent> = {
     "Algebra 2",
     "Algebra 2 builds fluency with functions, polynomials, exponentials, logarithms, and equation solving.",
     "Think of algebra as a toolkit for transforming expressions without changing their meaning.",
+    [
+      mathExercise("algebra-quadratic-factor", "Factor a quadratic", "Easy", "Factor x^2 - 7x + 12 completely, then list the zeros of the function.", "(x - 3)(x - 4); zeros: 3 and 4", "Look for two numbers that multiply to 12 and add to -7."),
+      mathExercise("algebra-log-equation", "Solve a logarithmic equation", "Medium", "Solve log_2(x - 1) + log_2(x + 3) = 3. Check for extraneous solutions.", "x = 3", "Use the product rule to combine the logs before converting to exponential form."),
+      mathExercise("algebra-exponential-model", "Exponential growth model", "Hard", "A value starts at 80 and grows by 12% each year. Write the model V(t), then find V(5) rounded to the nearest tenth.", "V(t) = 80(1.12)^t; V(5) = 141.0", "Growth by 12% means the multiplier is 1.12 each year."),
+    ],
   ),
   precalculus: mathContent(
     "Precalculus",
     "Precalculus connects advanced functions, graphs, trigonometry, limits, and modeling before calculus.",
     "Precalculus is the bridge between symbolic algebra and motion/change.",
+    [
+      mathExercise("precalc-compose-functions", "Compose two functions", "Easy", "Given f(x) = 2x - 5 and g(x) = x^2 + 1, find f(g(3)) and g(f(3)).", "f(g(3)) = 15; g(f(3)) = 2", "Evaluate the inside function first, then substitute into the outside function."),
+      mathExercise("precalc-inverse-function", "Find an inverse", "Medium", "Find the inverse of f(x) = (3x - 4) / 2. State f^-1(x).", "f^-1(x) = (2x + 4) / 3", "Set y = (3x - 4) / 2, swap x and y, then solve for y."),
+      mathExercise("precalc-limit-table", "Estimate a limit", "Hard", "Evaluate lim as x approaches 2 of (x^2 - 4) / (x - 2). Explain the simplification.", "4", "Factor the numerator as a difference of squares, then cancel the removable factor."),
+    ],
   ),
   "calculus-1": mathContent(
     "Calculus 1",
     "Calculus 1 focuses on limits, derivatives, rates of change, tangent lines, and optimization.",
     "A derivative is a speedometer for a changing quantity.",
+    [
+      mathExercise("calc1-power-rule", "Differentiate a polynomial", "Easy", "Find dy/dx for y = 4x^3 - 7x^2 + 5x - 9.", "dy/dx = 12x^2 - 14x + 5", "Apply the power rule term by term."),
+      mathExercise("calc1-tangent-line", "Tangent line equation", "Medium", "For f(x) = x^2 - 3x + 1, find the tangent line at x = 4.", "y = 5x - 15", "Find f(4), find f'(x), then use point-slope form."),
+      mathExercise("calc1-optimization", "Optimize area", "Hard", "A rectangle has perimeter 40. What dimensions maximize its area, and what is the maximum area?", "10 by 10; maximum area = 100", "Write area using one variable after using 2L + 2W = 40."),
+    ],
   ),
   "calculus-2": mathContent(
     "Calculus 2",
     "Calculus 2 develops integration techniques, accumulation, sequences, and series.",
     "Integration is a way to add infinitely many tiny pieces into one whole.",
+    [
+      mathExercise("calc2-basic-integral", "Evaluate an indefinite integral", "Easy", "Evaluate the integral of (6x^2 - 4x + 3) dx.", "2x^3 - 2x^2 + 3x + C", "Use the reverse power rule on each term."),
+      mathExercise("calc2-substitution", "Use u-substitution", "Medium", "Evaluate the integral of 2x(x^2 + 5)^4 dx.", "(x^2 + 5)^5 / 5 + C", "Let u = x^2 + 5 so du = 2x dx."),
+      mathExercise("calc2-series-test", "Test a series", "Hard", "Determine whether the series sum from n=1 to infinity of 1/n^2 converges or diverges, and name the test.", "Converges by the p-series test because p = 2 > 1", "Compare it to the p-series rule for sum 1/n^p."),
+    ],
   ),
   trigonometry: mathContent(
     "Trigonometry",
     "Trigonometry studies angles, cycles, unit-circle relationships, identities, and wave behavior.",
     "Trig turns rotation and repeating motion into measurable relationships.",
+    [
+      mathExercise("trig-unit-circle", "Use the unit circle", "Easy", "Find sin(150 degrees), cos(150 degrees), and tan(150 degrees).", "sin = 1/2; cos = -sqrt(3)/2; tan = -sqrt(3)/3", "150 degrees is in Quadrant II with reference angle 30 degrees."),
+      mathExercise("trig-solve-equation", "Solve a trig equation", "Medium", "Solve 2sin(x) - 1 = 0 for 0 <= x < 2pi.", "x = pi/6, 5pi/6", "First solve sin(x) = 1/2, then use the unit circle."),
+      mathExercise("trig-identity", "Verify an identity", "Hard", "Verify that (1 - cos^2(x)) / sin(x) = sin(x), stating any restrictions.", "It simplifies to sin(x), with sin(x) not equal to 0", "Use the Pythagorean identity 1 - cos^2(x) = sin^2(x)."),
+    ],
   ),
   "calculus-3": mathContent(
     "Calculus 3",
     "Calculus 3 extends calculus into vectors, 3D space, multivariable functions, and partial derivatives.",
     "Instead of walking on a line, Calculus 3 explores movement across landscapes.",
+    [
+      mathExercise("calc3-gradient", "Find a gradient", "Easy", "For f(x, y) = x^2y + 3y^2, find the gradient vector at (2, 1).", "gradient f(2, 1) = <4, 10>", "Compute partial derivatives with respect to x and y, then substitute the point."),
+      mathExercise("calc3-dot-product-angle", "Angle between vectors", "Medium", "Find the angle between a = <1, 2, 2> and b = <2, 0, 1>, rounded to the nearest degree.", "50 degrees", "Use a dot b = |a||b|cos(theta)."),
+      mathExercise("calc3-directional-derivative", "Directional derivative", "Hard", "For f(x, y) = x^2 + y^2, find the directional derivative at (1, 2) in the direction of <3, 4>.", "22/5 or 4.4", "Normalize the direction vector, then dot it with the gradient at the point."),
+    ],
   ),
   "discrete-math": mathContent(
     "Discrete Math",
     "Discrete Math builds foundations in logic, proofs, sets, counting, recurrence, and graphs.",
     "Discrete math is the grammar of computer science reasoning.",
+    [
+      mathExercise("discrete-truth-table", "Evaluate a compound statement", "Easy", "Let p be true and q be false. Evaluate (p -> q) OR (not q).", "true", "Remember p -> q is false only when p is true and q is false."),
+      mathExercise("discrete-counting", "Count arrangements", "Medium", "How many 5-character strings can be made from A, B, C, D if repetition is allowed?", "4^5 = 1024", "Each position has 4 independent choices."),
+      mathExercise("discrete-graph-degree", "Use the handshake lemma", "Hard", "A graph has vertex degrees 3, 3, 2, 2, 2. How many edges does it have?", "6 edges", "The sum of degrees equals twice the number of edges."),
+    ],
   ),
   statistics: mathContent(
     "Statistics",
     "Statistics explains data, probability, distributions, inference, and uncertainty.",
     "Statistics is how we make careful claims when the world is noisy.",
+    [
+      mathExercise("stats-mean-median", "Mean and median", "Easy", "For the data set 4, 7, 7, 10, 12, find the mean and median.", "mean = 8; median = 7", "Mean is the sum divided by count; median is the middle value."),
+      mathExercise("stats-probability", "Conditional probability", "Medium", "A bag has 5 red marbles and 3 blue marbles. Two marbles are drawn without replacement. What is the probability both are red?", "5/14", "Multiply P(red first) by P(red second given red first)."),
+      mathExercise("stats-z-score", "Compute a z-score", "Hard", "A test has mean 72 and standard deviation 8. A student scores 88. Find the z-score and interpret it.", "z = 2; the score is 2 standard deviations above the mean", "Use z = (x - mean) / standard deviation."),
+    ],
   ),
   science: {
     overview: "Science uses observation and evidence to explain patterns in the natural world. Strong explanations connect what happens to the mechanisms that cause it.",
