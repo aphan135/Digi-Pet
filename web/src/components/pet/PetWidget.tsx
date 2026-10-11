@@ -131,7 +131,7 @@ function PetWidget() {
   const dragRef = useRef<DragState | null>(null);
   const positionRef = useRef(position);
   const suppressClickRef = useRef(false);
-  const { tip, nextTip } = usePetTip();
+  const { message, nextTip } = usePetTip();
   const open = phase === "open";
 
   useEffect(() => {
@@ -306,12 +306,9 @@ function PetWidget() {
             </button>
             <div className="pet-cloud-body">
               <div className="pet-label" style={{ color: catColors.label }}>
-                Today's spark
+                {message.category}
               </div>
-              <p className="pet-quote">{tip}</p>
-              <a className="pet-link" href="#challenge" style={{ color: catColors.label }}>
-                Keep practicing
-              </a>
+              <p className="pet-quote">{message.text}</p>
             </div>
           </div>
           <div className="pet-trail">
