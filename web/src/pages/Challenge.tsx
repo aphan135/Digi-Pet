@@ -9,7 +9,7 @@ import { checkAnswer } from "../services/answerService";
 import { runCode, type CodeRunResult } from "../services/codeRunnerService";
 import { celebratePet } from "../services/petCelebration";
 import { getFeaturedProblem } from "../services/problemService";
-import { markProblemCompleted, recordAttempt } from "../services/progressService";
+import { getProblemStatuses, markProblemCompleted, recordAttempt, subscribeToProgressUpdates } from "../services/progressService";
 import type { AnswerFeedback, Problem, ProblemType } from "../types";
 
 const subjectFilters: { id: ProblemType | "all"; label: string }[] = [
@@ -53,6 +53,13 @@ function Challenge({ problem }: ChallengeProps) {
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+  const [statuses, setStatuses] = useState(getProblemStatuses);
+
+  useEffect(() => {
+    const refreshStatuses = () => setStatuses(getProblemStatuses());
+    refreshStatuses();
+    return subscribeToProgressUpdates(refreshStatuses);
+  }, []);
 
   useEffect(() => {
     if (!problem) return;
@@ -130,6 +137,9 @@ function Challenge({ problem }: ChallengeProps) {
       <div className="problem-panel">
         <p className="eyebrow">{getSubjectLabel(selectedProblem.type)}</p>
         <h2>{selectedProblem.title}</h2>
+        <span className="status-pill">
+          {statuses[selectedProblem.id] === "completed" ? "Completed" : statuses[selectedProblem.id] === "incomplete" ? "Incomplete" : "Not attempted"}
+        </span>{" "}
         <span className={`difficulty ${selectedProblem.difficulty.toLowerCase()}`}>
           {selectedProblem.difficulty}
         </span>

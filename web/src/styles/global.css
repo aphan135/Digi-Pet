@@ -4334,6 +4334,11 @@ textarea:focus-visible {
   background: #f2fbf6;
 }
 
+.exercise-card.incomplete {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .exercise-card.completed .exercise-number {
   color: #399967;
   font-weight: 900;
