@@ -27,8 +27,8 @@ const worlds: MapWorld[] = [
     shortName: "Arrays + Hashmaps",
     description: "Start with indexing, traversal, lookup tables, and frequency patterns.",
     theme: "meadow",
-    position: { x: 24, y: 29 },
-    previewPosition: "22% 34%",
+    position: { x: 21, y: 25 },
+    previewPosition: "21% 25%",
   },
   {
     id: "two-pointer-grove",
