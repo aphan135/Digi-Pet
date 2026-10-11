@@ -3,6 +3,10 @@
   "name": "Digi-Pet",
   "description": "A little study companion that stays with you in Chrome.",
   "version": "1.0.0",
+  "permissions": ["alarms", "notifications", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],

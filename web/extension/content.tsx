@@ -27,7 +27,7 @@ function mountPet() {
 
   createRoot(mountPoint).render(
     <StrictMode>
-      <PetWidget />
+      <PetWidget enableReminderControls />
     </StrictMode>,
   );
 }
