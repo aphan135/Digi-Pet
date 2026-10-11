@@ -3,7 +3,7 @@
 
 Digi-Pet is an interactive educational platform designed to make coding practice more engaging, structured, and rewarding.
 
-Inspired by Duolingo's progression system and LeetCode-style coding challenges, Digi-Pet combines guided learning paths, gamification, AI-powered feedback, and an interactive digital cat companion. The goal is to encourage consistent daily learning while making technical education feel more like an adventure than an obligation.
+Inspired by progression systems from MMORPG games and LeetCode-style coding challenges, Digi-Pet combines guided learning paths, gamification, AI-powered feedback, and an interactive digital cat companion. The goal is to encourage consistent daily learning while making technical education feel more like an adventure than an obligation.
 
 - **Live Demo:** https://digi-pet-indol.vercel.app/
 - **GitHub:** https://github.com/aphan135/Digi-Pet
