@@ -23,13 +23,17 @@ const mapLocations = [
 const routePoints = mapLocations.map((location) => `${location.x},${location.y}`).join(" ");
 
 function LearningMap({ onSelectTopic }: LearningMapProps) {
-  const firstAvailableTopic = useMemo(
-    () => topics.find((topic, index) => getNodeState(topic.progress, index) !== "locked") ?? topics[0],
+  const mapTopics = useMemo(
+    () => topics.filter((topic) => topic.category === "Foundations" || topic.category === "Patterns"),
     []
   );
+  const firstAvailableTopic = useMemo(
+    () => mapTopics.find((topic, index) => getNodeState(topic.progress, index) !== "locked") ?? mapTopics[0],
+    [mapTopics]
+  );
   const [selectedTopicId, setSelectedTopicId] = useState(firstAvailableTopic.id);
-  const selectedTopic = topics.find((topic) => topic.id === selectedTopicId) ?? firstAvailableTopic;
-  const selectedIndex = topics.findIndex((topic) => topic.id === selectedTopic.id);
+  const selectedTopic = mapTopics.find((topic) => topic.id === selectedTopicId) ?? firstAvailableTopic;
+  const selectedIndex = mapTopics.findIndex((topic) => topic.id === selectedTopic.id);
   const selectedLocation = mapLocations[selectedIndex] ?? mapLocations[0];
   const selectedState = getNodeState(selectedTopic.progress, selectedIndex);
 
@@ -93,7 +97,7 @@ function LearningMap({ onSelectTopic }: LearningMapProps) {
             <strong>Pet Village</strong>
           </div>
 
-          {topics.map((topic, index) => {
+          {mapTopics.map((topic, index) => {
             const state = getNodeState(topic.progress, index);
             const location = mapLocations[index] ?? mapLocations[0];
             const isSelected = topic.id === selectedTopic.id;

@@ -24,6 +24,29 @@ function levels(
   ];
 }
 
+function mathContent(title: string, overview: string, analogy: string): TopicContent {
+  return {
+    overview,
+    analogy,
+    levels: levels(
+      `Learn the core vocabulary and notation for ${title}.`,
+      "Practice choosing the right method and explaining each step clearly.",
+      "Connect the method to edge cases, alternate strategies, and real applications.",
+    ),
+    exercises: [
+      exercise(
+        `${title.toLowerCase().split(" ").join("-")}-reasoning`,
+        `${title} reasoning check`,
+        "Medium",
+        `Solve a representative ${title} problem and explain the reasoning behind each step.`,
+        "function explainSolution() {\n  // Write your reasoning in the answer box on the Challenge page\n}\n\nconsole.log('ready');",
+        "ready",
+        "State what is given, what you need to find, and why each transformation is valid.",
+      ),
+    ],
+  };
+}
+
 export const learningContent: Record<string, TopicContent> = {
   arrays: {
     overview: "Arrays keep values in an ordered sequence. Hash maps pair unique keys with values for fast lookup. Together they solve a huge range of counting, lookup, and grouping problems.",
@@ -84,5 +107,61 @@ export const learningContent: Record<string, TopicContent> = {
       exercise("dp-fib", "Memoized Fibonacci", "Medium", "Implement memoized Fibonacci and print fib(10).", "function fib(n, memo = {}) {\n  // Cache computed values\n}\n\nconsole.log(fib(10));", "55", "Return n for n below 2; otherwise cache the recursive sum."),
       exercise("dp-coins", "Minimum coins", "Hard", "Find the fewest coins needed to make amount 6.", "function minCoins(coins, amount) {\n  // dp[x] is the best answer for amount x\n}\n\nconsole.log(minCoins([1, 3, 4], 6));", "2", "Initialize unreachable amounts to Infinity and build upward."),
     ],
+  },
+  "system-design": {
+    overview: "System design turns product requirements into cooperating services, APIs, data stores, caches, and queues that remain reliable as usage grows.",
+    analogy: "Designing a city means planning roads, utilities, capacity, and failure recovery before adding buildings.",
+    levels: levels("Clarify users, requirements, and the core data flow.", "Choose APIs, storage, caching, and scaling boundaries.", "Analyze consistency, hot spots, failures, observability, and cost."),
+    exercises: [
+      exercise("system-id", "Generate a short ID", "Easy", "Convert the number to base 36 and print the result.", "function shortId(number) {\n  // Use a compact alphanumeric representation\n}\n\nconsole.log(shortId(12345));", "9ix", "JavaScript numbers can be converted with toString(radix)."),
+      exercise("system-shard", "Choose a shard", "Medium", "Route each numeric user ID to one of four shards.", "function shardFor(userId, shardCount) {\n  // Return a stable shard number\n}\n\nconsole.log(shardFor(42, 4));", "2", "Modulo gives a stable value from zero to shardCount - 1."),
+      exercise("system-rate", "Fixed-window limiter", "Hard", "Allow only the first three calls and print the decisions as JSON.", "function createLimiter(limit) {\n  // Return a function that tracks calls\n}\n\nconst allow = createLimiter(3);\nconsole.log(JSON.stringify([allow(), allow(), allow(), allow()]));", "[true,true,true,false]", "Close over a counter and compare it with the limit."),
+    ],
+  },
+  "algebra-2": mathContent(
+    "Algebra 2",
+    "Algebra 2 builds fluency with functions, polynomials, exponentials, logarithms, and equation solving.",
+    "Think of algebra as a toolkit for transforming expressions without changing their meaning.",
+  ),
+  precalculus: mathContent(
+    "Precalculus",
+    "Precalculus connects advanced functions, graphs, trigonometry, limits, and modeling before calculus.",
+    "Precalculus is the bridge between symbolic algebra and motion/change.",
+  ),
+  "calculus-1": mathContent(
+    "Calculus 1",
+    "Calculus 1 focuses on limits, derivatives, rates of change, tangent lines, and optimization.",
+    "A derivative is a speedometer for a changing quantity.",
+  ),
+  "calculus-2": mathContent(
+    "Calculus 2",
+    "Calculus 2 develops integration techniques, accumulation, sequences, and series.",
+    "Integration is a way to add infinitely many tiny pieces into one whole.",
+  ),
+  trigonometry: mathContent(
+    "Trigonometry",
+    "Trigonometry studies angles, cycles, unit-circle relationships, identities, and wave behavior.",
+    "Trig turns rotation and repeating motion into measurable relationships.",
+  ),
+  "calculus-3": mathContent(
+    "Calculus 3",
+    "Calculus 3 extends calculus into vectors, 3D space, multivariable functions, and partial derivatives.",
+    "Instead of walking on a line, Calculus 3 explores movement across landscapes.",
+  ),
+  "discrete-math": mathContent(
+    "Discrete Math",
+    "Discrete Math builds foundations in logic, proofs, sets, counting, recurrence, and graphs.",
+    "Discrete math is the grammar of computer science reasoning.",
+  ),
+  statistics: mathContent(
+    "Statistics",
+    "Statistics explains data, probability, distributions, inference, and uncertainty.",
+    "Statistics is how we make careful claims when the world is noisy.",
+  ),
+  science: {
+    overview: "Science uses observation and evidence to explain patterns in the natural world. Strong explanations connect what happens to the mechanisms that cause it.",
+    analogy: "A scientific explanation is a detective story: observations are clues, and evidence supports the best explanation.",
+    levels: levels("Describe observations and identify the scientific question.", "Connect evidence to models such as matter, energy, and forces.", "Evaluate explanations by checking predictions against evidence."),
+    exercises: [],
   },
 };
