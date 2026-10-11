@@ -7,8 +7,51 @@ interface TopicDetailProps {
   onStartExercise: (exercise: LearningExercise, topic: Topic) => void;
 }
 
+const topicDetailCopy = {
+  coding: {
+    exerciseLabel: "code labs",
+    guideTitle: "Three levels of understanding",
+    guideText: "Move through the mental model before testing it in code.",
+    practiceEyebrow: "Practice lab",
+    practiceTitle: "Practice with AI feedback",
+    practiceText: "Pick an exercise, write your approach on the Challenge page, then submit it for review.",
+  },
+  math: {
+    exerciseLabel: "practice checks",
+    guideTitle: "Three steps to mastery",
+    guideText: "Learn the idea, practice the method, then explain each step clearly.",
+    practiceEyebrow: "Problem set",
+    practiceTitle: "Practice with AI feedback",
+    practiceText: "Pick a problem, show your work on the Challenge page, then submit it for review.",
+  },
+  science: {
+    exerciseLabel: "review prompts",
+    guideTitle: "Three ways to understand it",
+    guideText: "Start with observations, connect the evidence, then explain the mechanism.",
+    practiceEyebrow: "Review prompt",
+    practiceTitle: "Practice with AI feedback",
+    practiceText: "Pick a prompt, write your explanation on the Challenge page, then submit it for review.",
+  },
+  systems: {
+    exerciseLabel: "design drills",
+    guideTitle: "Three levels of design thinking",
+    guideText: "Clarify the product, choose the architecture, then reason through tradeoffs.",
+    practiceEyebrow: "Design drill",
+    practiceTitle: "Practice with AI feedback",
+    practiceText: "Pick a drill, write your design approach on the Challenge page, then submit it for review.",
+  },
+};
+
+function getTopicCopy(topic: Topic) {
+  if (topic.category === "Math") return topicDetailCopy.math;
+  if (topic.category === "Science") return topicDetailCopy.science;
+  if (topic.category === "Systems") return topicDetailCopy.systems;
+  return topicDetailCopy.coding;
+}
+
 function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
   const content = learningContent[topic.id];
+  const copy = getTopicCopy(topic);
 
   return (
     <section className={`topic-detail accent-${topic.accent}`}>
@@ -24,7 +67,7 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
           <div className="detail-meta">
             <span>{topic.lessons} lessons</span>
             <span>{topic.minutes} minutes</span>
-            <span>{content.exercises.length} code labs</span>
+            <span>{content.exercises.length} {copy.exerciseLabel}</span>
           </div>
         </div>
         <div className="concept-card">
@@ -37,8 +80,8 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
       <section className="understanding-section" aria-labelledby="understanding-title">
         <div className="detail-section-heading">
           <p className="eyebrow">Concept guide</p>
-          <h3 id="understanding-title">Three levels of understanding</h3>
-          <p>Move through the mental model before testing it in code.</p>
+          <h3 id="understanding-title">{copy.guideTitle}</h3>
+          <p>{copy.guideText}</p>
         </div>
         <div className="level-grid">
           {content.levels.map((level, index) => (
@@ -56,9 +99,9 @@ function TopicDetail({ topic, onBack, onStartExercise }: TopicDetailProps) {
       {content.exercises.length > 0 && (
         <section className="exercise-section" aria-labelledby="exercise-title">
           <div className="detail-section-heading">
-            <p className="eyebrow">Practice lab</p>
-            <h3 id="exercise-title">Practice with AI feedback</h3>
-            <p>Pick an exercise, write your approach on the Challenge page, then submit it for review.</p>
+            <p className="eyebrow">{copy.practiceEyebrow}</p>
+            <h3 id="exercise-title">{copy.practiceTitle}</h3>
+            <p>{copy.practiceText}</p>
           </div>
           <div className="exercise-list">
             {content.exercises.map((item, index) => (
