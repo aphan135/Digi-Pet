@@ -160,6 +160,11 @@ function Challenge({ problem }: ChallengeProps) {
         expectedOutput: selectedProblem.expectedOutput,
       });
       setRunResult(result);
+      recordAttempt(selectedProblem, {
+        isCorrect: result.status === "passed",
+        score: result.status === "passed" ? 10 : result.status === "failed" ? 5 : 0,
+        missedConcepts: [],
+      });
       if (result.status === "passed") {
         markProblemCompleted(selectedProblem.id);
         celebratePet();

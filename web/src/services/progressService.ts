@@ -161,7 +161,7 @@ async function insertAttempt(attempt: Attempt) {
     if (insertError) throw insertError;
   } catch (error) { console.warn("Could not save attempt.", error); }
 }
-export function recordAttempt(problem: Problem, feedback: AnswerFeedback) {
+export function recordAttempt(problem: Problem, feedback: Pick<AnswerFeedback, "score" | "isCorrect" | "missedConcepts">) {
   const attempt: Attempt = {
     problemId: problem.id, title: problem.title, topic: problem.topic,
     type: problem.type, difficulty: problem.difficulty,
