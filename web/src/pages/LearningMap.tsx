@@ -57,8 +57,8 @@ const worlds: MapWorld[] = [
     shortName: "Queues",
     description: "Process work in first-in, first-out order.",
     theme: "forest",
-    position: { x: 60, y: 45 },
-    previewPosition: "61% 45%",
+    position: { x: 64, y: 43 },
+    previewPosition: "64% 43%",
   },
   {
     id: "linked-list-coast",
