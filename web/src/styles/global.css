@@ -1726,9 +1726,25 @@ textarea:focus-visible {
 
 .pet-stage {
   position: fixed;
-  inset: 0;
+  width: 150px;
+  height: 150px;
   z-index: 20;
   pointer-events: none;
+}
+
+.pet-stage.dragging,
+.pet-stage.dragging * {
+  cursor: grabbing;
+}
+
+.pet-stage[data-corner$="left"] .pet-hotspot {
+  right: auto;
+  left: 0;
+}
+
+.pet-stage[data-corner^="top"] .pet-hotspot {
+  bottom: auto;
+  top: 0;
 }
 
 .pet-hotspot {
@@ -1742,6 +1758,8 @@ textarea:focus-visible {
   padding: 0;
   background: transparent;
   pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
 }
 
 .pet-hotspot:focus-visible {
@@ -1760,6 +1778,16 @@ textarea:focus-visible {
   pointer-events: none;
 }
 
+.pet-stage[data-corner$="left"] .pet-peek-clip {
+  right: auto;
+  left: 0;
+}
+
+.pet-stage[data-corner^="top"] .pet-peek-clip {
+  bottom: auto;
+  top: 0;
+}
+
 .pet-peek {
   display: block;
   width: 150px;
@@ -1771,6 +1799,30 @@ textarea:focus-visible {
 
 .pet-peek.shown {
   transform: translate(6%, 6%);
+}
+
+.pet-stage[data-corner="top-right"] .pet-peek {
+  transform: translate(100%, -100%);
+}
+
+.pet-stage[data-corner="top-right"] .pet-peek.shown {
+  transform: translate(6%, -6%);
+}
+
+.pet-stage[data-corner="bottom-left"] .pet-peek {
+  transform: translate(-100%, 100%);
+}
+
+.pet-stage[data-corner="bottom-left"] .pet-peek.shown {
+  transform: translate(-6%, 6%);
+}
+
+.pet-stage[data-corner="top-left"] .pet-peek {
+  transform: translate(-100%, -100%);
+}
+
+.pet-stage[data-corner="top-left"] .pet-peek.shown {
+  transform: translate(-6%, -6%);
 }
 
 .pet-peek.shown .pet-ear {
@@ -1813,6 +1865,39 @@ textarea:focus-visible {
   transition:
     transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.25s ease;
+}
+
+.pet-stage[data-corner$="left"] .pet-wrap {
+  right: auto;
+  left: 20px;
+  align-items: flex-start;
+  transform-origin: bottom left;
+}
+
+.pet-stage[data-corner$="right"] .pet-wrap {
+  align-items: flex-end;
+}
+
+.pet-stage[data-corner^="top"] .pet-wrap {
+  top: 8px;
+  bottom: auto;
+  transform-origin: top center;
+}
+
+.pet-stage[data-corner^="top"] .pet-area {
+  order: -1;
+}
+
+.pet-stage[data-corner="top-left"] .pet-wrap {
+  transform-origin: top left;
+}
+
+.pet-stage[data-corner="top-right"] .pet-wrap {
+  transform-origin: top right;
+}
+
+.pet-stage.dragging .pet-wrap {
+  transition: none;
 }
 
 .pet-wrap.open {
@@ -2007,6 +2092,8 @@ textarea:focus-visible {
   margin-top: 4px;
   padding: 0;
   background: none;
+  cursor: grab;
+  touch-action: none;
 }
 
 .pet-button:focus-visible {

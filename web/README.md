@@ -21,6 +21,20 @@ or in a chat, revoke it and use a newly generated key.
 
 After changing `.env`, restart the API server for the new settings to take effect.
 
+## Chrome extension
+
+Build the extension from the `web` directory:
+
+```bash
+npm run extension:build
+```
+
+In Chrome, open `chrome://extensions`, enable Developer mode, choose **Load unpacked**,
+and select `web/extension-dist`. Digi-Pet will appear on regular HTTP/HTTPS pages and
+reload Digi-Pet after rebuilding. Chrome's standard New Tab page stays unchanged.
+Chrome internal pages, the Chrome Web Store, and some protected pages do not allow
+extensions to inject content.
+
 ## Structure
 
 - `src/components/` - Reusable UI components.

@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { usePetTip } from "../../hooks/usePetTip";
 
 const catColors = {
@@ -18,6 +19,35 @@ interface Heart {
   id: number;
   left: number;
   top: number;
+}
+
+interface PetPosition {
+  x: number;
+  y: number;
+}
+
+type PetCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+interface DragState {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+  moved: boolean;
+}
+
+const PET_SIZE = 150;
+const CORNER_INSET = 12;
+
+function getCornerPosition(corner: PetCorner): PetPosition {
+  const right = Math.max(CORNER_INSET, window.innerWidth - PET_SIZE - CORNER_INSET);
+  const bottom = Math.max(CORNER_INSET, window.innerHeight - PET_SIZE - CORNER_INSET);
+
+  return {
+    x: corner.endsWith("right") ? right : CORNER_INSET,
+    y: corner.startsWith("bottom") ? bottom : CORNER_INSET,
+  };
 }
 
 export function Cat({ className }: CatProps) {
@@ -89,19 +119,111 @@ function PeekHead({ shown }: PeekHeadProps) {
 
 function PetWidget() {
   const [phase, setPhase] = useState<"hidden" | "peek" | "open">("peek");
+  const [corner, setCorner] = useState<PetCorner>("bottom-right");
+  const [position, setPosition] = useState<PetPosition>(() =>
+    getCornerPosition("bottom-right"),
+  );
+  const [isDragging, setIsDragging] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
   const [jump, setJump] = useState(0);
   const [hearts, setHearts] = useState<Heart[]>([]);
   const closeTimer = useRef<number | undefined>(undefined);
+  const dragRef = useRef<DragState | null>(null);
+  const positionRef = useRef(position);
+  const suppressClickRef = useRef(false);
   const { tip, nextTip } = usePetTip();
   const open = phase === "open";
 
+  useEffect(() => {
+    function handleResize() {
+      const nextPosition = getCornerPosition(corner);
+      positionRef.current = nextPosition;
+      setPosition(nextPosition);
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [corner]);
+
+  function beginDrag(event: ReactPointerEvent<HTMLElement>) {
+    if (event.button !== 0) return;
+
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: positionRef.current.x,
+      originY: positionRef.current.y,
+      moved: false,
+    };
+    setIsDragging(true);
+    window.clearTimeout(closeTimer.current);
+  }
+
+  function movePet(event: ReactPointerEvent<HTMLElement>) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+    if (!drag.moved && Math.hypot(deltaX, deltaY) < 5) return;
+
+    drag.moved = true;
+    event.preventDefault();
+
+    const nextPosition = {
+      x: Math.min(
+        Math.max(0, drag.originX + deltaX),
+        Math.max(0, window.innerWidth - PET_SIZE),
+      ),
+      y: Math.min(
+        Math.max(0, drag.originY + deltaY),
+        Math.max(0, window.innerHeight - PET_SIZE),
+      ),
+    };
+    positionRef.current = nextPosition;
+    setPosition(nextPosition);
+  }
+
+  function finishDrag(event: ReactPointerEvent<HTMLElement>) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    dragRef.current = null;
+    setIsDragging(false);
+
+    if (!drag.moved) return;
+
+    const centerX = positionRef.current.x + PET_SIZE / 2;
+    const centerY = positionRef.current.y + PET_SIZE / 2;
+    const nextCorner: PetCorner = `${centerY < window.innerHeight / 2 ? "top" : "bottom"}-${
+      centerX < window.innerWidth / 2 ? "left" : "right"
+    }`;
+    const snappedPosition = getCornerPosition(nextCorner);
+
+    setCorner(nextCorner);
+    positionRef.current = snappedPosition;
+    setPosition(snappedPosition);
+    setIsPinned(true);
+    setPhase("peek");
+    suppressClickRef.current = true;
+    window.setTimeout(() => {
+      suppressClickRef.current = false;
+    }, 0);
+  }
+
   function hide() {
     window.clearTimeout(closeTimer.current);
+    setIsPinned(false);
     setPhase("hidden");
   }
 
   function openNow() {
+    if (suppressClickRef.current) return;
     window.clearTimeout(closeTimer.current);
+    setIsPinned(false);
     if (!open) {
       nextTip();
     }
@@ -109,6 +231,8 @@ function PetWidget() {
   }
 
   function petIt() {
+    if (suppressClickRef.current) return;
+
     const heart = {
       id: Math.random(),
       left: 70 + Math.round(Math.random() * 60),
@@ -126,7 +250,15 @@ function PetWidget() {
   }
 
   return (
-    <aside className="pet-stage" aria-label="Digital pet helper">
+    <aside
+      aria-label="Digital pet helper"
+      className={`pet-stage${isDragging ? " dragging" : ""}`}
+      data-corner={corner}
+      onPointerCancel={finishDrag}
+      onPointerMove={movePet}
+      onPointerUp={finishDrag}
+      style={{ left: position.x, top: position.y }}
+    >
       <div className="pet-peek-clip">
         <PeekHead shown={phase === "peek"} />
       </div>
@@ -135,11 +267,22 @@ function PetWidget() {
         <button
           aria-label="Say hi to the cat"
           className="pet-hotspot"
-          onBlur={() => setPhase((currentPhase) => (currentPhase === "peek" ? "hidden" : currentPhase))}
+          onBlur={() => {
+            if (!isPinned && !dragRef.current) {
+              setPhase((currentPhase) => (currentPhase === "peek" ? "hidden" : currentPhase));
+            }
+          }}
           onClick={openNow}
           onFocus={() => setPhase("peek")}
-          onMouseEnter={() => setPhase("peek")}
-          onMouseLeave={() => setPhase((currentPhase) => (currentPhase === "peek" ? "hidden" : currentPhase))}
+          onMouseEnter={() => {
+            if (!dragRef.current) setPhase("peek");
+          }}
+          onMouseLeave={() => {
+            if (!isPinned && !dragRef.current) {
+              setPhase((currentPhase) => (currentPhase === "peek" ? "hidden" : currentPhase));
+            }
+          }}
+          onPointerDown={beginDrag}
           type="button"
         />
       )}
@@ -148,7 +291,7 @@ function PetWidget() {
         className={open ? "pet-wrap open" : "pet-wrap"}
         onMouseEnter={() => window.clearTimeout(closeTimer.current)}
         onMouseLeave={() => {
-          if (!open) {
+          if (!open || dragRef.current) {
             return;
           }
 
@@ -193,7 +336,13 @@ function PetWidget() {
               />
             </svg>
           ))}
-          <button aria-label="Pet the cat" className="pet-button" onClick={petIt} type="button">
+          <button
+            aria-label="Pet the cat"
+            className="pet-button"
+            onClick={petIt}
+            onPointerDown={beginDrag}
+            type="button"
+          >
             <Cat className={jump ? (jump % 2 ? "pet-cat jump-a" : "pet-cat jump-b") : "pet-cat"} />
           </button>
         </div>
